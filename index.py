@@ -24,14 +24,21 @@ def actualizar_estado(equipo_id, nuevo_estado):
     supabase.table("equipos").update({"estado": nuevo_estado}).eq("id", equipo_id).execute()
     st.rerun()
 
-def clasificar(equipo_id, ronda_actual, grupo_destino):
-    # Insertar en la siguiente ronda
+def clasificar(equipo_id, ronda_sel, grupo_sel):
+    # Definimos a dónde va el equipo según en qué ronda está
+    proxima_ronda = ronda_sel + 1
+    
+    # Lógica simplificada: De Ronda 1 a Ronda 2 van al grupo unificado
+    nuevo_grupo = "A-B-C-D" if proxima_ronda == 2 else "Finales"
+    
     supabase.table("estructura_torneo").insert({
         "equipo_id": equipo_id,
-        "ronda": ronda_actual + 1,
-        "grupo": grupo_destino
+        "ronda": proxima_ronda,
+        "grupo": nuevo_grupo
     }).execute()
-    st.success("¡Clasificado!")
+    
+    st.success(f"Movido a Ronda {proxima_ronda} ({nuevo_grupo})")
+    st.balloons() # Un poco de efecto visual para celebrar
 
 # --- INTERFAZ ---
 col_izq, col_der = st.columns([1, 3])
