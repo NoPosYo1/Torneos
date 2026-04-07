@@ -46,7 +46,3 @@ if equipos_r1:
                 clasificar_equipo(e_id, 1)
 else:
     st.info("No hay equipos registrados en el Grupo A.")
-
-
-
-    
