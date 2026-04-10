@@ -12,7 +12,7 @@ st.title("🏆 Gestión de Torneo")
 
 # Simulamos que traemos los dos equipos del VS actual
 # En un caso real, filtrarías por el ID del partido
-equipos_db = supabase.table("equipo").select("*").limit(2).execute().data
+equipos_db = supabase.table("equipo").select("*").execute().data
 
 if len(equipos_db) < 2:
     st.warning("Faltan equipos en la base de datos.")
