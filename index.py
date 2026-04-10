@@ -10,7 +10,7 @@ def actualizar_estado(equipo_id, nuevo_estado):
 
 st.title("🏆 Gestión de Torneo")
 
-
+ 
 equipos_db = supabase.table("equipo").select("jugador_1, jugador_2").execute().data
 
 if equipos_db:
