@@ -5,14 +5,14 @@ from supabase import create_client
 supabase = create_client(st.secrets["SUPABASE_URL"], st.secrets["SUPABASE_KEY"])
 
 def actualizar_estado(equipo_id, nuevo_estado):
-    supabase.table("equipos").update({"estado": nuevo_estado}).eq("id", equipo_id).execute()
+    supabase.table("equipo").update({"estado": nuevo_estado}).eq("id", equipo_id).execute()
     st.rerun()
 
 st.title("🏆 Gestión de Torneo")
 
 # Simulamos que traemos los dos equipos del VS actual
 # En un caso real, filtrarías por el ID del partido
-equipos_db = supabase.table("equipos").select("*").limit(2).execute().data
+equipos_db = supabase.table("equipo").select("*").limit(2).execute().data
 
 if len(equipos_db) < 2:
     st.warning("Faltan equipos en la base de datos.")
