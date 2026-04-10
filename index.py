@@ -16,6 +16,7 @@ equipos_db = supabase.table("equipo").select("*").limit(2).execute().data
 
 if len(equipos_db) < 2:
     st.warning("Faltan equipos en la base de datos.")
+    st.rerun()  # Recarga para intentar obtener los equipos
 else:
     col1, vs_col, col2 = st.columns([4, 1, 4])
 
