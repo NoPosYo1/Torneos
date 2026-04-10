@@ -1,83 +1,47 @@
 import streamlit as st
 from supabase import create_client
 
-# 1. Conexión con Secretos
-url = st.secrets["SUPABASE_URL"]
-key = st.secrets["SUPABASE_KEY"]
-supabase = create_client(url, key)
-
-st.set_page_config(page_title="Admin Torneo", layout="wide")
-
-st.title("🏆 Gestión de Torneo: Fase de Grupos")
-
-# --- LÓGICA DE BASE DE DATOS ---
-def obtener_equipos_ronda(ronda, grupo):
-    # Trae equipos y sus datos unidos (Join)
-    res = supabase.table("estructura_torneo") \
-        .select("id, equipo_id, ronda, grupo, equipos(nombre_jugador_1, nombre_jugador_2, estado)") \
-        .eq("ronda", ronda) \
-        .eq("grupo", grupo) \
-        .execute()
-    return res.data
+# Conexión
+supabase = create_client(st.secrets["SUPABASE_URL"], st.secrets["SUPABASE_KEY"])
 
 def actualizar_estado(equipo_id, nuevo_estado):
     supabase.table("equipos").update({"estado": nuevo_estado}).eq("id", equipo_id).execute()
     st.rerun()
 
-def clasificar(equipo_id, ronda_sel, grupo_sel):
-    # Definimos a dónde va el equipo según en qué ronda está
-    proxima_ronda = ronda_sel + 1
-    
-    # Lógica simplificada: De Ronda 1 a Ronda 2 van al grupo unificado
-    nuevo_grupo = "A-B-C-D" if proxima_ronda == 2 else "Finales"
-    
-    supabase.table("estructura_torneo").insert({
-        "equipo_id": equipo_id,
-        "ronda": proxima_ronda,
-        "grupo": nuevo_grupo
-    }).execute()
-    
-    st.success(f"Movido a Ronda {proxima_ronda} ({nuevo_grupo})")
-    st.balloons() # Un poco de efecto visual para celebrar
+st.title("🏆 Gestión de Torneo")
 
-# --- INTERFAZ ---
-col_izq, col_der = st.columns([1, 3])
+# Simulamos que traemos los dos equipos del VS actual
+# En un caso real, filtrarías por el ID del partido
+equipos_db = supabase.table("equipos").select("*").limit(2).execute().data
 
-with col_izq:
-    st.subheader("Filtros de Vista")
-    ronda_sel = st.selectbox("Ronda", [1, 2, 3, 4], index=0)
-    grupo_sel = st.selectbox("Grupo", ["A", "B", "C", "D", "E", "F"], index=0)
+if len(equipos_db) < 2:
+    st.warning("Faltan equipos en la base de datos.")
+else:
+    col1, vs_col, col2 = st.columns([4, 1, 4])
 
-with col_der:
-    st.subheader(f"Participantes - Ronda {ronda_sel} | Grupo {grupo_sel}")
-    
-    equipos = obtener_equipos_ronda(ronda_sel, grupo_sel)
-    
-    if not equipos:
-        st.info("No hay participantes en esta sección aún.")
-    else:
-        for item in equipos:
-            e = item['equipos']
-            e_id = item['equipo_id']
+    for i, col in enumerate([col1, col2]):
+        eq = equipos_db[i]
+        with col:
+            st.subheader(eq["nombre_equipo"])
+            # El rectángulo del equipo (diseño de tu dibujo)
+            st.info(f"👤 {eq['jugador_1']} - 👤 {eq['jugador_2']}")
             
-            # Estilo basado en el estado (como tu Excel)
-            color = "#2ecc71" if e['estado'] == 'activo' else "#e74c3c"
+            # Lógica de botones según estado
+            if eq["estado"] == "activo":
+                btn_col1, btn_col2, btn_col3 = st.columns(3)
+                with btn_col1:
+                    st.button("Edit", key=f"edit_{eq['id']}")
+                with btn_col2:
+                    # Botón LOSE: Cambia el estado a eliminado
+                    if st.button("Lose", key=f"lose_{eq['id']}", type="primary"):
+                        actualizar_estado(eq["id"], "eliminado")
+                with btn_col3:
+                    st.button("Win", key=f"win_{eq['id']}")
             
-            with st.container(border=True):
-                c1, c2, c3, c4 = st.columns([3, 3, 2, 2])
-                
-                c1.markdown(f"**Nick:** {e['nombre_jugador_1']}")
-                c2.markdown(f"**Dúo:** {e['nombre_jugador_2']}")
-                
-                # Botón de Asistencia / Estado
-                if e['estado'] == 'activo':
-                    if c3.button("Marcar Ausente ❌", key=f"btn_aus_{item['id']}"):
-                        actualizar_estado(e_id, 'eliminado')
-                else:
-                    if c3.button("Marcar Activo ✅", key=f"btn_act_{item['id']}"):
-                        actualizar_estado(e_id, 'activo')
-                
-                # Botón para Clasificar a la siguiente ronda
-                if c4.button("Clasificar ➡️", key=f"btn_cla_{item['id']}"):
-                    # Ejemplo: De Ronda 1 Grupo A pasan a Ronda 2 Grupo "A-B"
-                    clasificar(e_id, ronda_sel, "A-B")
+            elif eq["estado"] == "eliminado":
+                # Botón REINSCRIPCIÓN: Vuelve a ponerlo activo
+                if st.button("🔄 Reinscripción", key=f"re_{eq['id']}", use_container_width=True):
+                    actualizar_estado(eq["id"], "activo")
+
+    with vs_col:
+        st.markdown("<h2 style='text-align: center;'>VS</h2>", unsafe_allow_html=True)
