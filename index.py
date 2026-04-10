@@ -19,7 +19,7 @@ if equipos_db:
     for i, col in enumerate([col1, col2]):
         eq = equipos_db[i]
         with col:
-            st.subheader(eq["nombre_equipo"])
+            st.subheader(f"Equipo {eq['id']}")
             # El rectángulo del equipo (diseño de tu dibujo)
             st.info(f"👤 {eq['jugador_1']} - 👤 {eq['jugador_2']}")
                 
