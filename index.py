@@ -57,11 +57,11 @@ if len(equipos_db) > 0:
         try:
             estado_jugador2 = "Activo" if equipo.get('jugador2', {}).get('estado_activo') is True else "AUSENTE"
         except AttributeError:
-            estado_jugador2 = "Sin Duo"
-        
+            pass  # Si no hay jugador2, lo ignoramos y seguimos con el siguiente equipo
+            
         try:
             st.write(f"Equipo: {equipo['id']}. Estado: {estado_equipo}.Jugador 1: {equipo.get('jugador1', {}).get('nick', 'Sin nombre')} estado: {estado_jugador1}.Jugador 2: {equipo.get('jugador2', {}).get('nick', 'Sin Duo')} estado: {estado_jugador2}")
         except AttributeError:
-            continue
+            pass  # Si hay un error al acceder a jugador2, lo ignoramos y seguimos con el siguiente equipo
         finally:
-            st.info(f"Equipo ID: {equipo['id']}. Estado: {estado_equipo}.Jugador 1: {equipo.get('jugador1', {}).get('nick', 'Sin nombre')} estado: {estado_jugador1}.Jugador 2: Sin Duo')")
+            st.info(f"Equipo ID: {equipo['id']}. Estado: {estado_equipo}.Jugador 1: {equipo.get('jugador1', {}).get('nick', 'Sin nombre')} estado: {estado_jugador1}.Jugador 2: Sin Duo'")
