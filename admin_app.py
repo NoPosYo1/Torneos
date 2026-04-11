@@ -7,7 +7,7 @@ def registrar_equipo(jugador1, jugador2):
     # Aquí iría la lógica para registrar el equipo en la base de datos
     if jugador2 == "":
         jugador2 = "Sin Duo"
-    st.success(f"Equipo registrado: {jugador1} y {jugador2}", icon="✅", use_container_width=True, type="primary",settings={"duration": 10})
+    st.success(f"Equipo registrado: {jugador1} y {jugador2}",settings={"duration": 10})
 
 if st.session_state.logged_in == False:
     st.title("🔒 PANEL DE CONTROL - ADMINISTRADOR")
