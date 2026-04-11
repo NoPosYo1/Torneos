@@ -29,32 +29,6 @@ res = supabase.table("equipo").select("""
 
 equipos_db = res.data
 
-#Lista de equipos
-if len(equipos_db) < 1:
-    st.warning("Faltan equipos en la base de datos.")
-else:
-
-    for eq in equipos_db:
-        # Extraemos el dato. Si es un diccionario, sacamos el nick. 
-        # Si es un número o None, ponemos 'Sin nombre'.
-        j1_data = eq.get('jugador1')
-        nick_1 = j1_data.get('nick') if isinstance(j1_data, dict) else "Sin nombre"
-        
-        j2_data = eq.get('jugador2')
-        nick_2 = j2_data.get('nick') if isinstance(j2_data, dict) else "Sin Duo"
-
-                
-        with st.container(border=True):
-            st.subheader(f"Equipo {eq['id']}")
-            st.info(f"👤 {nick_1}  —  👤 {nick_2}")
-            
-            # Aquí van tus botones de Edit, Lose, Win...
-            if eq["estado"] == True: # Activo
-                st.success("Activo")
-            
-            elif eq["estado"] == False: # Eliminado
-                st.error("Eliminado")
-
 if len(equipos_db) > 0:
     for equipo in equipos_db:
         # Extraemos los datos de forma segura
