@@ -1,6 +1,6 @@
 import streamlit as st
 
-st.set_page_config(page_title="Torneo 2v2 GGReport - Admin", layout="wide")
+st.set_page_config(page_title="Torneo 2v2 GGReport - Admin", layout="wide", initial_sidebar_state="collapsed")
 st.session_state.logged_in = st.session_state.get('logged_in', False)
 
 if st.session_state.logged_in == False:
