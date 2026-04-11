@@ -1,11 +1,11 @@
-import os
-st.write("Archivos en el servidor:", os.listdir("."))
-if os.path.exists("pages"):
-    st.write("Archivos en pages:", os.listdir("pages"))
 import streamlit as st
 from supabase import create_client
 import re
 
+import os
+st.write("Archivos en el servidor:", os.listdir("."))
+if os.path.exists("pages"):
+    st.write("Archivos en pages:", os.listdir("pages"))
 
 # 1. Configuración y Estilo LoL (Hextech)
 st.set_page_config(page_title="Torneo 2v2 GGReport", layout="wide")
