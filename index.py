@@ -113,7 +113,7 @@ if len(equipos_db) > 0:
                     st.markdown(f"""
                         <div class="team-card">
                             <div class="status-badge">Equipo {equipo['id']} • {estado_eq}</div>
-                            <div class="nick-display">👤 {nick1} <span style="color:#45475a;"> VS </span> 👤 {nick2}</div>
+                            <div class="nick-display">👤 {nick1} <span style="color:#45475a;"> -- </span> 👤 {nick2}</div>
                             <div style="text-align: center; font-size: 0.7rem; color: #a09b8c;">
                                 {est1} | {est2 if nick2 != 'Sin Duo' else 'ESPERANDO...'}
                             </div>
