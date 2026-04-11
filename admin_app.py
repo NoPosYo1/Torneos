@@ -98,6 +98,8 @@ else:
         cambiar_vista('principal')
     if st.sidebar.button("⚔️ IR A GESTIÓN DE EQUIPOS"):
         cambiar_vista('reg_equipo')
+    if st.sidebar.button("✏️ IR A EDICIÓN DE EQUIPOS"):
+        cambiar_vista('editar_equipo')
 
 
     def panel_control_admin():
@@ -156,10 +158,12 @@ else:
             Aquí podrás editar los detalles de un equipo registrado. Selecciona el equipo que deseas modificar y actualiza la información.
         """)
         # Aquí iría la lógica para mostrar los equipos y permitir su edición
-        
+
 
     # --- LÓGICA PRINCIPAL (EL SELECTOR) ---
     if st.session_state.vista == 'reg_equipo':
         panel_registro_equipo()
     elif st.session_state.vista == 'principal':
         panel_control_admin()
+    elif st.session_state.vista == 'editar_equipo':
+        panel_editar_equipo()
