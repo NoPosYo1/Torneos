@@ -23,43 +23,57 @@ def sanitizar_input(texto):
     return texto_limpio.strip()
 
 def registrar_equipo(jugador1, jugador2):
-    # Aquí iría la lógica para registrar el equipo en la base de datos
-    
-    jugador_1 = sanitizar_input(jugador1)
-    if jugador2 == "":
-        jugador_2 = "Sin Duo"
-    else:
-        jugador_2 = sanitizar_input(jugador2)
-    
+    # 1. Limpieza inicial
+    j1_limpio = sanitizar_input(jugador1)
+    j2_limpio = sanitizar_input(jugador2)
+
+    if not j1_limpio:
+        st.error("Error: El Jugador 1 es obligatorio.")
+        return
+
     try:
-        supabd.table("jugador").insert({"nick": jugador_1}).execute()
-    except:
-        st.error(f"Error al registrar jugador 1: {jugador_1}")
-    
-    if jugador_2 != "Sin Duo":
+        # 2. Registrar Jugador 1 y capturar su ID inmediatamente
+        # El .data[0] accede directamente a la fila recién creada
         try:
-            supabd.table("jugador").insert({"nick": jugador_2}).execute()
-        except:
-            st.error(f"Error al registrar jugador 2: {jugador_2}")
+            res_j1 = supabd.table("jugador").insert({"nick": j1_limpio}).execute()
+            id_j1 = res_j1.data[0]["id"]
+        except Exception as e:
+            st.error(f"❌ Error al registrar Jugador 1: {e}")
+            return
 
-    try:
-        id_jugador_1 = supabd.table("jugador").select("id").eq("nick", jugador_1).execute().data[0]["id"]    
-    except:
-        st.error(f"Error al obtener ID del jugador 1: {jugador_1}")
-    id_jugador_2 = None
-    if jugador_2 != "Sin Duo":
+        id_j2 = None
+        # 3. Registrar Jugador 2 solo si existe y es distinto al J1
+        if j2_limpio and j2_limpio != "" and j2_limpio != j1_limpio:
+            try:
+                res_j2 = supabd.table("jugador").insert({"nick": j2_limpio}).execute()
+                id_j2 = res_j2.data[0]["id"]
+            except Exception as e:
+                st.error(f"❌ Error al registrar Jugador 2: {e}")
+                return
+
+        # 4. Crear el equipo usando los IDs obtenidos arriba
         try:
-            id_jugador_2 = supabd.table("jugador").select("id").eq("nick", jugador_2).execute().data[0]["id"]
-        except:
-            st.error(f"Error al obtener ID del jugador 2: {jugador_2}")
+            res_equipo = supabd.table("equipo").insert({
+                "jugador_1": id_j1, 
+                "jugador_2": id_j2,
+                "estado": "activo" # Siempre inicializar con un estado
+            }).execute()
+            id_equipo = res_equipo.data[0]["id"]
+        except Exception as e:
+            st.error(f"❌ Error al crear el equipo: {e}")
+            return
 
-    try:
-        supabd.table("equipo").insert({"jugador_1": id_jugador_1, "jugador_2": id_jugador_2}).execute()
-    except:
-        st.error(f"Error al registrar equipo: {jugador_1} y {jugador_2}")
+        st.toast(f"✅ Equipo registrado: {id_equipo}", icon="🔥")
+        st.session_state.registro_exitoso = True
+        st.rerun()
 
-    st.toast(f"Equipo registrado: {jugador_1} y {jugador_2}", icon="✅")
-
+    except Exception as e:
+        # Capturamos el error específico de Supabase (ej: Nick duplicado)
+        error_msg = str(e)
+        if "duplicate key" in error_msg:
+            st.error(f"⚠️ Error: Uno de los nicks ya está registrado en el torneo.")
+        else:
+            st.error(f"❌ Error en la base de datos: {error_msg}")
 
 if st.session_state.logged_in == False:
     st.title("🔒 PANEL DE CONTROL - ADMINISTRADOR")
