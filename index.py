@@ -5,6 +5,28 @@ from supabase import create_client
 # 1. Configuración y Estilo LoL (Hextech)
 st.set_page_config(page_title="Torneo 2v2 GGReport", layout="wide")
 
+# Al principio de tu index.py
+if 'pagina' not in st.session_state:
+    st.session_state.pagina = 'inicio'
+
+# Función para cambiar
+def navegar_a(nombre):
+    st.session_state.pagina = nombre
+
+# Lógica de navegación
+if st.session_state.pagina == 'inicio':
+    st.title("Página de Equipos")
+    if st.button("Ir a Rondas"):
+        navegar_a('rondas')
+        st.rerun()
+
+elif st.session_state.pagina == 'rondas':
+    st.title("Página de Rondas")
+    if st.button("Volver"):
+        navegar_a('inicio')
+        st.rerun()
+
+
 st.markdown("""
     <style>
     /* Fondo oscuro de la Grieta */
