@@ -153,12 +153,45 @@ else:
         st.button("Registrar Equipo", on_click=registrar_equipo, args=(jugador_1, jugador_2), use_container_width=True, type="primary")
 
     def panel_editar_equipo():
-        st.title("Editar Equipo")
+        st.title("Editar Equipos Registrados")
         st.markdown("""
             Aquí podrás editar los detalles de un equipo registrado. Selecciona el equipo que deseas modificar y actualiza la información.
         """)
         # Aquí iría la lógica para mostrar los equipos y permitir su edición
 
+        # 1. Traemos los datos de Supabase
+        res = supabd.table("equipo").select("id, nombre_equipo").execute()
+        equipos = res.data # Esto es una lista de diccionarios
+
+        if equipos:
+            # 2. Creamos una lista de nombres para el selector
+            # Usamos un diccionario para mapear Nombre -> ID
+            opciones = {f"{e['id']} - {e['nombre_equipo']}": e['id'] for e in equipos}
+            
+            seleccion = st.selectbox(
+                "Seleccione un equipo para gestionar:",
+                options=list(opciones.keys()),
+                index=None,
+                placeholder="Elija un equipo..."
+            )
+
+            if seleccion:
+                id_seleccionado = opciones[seleccion]
+                st.write(f"Has seleccionado el ID: {id_seleccionado}")
+                # Aquí podrías cargar la función para editar ese equipo específico
+        else:
+            st.warning("No hay equipos registrados aún.")
+
+        st.write("---selector de jugadores para editar---")
+        # Traer solo jugadores que no tienen equipo o están disponibles
+        res_jugadores = supabd.table("jugador").select("id, nick").execute()
+        lista_nicks = [j['nick'] for j in res_jugadores.data]
+
+        busqueda = st.multiselect(
+            "Buscar jugadores por Nick:",
+            options=lista_nicks,
+            max_selections=2 # Limitas a 2 si es para un torneo 2v2
+        )
 
     # --- LÓGICA PRINCIPAL (EL SELECTOR) ---
     if st.session_state.vista == 'reg_equipo':
@@ -167,3 +200,4 @@ else:
         panel_control_admin()
     elif st.session_state.vista == 'editar_equipo':
         panel_editar_equipo()
+    
