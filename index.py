@@ -136,4 +136,14 @@ else:
 
 st.button("Actualizar Lista", on_click=st.rerun)
 if st.button("Ir a rondas"):
-    st.switch_page("pages/rondas.py")
+    # Intenta solo con el nombre del archivo
+    st.switch_page("pages/rondas.py") 
+    
+    # Si lo anterior falla, intenta sin el "pages/":
+    # st.switch_page("rondas.py")
+if st.button("Ir a rondas"):
+    # Intenta solo con el nombre del archivo
+    st.switch_page("rondas.py") 
+    
+    # Si lo anterior falla, intenta sin el "pages/":
+    # st.switch_page("rondas.py")
