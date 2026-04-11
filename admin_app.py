@@ -7,6 +7,9 @@ supabd = create_client(st.secrets["SUPABASE_URL"], st.secrets["SUPABASE_KEY"])
 st.set_page_config(page_title="Torneo 2v2 GGReport - Admin", layout="wide", initial_sidebar_state="collapsed")
 st.session_state.logged_in = st.session_state.get('logged_in', False)
 
+def cambiar_vista(nueva_vista):
+    st.session_state.vista = nueva_vista
+    st.rerun()
 
 def sanitizar_input(texto):
     if not texto:
@@ -67,36 +70,41 @@ if st.session_state.logged_in == False:
     else:
         st.warning("Acceso restringido a moderadores.")
 else:
-    st.title("🔧 PANEL DE CONTROL - ADMINISTRADOR")
-    st.markdown("""
-        Bienvenido al panel de control del torneo. Aquí puedes gestionar equipos, rondas y reportes.
-        Usa el menú lateral para navegar entre las diferentes secciones de administración.
-    """)
-    st.markdown("""
-        <style>
-        /* Aquí puedes agregar estilos personalizados para el panel de administración */
-         .stButton button {
-            background-color: #007bff;
-            color: white;
-            border-radius: 5px;
-            padding: 0.5em 1em;
-            font-size: 1rem;
-            border: none;
-        }
-        .stButton button:hover {
-            background-color: #0056b3;
-        }
-        </style>
-    """, unsafe_allow_html=True)
-
+    
     st.sidebar.title("Menú de Administración")
+    if st.button("🏠 IR A PANEL PRINCIPAL"):
+        cambiar_vista('principal')
     st.sidebar.markdown("- [Gestión de Equipos](#gestión-de-equipos)")
-    st.button("🔧 Añadir jugadores a Equipos", on_click=st.session_state[registrar_equipo])
-    st.sidebar.markdown("- [Gestión de Rondas](#gestión-de-rondas)")
+    if st.button("IR A REGISTRAR EQUIPO"):
+        cambiar_vista('reg_equipo')
     st.sidebar.markdown("- [Gestión de Reportes](#gestión-de-reportes)")
 
 
-    if st.session_state.get(registrar_equipo):
+
+    def panel_control_admin():
+        st.title("🔧 PANEL DE CONTROL - ADMINISTRADOR")
+        st.markdown("""
+            Bienvenido al panel de control del torneo. Aquí puedes gestionar equipos, rondas y reportes.
+            Usa el menú lateral para navegar entre las diferentes secciones de administración.
+        """)
+        st.markdown("""
+            <style>
+            /* Aquí puedes agregar estilos personalizados para el panel de administración */
+            .stButton button {
+                background-color: #007bff;
+                color: white;
+                border-radius: 5px;
+                padding: 0.5em 1em;
+                font-size: 1rem;
+                border: none;
+            }
+            .stButton button:hover {
+                background-color: #0056b3;
+            }
+            </style>
+        """, unsafe_allow_html=True)
+
+    def registrar_equipos_vista_admin():
         st.header("Gestión de Equipos")
         # Formulario para registrar equipos
         jugador_1 =st.text_input("Ingrese Nick del Jugador 1")
@@ -105,3 +113,8 @@ else:
         st.success("Equipo registrado exitosamente.")
 
 
+    # --- LÓGICA PRINCIPAL (EL SELECTOR) ---
+    if st.session_state.vista == 'reg_equipo':
+        registrar_equipos_vista_admin()
+    elif st.session_state.vista == 'principal':
+        mostrar_rondas()
