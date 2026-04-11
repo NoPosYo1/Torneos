@@ -59,6 +59,5 @@ else:
                 if st.button("🔄 Reinscripción", key=f"pago_{eq['id']}", use_container_width=True):
                     actualizar_estado(eq["id"], "True")
         
-        with vs_col:
-            st.markdown("<h2 style='text-align: center;'>VS</h2>", unsafe_allow_html=True)
+        st.markdown("<h2 style='text-align: center;'>VS</h2>", unsafe_allow_html=True)
 
