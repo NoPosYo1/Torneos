@@ -14,8 +14,7 @@ st.title("🏆 Gestión de Torneo")
 # Fíjate en el formato de los dos puntos
 res = supabase.table("equipo").select("""
     id,
-    nombre_equipo,
-    estado,
+    estado_activo,
     jugador1:jugador_1(nick),
     jugador2:jugador_2(nick)
 """).execute()
