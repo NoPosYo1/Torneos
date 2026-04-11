@@ -1,6 +1,11 @@
+import os
+st.write("Archivos en el servidor:", os.listdir("."))
+if os.path.exists("pages"):
+    st.write("Archivos en pages:", os.listdir("pages"))
 import streamlit as st
 from supabase import create_client
 import re
+
 
 # 1. Configuración y Estilo LoL (Hextech)
 st.set_page_config(page_title="Torneo 2v2 GGReport", layout="wide")
@@ -138,12 +143,6 @@ st.button("Actualizar Lista", on_click=st.rerun)
 if st.button("Ir a rondas"):
     # Intenta solo con el nombre del archivo
     st.switch_page("pages/rondas.py") 
-    
-    # Si lo anterior falla, intenta sin el "pages/":
-    # st.switch_page("rondas.py")
-if st.button("Ir a rondas3"):
-    # Intenta solo con el nombre del archivo
-    st.switch_page("rondas.py") 
     
     # Si lo anterior falla, intenta sin el "pages/":
     # st.switch_page("rondas.py")
