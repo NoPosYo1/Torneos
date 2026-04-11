@@ -141,7 +141,7 @@ if st.button("Ir a rondas"):
     
     # Si lo anterior falla, intenta sin el "pages/":
     # st.switch_page("rondas.py")
-if st.button("Ir a rondas"):
+if st.button("Ir a rondas3"):
     # Intenta solo con el nombre del archivo
     st.switch_page("rondas.py") 
     
