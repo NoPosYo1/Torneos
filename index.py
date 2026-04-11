@@ -13,6 +13,18 @@ st.markdown("""
         color: #f0e6d2;
     }
 
+    /* NUEVA REGLA: Título centrado y con aire */
+    h1 {
+        text-align: center !important;
+        padding-top: 60px !important;
+        padding-bottom: 40px !important;
+        color: #c8aa6e !important;
+        text-transform: uppercase;
+        letter-spacing: 4px;
+    }
+    
+    
+
     /* Tarjeta de Equipo Estilo Hextech */
     .team-card {
         background: linear-gradient(180deg, #091428 0%, #0a1428 100%);
