@@ -165,3 +165,33 @@ try:
 except:
     if st.button("Intento B"):
         st.switch_page("rondas.py")
+
+# Navegación manual compatible con Local y Cloud
+st.markdown("""
+    <style>
+    .btn-nav-lol {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #1e2328;
+        color: #cdbe91 !important;
+        border: 1px solid #785a28;
+        text-decoration: none;
+        text-transform: uppercase;
+        font-weight: bold;
+        font-size: 14px;
+        letter-spacing: 2px;
+        transition: 0.3s;
+        cursor: pointer;
+    }
+    .btn-nav-lol:hover {
+        background-color: #32281e;
+        border-color: #c8aa6e;
+        color: #f0e6d2 !important;
+        box-shadow: 0 0 10px rgba(200, 170, 110, 0.4);
+    }
+    </style>
+    
+    <a href="./rondas" target="_self" class="btn-nav-lol">
+        ⚔️ Ir a Rondas
+    </a>
+""", unsafe_allow_html=True)
