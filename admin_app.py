@@ -186,14 +186,12 @@ else:
 
         equipos = res.data# Esto es una lista de diccionarios
         if equipos:
-            # 2. Creamos una lista de nombres para el selector
-            # Usamos un diccionario para mapear Nombre -> ID
-            try:
+            
+            opciones = {
+                f"{e['id']} - {e['jugador_1']['nick']} & {e['jugador_2']['nick'] if e['jugador_2'] else 'Sin Duo'}": e['id'] 
+                for e in equipos
+            }
 
-                opciones = {f"{e['id']} - {e['jugador_1']['nick']} & {e['jugador_2']['nick']}": e['id'] for e in equipos}
-            except Exception as e:
-                opciones = {f"{e['id']} - Jugador 1: {e['jugador_1']['nick']} & Jugador 2: Sin Duo": e['id'] for e in equipos}
-                
             seleccion = st.selectbox(
                 "Seleccione un equipo para gestionar:",
                 options=list(opciones.keys()),
