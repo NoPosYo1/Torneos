@@ -9,6 +9,7 @@ def actualizar_estado(equipo_id, nuevo_estado):
     st.rerun()
 
 st.title("🏆 Gestión de Torneo")
+st.subheader("Lista de Equipos")
 
  
 # Fíjate en el formato de los dos puntos
@@ -41,22 +42,8 @@ else:
             
             # Aquí van tus botones de Edit, Lose, Win...
             if eq["estado_activo"] == True: # Activo
-                btn_col1, btn_col2, btn_col3 = st.columns(3)
-                with btn_col1:
-                    st.button("Ausente", key=f"ausente_{eq['id']}")
-                with btn_col2:
-                    # Botón LOSE: Cambia el estado a eliminado
-                    if st.button("Lose", key=f"lose_{eq['id']}", type="primary"):
-                        actualizar_estado(eq["id"], "False")
-                with btn_col3:
-                    st.button("Win", key=f"win_{eq['id']}")
+                st.success("Activo")
             
             elif eq["estado_activo"] == "False": # Eliminado
-                st.rerun()  # Para refrescar la página y mostrar el cambio
                 st.error("Eliminado")
-                # Botón REINSCRIPCIÓN: Vuelve a ponerlo activo
-                if st.button("🔄 Reinscripción", key=f"pago_{eq['id']}", use_container_width=True):
-                    actualizar_estado(eq["id"], "True")
-        
-        st.markdown("<h2 style='text-align: center;'>VS</h2>", unsafe_allow_html=True)
 
