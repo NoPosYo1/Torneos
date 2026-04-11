@@ -124,7 +124,27 @@ else:
         """, unsafe_allow_html=True)
 
     def registrar_equipos_vista_admin():
-        st.header("Gestión de Equipos")
+        st.title("Gestión de Equipos")
+        st.markdown("""
+            Bienvenido al panel de control del torneo. Aquí puedes gestionar equipos, rondas y reportes.
+            Usa el menú lateral para navegar entre las diferentes secciones de administración.
+        """)
+        st.markdown("""
+            <style>
+            /* Aquí puedes agregar estilos personalizados para el panel de administración */
+            .stButton button {
+                background-color: #007bff;
+                color: white;
+                border-radius: 5px;
+                padding: 0.5em 1em;
+                font-size: 1rem;
+                border: none;
+            }
+            .stButton button:hover {
+                background-color: #0056b3;
+            }
+            </style>
+        """, unsafe_allow_html=True)
         # Formulario para registrar equipos
         jugador_1 =st.text_input("Ingrese Nick del Jugador 1")
         jugador_2 = st.text_input("Ingrese Nick del Jugador 2")
