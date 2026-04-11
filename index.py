@@ -24,7 +24,6 @@ equipos_db = res.data
 if len(equipos_db) < 2:
     st.warning("Faltan equipos en la base de datos.")
 else:
-    col1, vs_col, col2 = st.columns([4, 1, 4])
 
     for eq in equipos_db:
         # Extraemos el dato. Si es un diccionario, sacamos el nick. 
