@@ -11,7 +11,7 @@ def actualizar_estado(equipo_id, nuevo_estado):
 st.title("🏆 Gestión de Torneo")
 st.subheader("Lista de Equipos")
 
- 
+st.button("Actualizar Lista", on_click=st.experimental_rerun)  # Botón para actualizar la lista de equipos
 # Fíjate en el formato de los dos puntos
 res = supabase.table("equipo").select("""
     id,
