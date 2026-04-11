@@ -19,8 +19,8 @@ if equipos_db:
     for eq in equipos_db:
         # Accedemos al nick dentro del objeto del jugador
         # Usamos .get() por seguridad por si algún jugador es NULL
-        nick_1 = eq.get('jugador1', {}).get('nick', 'Sin nombre')
-        nick_2 = eq.get('jugador2', {}).get('nick', 'Sin Equipo')
+        nick_1 = eq.get('jugador_1', {}).get('nick', 'Sin nombre')
+        nick_2 = eq.get('jugador_2', {}).get('nick', 'Sin Equipo')
         
         with st.container(border=True):
             st.subheader(f"Equipo {eq['id']}")
