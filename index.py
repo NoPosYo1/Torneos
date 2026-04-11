@@ -3,7 +3,7 @@ from supabase import create_client
 
 
 # 1. Configuración y Estilo LoL (Hextech)
-st.set_page_config(page_title="Torneo 2v2 GGReport", layout="wide")
+st.set_page_config(page_title="Torneo 2v2 GGReport", layout="wide",initial_sidebar_state="expanded")
 
 # Al principio de tu index.py
 if 'pagina' not in st.session_state:
