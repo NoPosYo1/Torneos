@@ -3,6 +3,11 @@ import streamlit as st
 st.set_page_config(page_title="Torneo 2v2 GGReport - Admin", layout="wide", initial_sidebar_state="collapsed")
 st.session_state.logged_in = st.session_state.get('logged_in', False)
 
+def registrar_equipo(jugador1, jugador2):
+    # Aquí iría la lógica para registrar el equipo en la base de datos
+    st.success(f"Equipo registrado: {jugador1} y {jugador2}")
+    pass
+
 if st.session_state.logged_in == False:
     st.title("🔒 PANEL DE CONTROL - ADMINISTRADOR")
     password = st.text_input("Ingresa clave de Moderador", type="password")
@@ -24,8 +29,3 @@ else:
 
 
 
-
-def registrar_equipo(jugador1, jugador2):
-    # Aquí iría la lógica para registrar el equipo en la base de datos
-    st.success(f"Equipo registrado: {jugador1} y {jugador2}")
-    pass
