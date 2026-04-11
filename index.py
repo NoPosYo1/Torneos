@@ -136,3 +136,4 @@ else:
 
 st.button("Actualizar Lista", on_click=st.rerun)
 st.button("Ir a rondas", on_click=lambda: st.switch_page("rondas"))  # aqui iria la pagina de rondas...
+st.button("Ir a rondas", on_click=rondas.py)
