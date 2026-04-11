@@ -123,7 +123,7 @@ else:
             </style>
         """, unsafe_allow_html=True)
 
-    def registrar_equipos_vista_admin():
+    def panel_registro_equipo():
         st.title("Gestión de Equipos")
         st.markdown("""
             Bienvenido al panel de control del torneo. Aquí puedes gestionar equipos, rondas y reportes.
@@ -150,9 +150,16 @@ else:
         jugador_2 = st.text_input("Ingrese Nick del Jugador 2")
         st.button("Registrar Equipo", on_click=registrar_equipo, args=(jugador_1, jugador_2), use_container_width=True, type="primary")
 
+    def panel_editar_equipo():
+        st.title("Editar Equipo")
+        st.markdown("""
+            Aquí podrás editar los detalles de un equipo registrado. Selecciona el equipo que deseas modificar y actualiza la información.
+        """)
+        # Aquí iría la lógica para mostrar los equipos y permitir su edición
+        
 
     # --- LÓGICA PRINCIPAL (EL SELECTOR) ---
     if st.session_state.vista == 'reg_equipo':
-        registrar_equipos_vista_admin()
+        panel_registro_equipo()
     elif st.session_state.vista == 'principal':
         panel_control_admin()
