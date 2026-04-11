@@ -135,4 +135,5 @@ else:
     st.info("No hay equipos en la base de datos.")
 
 st.button("Actualizar Lista", on_click=st.rerun)
-st.button("Ir a rondas", on_click=lambda: st.switch_page("pages/rondas.py"))  # aqui iria la pagina de rondas...
+if st.button("Ir a rondas"):
+    st.switch_page("pages/rondas.py")
