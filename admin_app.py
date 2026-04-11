@@ -174,7 +174,6 @@ else:
             }
             </style>
         """, unsafe_allow_html=True)
-        # Aquí iría la lógica para mostrar los equipos y permitir su edición
 
         # 1. Traemos los datos de Supabase
         # Traemos el ID del equipo y los nicks de ambos jugadores
@@ -186,9 +185,9 @@ else:
 
         equipos = res.data# Esto es una lista de diccionarios
         if equipos:
-            
+
             opciones = {
-                f"{e['id']} - {e['jugador_1']['nick']} & {e['jugador_2']['nick'] if e['jugador_2'] else 'Sin Duo'}": e['id'] 
+                f"{e['id']} - {e['jugador_1']['nick']} & {e['jugador_2']['nick'] if e['jugador_2'] else 'Sin Duo -----!!!'}": e['id'] 
                 for e in equipos
             }
 
@@ -203,6 +202,10 @@ else:
                 id_seleccionado = opciones[seleccion]
                 st.write(f"Has seleccionado el ID: {id_seleccionado}")
                 # Aquí podrías cargar la función para editar ese equipo específico
+                # editar_equipo(id_seleccionado)
+                st.divider()
+                st.info("Funcionalidad de edición aún en desarrollo. Pronto podrás modificar los detalles del equipo seleccionado.")
+            
         else:
             st.warning("No hay equipos registrados aún.")
 
