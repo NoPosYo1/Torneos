@@ -153,20 +153,43 @@ else:
         st.button("Registrar Equipo", on_click=registrar_equipo, args=(jugador_1, jugador_2), use_container_width=True, type="primary")
 
     def panel_editar_equipo():
+
         st.title("Editar Equipos Registrados")
         st.markdown("""
             Aquí podrás editar los detalles de un equipo registrado. Selecciona el equipo que deseas modificar y actualiza la información.
         """)
+        st.markdown("""
+            <style>
+            /* Aquí puedes agregar estilos personalizados para el panel de administración */
+            .stButton button {
+                background-color: #007bff;
+                color: white;
+                border-radius: 5px;
+                padding: 0.5em 1em;
+                font-size: 1rem;
+                border: none;
+            }
+            .stButton button:hover {
+                background-color: #0056b3;
+            }
+            </style>
+        """, unsafe_allow_html=True)
         # Aquí iría la lógica para mostrar los equipos y permitir su edición
 
         # 1. Traemos los datos de Supabase
-        res = supabd.table("equipo").select("id, nombre_equipo").execute()
-        equipos = res.data # Esto es una lista de diccionarios
+        # Traemos el ID del equipo y los nicks de ambos jugadores
+        res = supabd.table("equipo").select("""
+            id,
+            jugador_1 ( nick ),
+            jugador_2 ( nick )
+        """).execute()
 
+        equipos = res.data# Esto es una lista de diccionarios
+        nombres_equipos = [f"{e['id']} - {e['jugador_1']['nick']} vs {e['jugador_2']['nick']}" for e in equipos]
         if equipos:
             # 2. Creamos una lista de nombres para el selector
             # Usamos un diccionario para mapear Nombre -> ID
-            opciones = {f"{e['id']} - {e['nombre_equipo']}": e['id'] for e in equipos}
+            opciones = {f"{e['id']} - {e['jugador_1']['nick']} & {e['jugador_2']['nick']}": e['id'] for e in equipos}
             
             seleccion = st.selectbox(
                 "Seleccione un equipo para gestionar:",
