@@ -101,7 +101,7 @@ equipos_db = res.data
 # 4. Renderizado de la Interfaz
 if len(equipos_db) > 0:
     # Mostramos de 2 en 2 para simular enfrentamientos (VS)
-    for i in range(0, len(equipos_db), 2):
+    for i in range(0, len(equipos_db), 1):
         col1, vs_text, col2 = st.columns([4, 1, 4])
         
         for idx, col_actual in enumerate([col1, col2]):
