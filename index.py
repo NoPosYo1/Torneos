@@ -31,7 +31,7 @@ if equipos_db:
         nick_1 = j1_data.get('nick') if isinstance(j1_data, dict) else "Sin nombre"
         
         j2_data = eq.get('jugador2')
-        nick_2 = j2_data.get('nick') if isinstance(j2_data, dict) else "Sin nombre"
+        nick_2 = j2_data.get('nick') if isinstance(j2_data, dict) else "Sin Duo"
 
                 
         with st.container(border=True):
