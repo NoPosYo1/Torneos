@@ -4,6 +4,15 @@ from supabase import create_client
 # --- CONFIGURACIÓN Y ESTILOS (Igual que antes) ---
 st.set_page_config(layout="wide")
 
+# Usar una imagen local
+#st.sidebar.image("imagenes/ARAM_Banner.ACCESSORIES_16_3.png", use_container_width=True)
+
+# O usar una URL de internet (por ejemplo, el logo de LoL)
+url_logo = "https://brand.riotgames.com/static/a91d1b2d395128a38e388c3d13b63249/00631/lol-logo.png"
+st.sidebar.image(url_logo, caption="Temporada 2026", use_container_width=True)
+
+st.sidebar.title("Menú de Navegación")
+
 # Inicializamos el estado de la página si no existe
 if 'vista' not in st.session_state:
     st.session_state.vista = 'equipos'
