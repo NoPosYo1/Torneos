@@ -51,6 +51,7 @@ if equipos_db:
                     st.button("Win", key=f"win_{eq['id']}")
             
             elif eq["estado_activo"] == "False": # Eliminado
+                st.rerun()  # Para refrescar la página y mostrar el cambio
                 st.error("Eliminado")
                 # Botón REINSCRIPCIÓN: Vuelve a ponerlo activo
                 if st.button("🔄 Reinscripción", key=f"pago_{eq['id']}", use_container_width=True):
