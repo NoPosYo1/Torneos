@@ -3,7 +3,7 @@ from supabase import create_client
 import re
 
 # 1. Configuración y Estilo LoL (Hextech)
-st.set_page_config(page_title="Gestión de Torneo LoL", layout="wide")
+st.set_page_config(page_title="Torneo 2v2 GGReport", layout="wide")
 
 st.markdown("""
     <style>
@@ -75,7 +75,7 @@ st.markdown("""
 # 2. Conexión
 supabase = create_client(st.secrets["SUPABASE_URL"], st.secrets["SUPABASE_KEY"])
 
-st.title("⚔️ HEXtech Tournament Manager")
+st.title("🏆 Gestión de Torneo 2v2 GGReport", anchor="center")
 
 # 3. Consulta de datos
 res = supabase.table("equipo").select("""
