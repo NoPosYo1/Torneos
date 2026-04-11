@@ -89,10 +89,19 @@ else:
         </style>
     """, unsafe_allow_html=True)
 
-    # Formulario para registrar equipos
-    jugador_1 =st.text_input("Ingrese Nick del Jugador 1")
-    jugador_2 = st.text_input("Ingrese Nick del Jugador 2")
-    st.button("Registrar Equipo", on_click=registrar_equipo, args=(jugador_1, jugador_2), use_container_width=True, type="primary")
+    st.sidebar.title("Menú de Administración")
+    st.sidebar.markdown("- [Gestión de Equipos](#gestión-de-equipos)")
+    st.button("🔧 Añadir jugadores a Equipos", on_click=st.session_state[registrar_equipo])
+    st.sidebar.markdown("- [Gestión de Rondas](#gestión-de-rondas)")
+    st.sidebar.markdown("- [Gestión de Reportes](#gestión-de-reportes)")
 
+
+    if st.session_state.get(registrar_equipo):
+        st.header("Gestión de Equipos")
+        # Formulario para registrar equipos
+        jugador_1 =st.text_input("Ingrese Nick del Jugador 1")
+        jugador_2 = st.text_input("Ingrese Nick del Jugador 2")
+        st.button("Registrar Equipo", on_click=registrar_equipo, args=(jugador_1, jugador_2), use_container_width=True, type="primary")
+        st.success("Equipo registrado exitosamente.")
 
 
