@@ -191,7 +191,7 @@ st.markdown("""
     }
     </style>
     
-    <a href="./rondas" target="_self" class="btn-nav-lol">
+    <a href="https://torneo-ggreport-rondas.streamlit.app/" target="_self" class="btn-nav-lol">
         ⚔️ Ir a Rondas
     </a>
 """, unsafe_allow_html=True)
