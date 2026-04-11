@@ -22,7 +22,9 @@ res = supabase.table("equipo").select("""
 
 equipos_db = res.data
 
-if len(equipos_db) < 2:
+
+#Lista de equipos
+if len(equipos_db) < 1:
     st.warning("Faltan equipos en la base de datos.")
 else:
 
@@ -47,3 +49,10 @@ else:
             elif eq["estado_activo"] == "False": # Eliminado
                 st.error("Eliminado")
 
+if equipos_db:
+    for equipo in equipos_db:
+        estado_jugador1 = "Activo" if equipo.get('jugador1', {}).get('estado', 'Sin estado') is True else "Inactivo"
+        estado_jugador2 = "Activo" if equipo.get('jugador2', {}).get('estado', 'Sin estado') is True else "Inactivo"
+        st.write(f"""Equipo ID: {equipo['id']}. Estado: {equipo['estado_activo']}. 
+                 Jugador 1: {equipo.get('jugador1', {}).get('nick', 'Sin nombre')} estado: {estado_jugador1}. 
+                 Jugador 2: {equipo.get('jugador2', {}).get('nick', 'Sin Duo')} estado: {estado_jugador2}""")
