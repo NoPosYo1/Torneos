@@ -33,16 +33,12 @@ if equipos_db:
         j2_data = eq.get('jugador2')
         nick_2 = j2_data.get('nick') if isinstance(j2_data, dict) else "Sin nombre"
 
-        # Ahora sí lo imprimes
-        st.info(f"👤 {nick_1}  —  👤 {nick_2}")
-        
+                
         with st.container(border=True):
             st.subheader(f"Equipo {eq['id']}")
             st.info(f"👤 {nick_1}  —  👤 {nick_2}")
             
             # Aquí van tus botones de Edit, Lose, Win...
-                
-                # Lógica de botones según estado
             if eq["estado_activo"] == True: # Activo
                 btn_col1, btn_col2, btn_col3 = st.columns(3)
                 with btn_col1:
