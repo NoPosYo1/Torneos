@@ -52,6 +52,7 @@ else:
 if len(equipos_db) > 0:
     for equipo in equipos_db:
         estado_jugador1 = "Activo" if equipo.get('jugador1', {}).get('estado_activo') is True else "AUSENTE"
+        estado_jugador2 = "Sin Duo"
         try:
             estado_jugador2 = "Activo" if equipo.get('jugador2', {}).get('estado_activo') is True else "AUSENTE"
         except AttributeError:
