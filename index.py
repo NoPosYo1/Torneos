@@ -52,6 +52,7 @@ else:
 if len(equipos_db) > 0:
     for equipo in equipos_db:
         estado_jugador1 = "Activo" if equipo.get('jugador1', {}).get('estado_activo') is True else "AUSENTE"
+        estado_equipo = "Activo" if equipo.get('estado_activo') is True else "Eliminado"
 
         try:
             estado_jugador2 = "Activo" if equipo.get('jugador2', {}).get('estado_activo') is True else "AUSENTE"
@@ -59,8 +60,8 @@ if len(equipos_db) > 0:
             estado_jugador2 = "Sin Duo"
         
         try:
-            st.write(f"Equipo: {equipo['id']}. Estado: {equipo['estado_activo']}.Jugador 1: {equipo.get('jugador1', {}).get('nick', 'Sin nombre')} estado: {estado_jugador1}.Jugador 2: {equipo.get('jugador2', {}).get('nick', 'Sin Duo')} estado: {estado_jugador2}")
+            st.write(f"Equipo: {equipo['id']}. Estado: {estado_equipo}.Jugador 1: {equipo.get('jugador1', {}).get('nick', 'Sin nombre')} estado: {estado_jugador1}.Jugador 2: {equipo.get('jugador2', {}).get('nick', 'Sin Duo')} estado: {estado_jugador2}")
         except AttributeError:
             continue
         finally:
-            st.info(f"Equipo ID: {equipo['id']}. Estado: {equipo['estado_activo']}.Jugador 1: {equipo.get('jugador1', {}).get('nick', 'Sin nombre')} estado: {estado_jugador1}.Jugador 2: Sin Duo")
+            st.info(f"Equipo ID: {equipo['id']}. Estado: {estado_equipo}.Jugador 1: {equipo.get('jugador1', {}).get('nick', 'Sin nombre')} estado: {estado_jugador1}.Jugador 2: {equipo.get('jugador2', {}).get('nick', 'Sin Duo')}")
