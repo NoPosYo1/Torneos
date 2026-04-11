@@ -38,7 +38,10 @@ def registrar_equipo(jugador1, jugador2):
             res_j1 = supabd.table("jugador").insert({"nick": j1_limpio}).execute()
             id_j1 = res_j1.data[0]["id"]
         except Exception as e:
-            st.error(f"❌ Error al registrar Jugador 1: {e}")
+            if "duplicate key" in str(e):
+                st.error(f"⚠️ Error: El nick '{j1_limpio}' ya está registrado en el torneo.")
+            else:                
+                st.error(f"❌ Error al registrar Jugador 1: {e}")
             return
 
         id_j2 = None
@@ -48,7 +51,10 @@ def registrar_equipo(jugador1, jugador2):
                 res_j2 = supabd.table("jugador").insert({"nick": j2_limpio}).execute()
                 id_j2 = res_j2.data[0]["id"]
             except Exception as e:
-                st.error(f"❌ Error al registrar Jugador 2: {e}")
+                if "duplicate key" in str(e):
+                    st.error(f"⚠️ Error: El nick '{j2_limpio}' ya está registrado en el torneo.")
+                else:
+                    st.error(f"❌ Error al registrar Jugador 2: {e}")
                 return
 
         # 4. Crear el equipo usando los IDs obtenidos arriba
