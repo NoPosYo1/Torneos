@@ -5,6 +5,7 @@ import re
 supabd = create_client(st.secrets["SUPABASE_URL"], st.secrets["SUPABASE_KEY"])
 
 st.set_page_config(page_title="Torneo 2v2 GGReport - Admin", layout="wide", initial_sidebar_state="collapsed")
+
 st.session_state.logged_in = st.session_state.get('logged_in', False)
 
 def cambiar_vista(nueva_vista):
@@ -70,7 +71,9 @@ if st.session_state.logged_in == False:
     else:
         st.warning("Acceso restringido a moderadores.")
 else:
-    
+    if 'vista' not in st.session_state:
+        st.session_state.vista = 'principal'
+
     st.sidebar.title("Menú de Administración")
     if st.button("🏠 IR A PANEL PRINCIPAL"):
         cambiar_vista('principal')
@@ -117,4 +120,4 @@ else:
     if st.session_state.vista == 'reg_equipo':
         registrar_equipos_vista_admin()
     elif st.session_state.vista == 'principal':
-        mostrar_rondas()
+        panel_control_admin()
