@@ -64,7 +64,6 @@ def registrar_equipo(jugador1, jugador2):
             return
 
         st.toast(f"✅ Equipo registrado: {id_equipo}", icon="🔥")
-        st.session_state.registro_exitoso = True
         st.rerun()
 
     except Exception as e:
@@ -124,7 +123,6 @@ else:
         jugador_1 =st.text_input("Ingrese Nick del Jugador 1")
         jugador_2 = st.text_input("Ingrese Nick del Jugador 2")
         st.button("Registrar Equipo", on_click=registrar_equipo, args=(jugador_1, jugador_2), use_container_width=True, type="primary")
-        st.toast("Equipo registrado exitosamente.")
 
 
     # --- LÓGICA PRINCIPAL (EL SELECTOR) ---
