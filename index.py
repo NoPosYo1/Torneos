@@ -135,5 +135,4 @@ else:
     st.info("No hay equipos en la base de datos.")
 
 st.button("Actualizar Lista", on_click=st.rerun)
-st.button("Ir a rondas", on_click=lambda: st.switch_page("rondas"))  # aqui iria la pagina de rondas...
-st.button("Ir a rondas", on_click=lambda: st.switch_page("https://torneo-ggreport-rondas.streamlit.app/"))
+st.button("Ir a rondas", on_click=lambda: st.switch_page("/pages/rondas"))  # aqui iria la pagina de rondas...
