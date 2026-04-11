@@ -15,7 +15,7 @@ st.subheader("Lista de Equipos")
 # Fíjate en el formato de los dos puntos
 res = supabase.table("equipo").select("""
     id,
-    estado_activo,
+    estado,
     jugador1:jugador_1(nick),
     jugador2:jugador_2(nick)
 """).execute()
@@ -43,22 +43,22 @@ else:
             st.info(f"👤 {nick_1}  —  👤 {nick_2}")
             
             # Aquí van tus botones de Edit, Lose, Win...
-            if eq["estado_activo"] == True: # Activo
+            if eq["estado"] == True: # Activo
                 st.success("Activo")
             
-            elif eq["estado_activo"] == False: # Eliminado
+            elif eq["estado"] == False: # Eliminado
                 st.error("Eliminado")
 
 if len(equipos_db) > 0:
     for equipo in equipos_db:
 
-        estado_jugador1 = equipo.get('jugador1', {}).get('estado_activo') 
-        estado_equipo = equipo.get('estado_activo')
+        estado_jugador1 = equipo.get('jugador1', {}).get('estado') 
+        estado_equipo = equipo.get('estado')
 
 
 
         try:
-            estado_jugador2 = equipo.get('jugador2', {}).get('estado_activo')
+            estado_jugador2 = equipo.get('jugador2', {}).get('estado')
         except AttributeError:
             pass  # Si no hay jugador2, lo ignoramos y seguimos con el siguiente equipo
             
