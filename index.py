@@ -46,19 +46,19 @@ else:
             if eq["estado_activo"] == True: # Activo
                 st.success("Activo")
             
-            elif eq["estado_activo"] == "False": # Eliminado
+            elif eq["estado_activo"] == False: # Eliminado
                 st.error("Eliminado")
 
 if len(equipos_db) > 0:
     for equipo in equipos_db:
 
-        estado_jugador1 = "Activo" if equipo.get('jugador1', {}).get('estado_activo') is True else "AUSENTE"
-        estado_equipo = "Activo" if equipo.get('estado_activo') is True else "Eliminado"
+        estado_jugador1 = equipo.get('jugador1', {}).get('estado_activo') 
+        estado_equipo = equipo.get('estado_activo')
 
 
 
         try:
-            estado_jugador2 = "Activo" if equipo.get('jugador2', {}).get('estado_activo') is True else "AUSENTE"
+            estado_jugador2 = equipo.get('jugador2', {}).get('estado_activo')
         except AttributeError:
             pass  # Si no hay jugador2, lo ignoramos y seguimos con el siguiente equipo
             
