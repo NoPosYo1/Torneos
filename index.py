@@ -58,3 +58,18 @@ if equipos_db:
 
     with vs_col:
         st.markdown("<h2 style='text-align: center;'>VS</h2>", unsafe_allow_html=True)
+
+    with col1:
+        st.header("Equipos Activos")
+        for eq in equipos_db:
+            if eq["estado_activo"] == True:
+                j1_data = eq.get('jugador1')
+                nick_1 = j1_data.get('nick') if isinstance(j1_data, dict) else "Sin nombre"
+                
+                j2_data = eq.get('jugador2')
+                nick_2 = j2_data.get('nick') if isinstance(j2_data, dict) else "Sin nombre"
+                
+                st.info(f"👤 {nick_1}  —  👤 {nick_2}")
+
+else:
+    st.warning("No hay equipos registrados aún.")
