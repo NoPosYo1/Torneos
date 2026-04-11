@@ -24,6 +24,22 @@ else:
         Bienvenido al panel de control del torneo. Aquí puedes gestionar equipos, rondas y reportes.
         Usa el menú lateral para navegar entre las diferentes secciones de administración.
     """)
+    st.markdown("""
+        <style>
+        /* Aquí puedes agregar estilos personalizados para el panel de administración */
+         .stButton button {
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            padding: 0.5em 1em;
+            font-size: 1rem;
+            border: none;
+        }
+        .stButton button:hover {
+            background-color: #0056b3;
+        }
+        </style>
+    """, unsafe_allow_html=True)
     jugador_1 =st.text_input("Ingrese Nick del Jugador 1")
     jugador_2 = st.text_input("Ingrese Nick del Jugador 2")
     st.button("Registrar Equipo", on_click=registrar_equipo, args=(jugador_1, jugador_2), use_container_width=True, type="primary")
