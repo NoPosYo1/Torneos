@@ -59,8 +59,8 @@ if len(equipos_db) > 0:
             estado_jugador2 = "Sin Duo"
         
         try:
-            st.write(f"Equipo ID: {equipo['id']}. Estado: {equipo['estado_activo']}.Jugador 1: {equipo.get('jugador1', {}).get('nick', 'Sin nombre')} estado: {estado_jugador1}.Jugador 2: {equipo.get('jugador2', {}).get('nick', 'Sin Duo')} estado: {estado_jugador2}")
-        except KeyError:
+            st.write(f"Equipo: {equipo['id']}. Estado: {equipo['estado_activo']}.Jugador 1: {equipo.get('jugador1', {}).get('nick', 'Sin nombre')} estado: {estado_jugador1}.Jugador 2: {equipo.get('jugador2', {}).get('nick', 'Sin Duo')} estado: {estado_jugador2}")
+        except AttributeError:
             continue
         finally:
             st.info(f"Equipo ID: {equipo['id']}. Estado: {equipo['estado_activo']}.Jugador 1: {equipo.get('jugador1', {}).get('nick', 'Sin nombre')} estado: {estado_jugador1}.Jugador 2: Sin Duo")
