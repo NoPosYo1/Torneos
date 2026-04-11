@@ -5,6 +5,8 @@ st.session_state.logged_in = st.session_state.get('logged_in', False)
 
 def registrar_equipo(jugador1, jugador2):
     # Aquí iría la lógica para registrar el equipo en la base de datos
+    if jugador2 == "":
+        jugador2 = "Sin Duo"
     st.success(f"Equipo registrado: {jugador1} y {jugador2}")
     pass
 
@@ -24,7 +26,7 @@ else:
         Usa el menú lateral para navegar entre las diferentes secciones de administración.
     """)
     jugador_1 =st.text_input("Ingrese Nick del Jugador 1")
-    jugador_2 = st.text_input("Ingrese Nick del Jugador 2", key="nick_jugador2")
+    jugador_2 = st.text_input("Ingrese Nick del Jugador 2")
     st.button("Registrar Equipo", on_click=registrar_equipo(jugador_1, jugador_2), use_container_width=True, type="primary")
 
 
