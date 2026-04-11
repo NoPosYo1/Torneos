@@ -4,10 +4,6 @@ from supabase import create_client
 # Conexión
 supabase = create_client(st.secrets["SUPABASE_URL"], st.secrets["SUPABASE_KEY"])
 
-def actualizar_estado(equipo_id, nuevo_estado):
-    supabase.table("equipo").update({"estado_activo": nuevo_estado}).eq("id", equipo_id).execute()
-    st.rerun()
-
 st.title("🏆 Gestión de Torneo")
 st.subheader("Lista de Equipos")
 
