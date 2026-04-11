@@ -131,26 +131,6 @@ if len(equipos_db) > 0:
                         </div>
                     """, unsafe_allow_html=True)
 
-                    # Lógica de Botones según tu dibujo
-                    if estado_eq == 'activo':
-                        b1, b2, b3 = st.columns(3)
-                        with b1:
-                            st.button("Edit", key=f"e_{equipo['id']}")
-                        with b2:
-                            if st.button("Lose", key=f"l_{equipo['id']}", type="primary"):
-                                supabase.table("equipo").update({"estado": "eliminado"}).eq("id", equipo['id']).execute()
-                                st.rerun()
-                        with b3:
-                            st.button("Win", key=f"w_{equipo['id']}")
-                    else:
-                        # Botón de Reinscripción
-                        if st.button("🔄 Reinscripción", key=f"r_{equipo['id']}", use_container_width=True):
-                            supabase.table("equipo").update({"estado": "activo"}).eq("id", equipo['id']).execute()
-                            st.rerun()
-
-        with vs_text:
-            st.markdown("<br><h1 style='text-align: center; color: #785a28;'>VS</h1>", unsafe_allow_html=True)
-        st.divider()
 else:
     st.info("No hay equipos en la base de datos.")
 
