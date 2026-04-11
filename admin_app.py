@@ -77,6 +77,8 @@ else:
     st.sidebar.title("Menú de Administración")
     if st.button("🏠 IR A PANEL PRINCIPAL"):
         cambiar_vista('principal')
+    if st.sidebar.button("⚔️ IR A GESTIÓN DE EQUIPOS"):
+        cambiar_vista('reg_equipo')
     st.sidebar.markdown("- [Gestión de Equipos](#gestión-de-equipos)")
     if st.button("IR A REGISTRAR EQUIPO"):
         cambiar_vista('reg_equipo')
