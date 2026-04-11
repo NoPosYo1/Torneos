@@ -23,7 +23,7 @@ if equipos_db:
         nick_2 = eq.get('jugador2', {}).get('nick', 'Sin Equipo')
         
         with st.container(border=True):
-            st.subheader(eq["nombre_equipo"])
+            st.subheader(f"Equipo {eq['id']}")
             st.info(f"👤 {nick_1}  —  👤 {nick_2}")
             
             # Aquí van tus botones de Edit, Lose, Win...
