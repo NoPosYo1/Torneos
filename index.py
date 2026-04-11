@@ -42,7 +42,7 @@ if equipos_db:
             if eq["estado_activo"] == True: # Activo
                 btn_col1, btn_col2, btn_col3 = st.columns(3)
                 with btn_col1:
-                    st.button("Pago reinscripción", key=f"pago_{eq['id']}")
+                    st.button("Ausente", key=f"ausente_{eq['id']}")
                 with btn_col2:
                     # Botón LOSE: Cambia el estado a eliminado
                     if st.button("Lose", key=f"lose_{eq['id']}", type="primary"):
