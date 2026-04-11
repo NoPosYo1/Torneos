@@ -49,9 +49,9 @@ else:
             elif eq["estado_activo"] == "False": # Eliminado
                 st.error("Eliminado")
 
-if equipos_db:
+if len(equipos_db) > 0:
     for equipo in equipos_db:
-        estado_jugador1 = "Activo" if equipo.get('jugador1', {}).get('estado', 'Sin estado') is True else "Inactivo"
-        estado_jugador2 = "Activo" if equipo.get('jugador2', {}).get('estado', 'Sin estado') is True else "Inactivo"
+        estado_jugador1 = "Activo" if equipo.get('jugador1', {}).get('estado', 'Sin estado') is True else "AUSENTE"
+        estado_jugador2 = "Activo" if equipo.get('jugador2', {}).get('estado', 'Sin estado') is True else "AUSENTE"
         st.write(f"Equipo ID: {equipo['id']}. Estado: {equipo['estado_activo']}.Jugador 1: {equipo.get('jugador1', {}).get('nick', 'Sin nombre')} estado: {estado_jugador1}.Jugador 2: {equipo.get('jugador2', {}).get('nick', 'Sin Duo')} estado: {estado_jugador2}")
         
