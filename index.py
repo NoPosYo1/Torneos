@@ -1,17 +1,6 @@
 import streamlit as st
 from supabase import create_client
-import re
 
-import os
-
-# Buscamos la ruta real del archivo
-path_rondas = os.path.join("pages", "rondas.py")
-
-if st.button("Ir a rondas"):
-    if os.path.exists(path_rondas):
-        st.switch_page(path_rondas)
-    else:
-        st.error(f"No encuentro el archivo en: {path_rondas}")
 
 # 1. Configuración y Estilo LoL (Hextech)
 st.set_page_config(page_title="Torneo 2v2 GGReport", layout="wide")
@@ -146,9 +135,11 @@ else:
     st.info("No hay equipos en la base de datos.")
 
 st.button("Actualizar Lista", on_click=st.rerun)
-if st.button("Ir a rondas"):
-    # Intenta solo con el nombre del archivo
-    st.switch_page("pages/rondas.py") 
-    
-    # Si lo anterior falla, intenta sin el "pages/":
-    # st.switch_page("rondas.py")
+
+# Intenta esto si nada más funciona, a veces el servidor toma 'pages' como raíz
+try:
+    if st.button("Intento A"):
+        st.switch_page("pages/rondas.py")
+except:
+    if st.button("Intento B"):
+        st.switch_page("rondas.py")
