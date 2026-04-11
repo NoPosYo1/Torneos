@@ -18,3 +18,6 @@ else:
         Bienvenido al panel de control del torneo. Aquí puedes gestionar equipos, rondas y reportes.
         Usa el menú lateral para navegar entre las diferentes secciones de administración.
     """)
+    st.impute("Aquí puedes agregar funcionalidades de administración como editar equipos, gestionar rondas, revisar reportes, etc.")
+    st.markdown("**Nota:** Asegúrate de tener cuidado al modificar datos, ya que esto puede afectar el desarrollo del torneo.")
+
