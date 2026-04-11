@@ -16,12 +16,17 @@ equipos_db = supabase.table("equipo").select("*").execute().data
 if equipos_db:
     col1, vs_col, col2 = st.columns([4, 1, 4])
 
-    for i, col in enumerate([col1, col2]):
-        eq = equipos_db[i]
-        with col:
-            st.subheader(f"Equipo {eq['id']}")
-            # El rectángulo del equipo (diseño de tu dibujo)
-            st.info(f"👤 {eq['jugador_1']} - 👤 {eq['jugador_2']}")
+    for eq in equipos_db:
+        # Accedemos al nick dentro del objeto del jugador
+        # Usamos .get() por seguridad por si algún jugador es NULL
+        nick_1 = eq.get('jugador1', {}).get('nick', 'Sin nombre')
+        nick_2 = eq.get('jugador2', {}).get('nick', 'Sin Equipo')
+        
+        with st.container(border=True):
+            st.subheader(eq["nombre_equipo"])
+            st.info(f"👤 {nick_1}  —  👤 {nick_2}")
+            
+            # Aquí van tus botones de Edit, Lose, Win...
                 
                 # Lógica de botones según estado
             if eq["estado_activo"] == True: # Activo
