@@ -205,17 +205,6 @@ else:
         else:
             st.warning("No hay equipos registrados aún.")
 
-        st.write("---selector de jugadores para editar---")
-        # Traer solo jugadores que no tienen equipo o están disponibles
-        res_jugadores = supabd.table("jugador").select("id, nick").execute()
-        lista_nicks = [j['nick'] for j in res_jugadores.data]
-
-        busqueda = st.multiselect(
-            "Buscar jugadores por Nick:",
-            options=lista_nicks,
-            max_selections=2 # Limitas a 2 si es para un torneo 2v2
-        )
-
     # --- LÓGICA PRINCIPAL (EL SELECTOR) ---
     if st.session_state.vista == 'reg_equipo':
         panel_registro_equipo()
