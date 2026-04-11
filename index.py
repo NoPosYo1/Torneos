@@ -11,16 +11,31 @@ def actualizar_estado(equipo_id, nuevo_estado):
 st.title("🏆 Gestión de Torneo")
 
  
-equipos_db = supabase.table("equipo").select("*").execute().data
+# Fíjate en el formato de los dos puntos
+res = supabase.table("equipo").select("""
+    id,
+    nombre_equipo,
+    estado,
+    jugador1:jugador_1(nick),
+    jugador2:jugador_2(nick)
+""").execute()
+
+equipos_db = res.data
 
 if equipos_db:
     col1, vs_col, col2 = st.columns([4, 1, 4])
 
     for eq in equipos_db:
-        # Accedemos al nick dentro del objeto del jugador
-        # Usamos .get() por seguridad por si algún jugador es NULL
-        nick_1 = eq.get('jugador_1', {}).get('nick', 'Sin nombre')
-        nick_2 = eq.get('jugador_2', {}).get('nick', 'Sin Equipo')
+        # Extraemos el dato. Si es un diccionario, sacamos el nick. 
+        # Si es un número o None, ponemos 'Sin nombre'.
+        j1_data = eq.get('jugador1')
+        nick_1 = j1_data.get('nick') if isinstance(j1_data, dict) else "Sin nombre"
+        
+        j2_data = eq.get('jugador2')
+        nick_2 = j2_data.get('nick') if isinstance(j2_data, dict) else "Sin nombre"
+
+        # Ahora sí lo imprimes
+        st.info(f"👤 {nick_1}  —  👤 {nick_2}")
         
         with st.container(border=True):
             st.subheader(f"Equipo {eq['id']}")
