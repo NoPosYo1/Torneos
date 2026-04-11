@@ -185,11 +185,10 @@ else:
         """).execute()
 
         equipos = res.data# Esto es una lista de diccionarios
-        nombres_equipos = [f"{e['id']} - {e['jugador_1']['nick']} vs {e['jugador_2']['nick']}" for e in equipos]
         if equipos:
             # 2. Creamos una lista de nombres para el selector
             # Usamos un diccionario para mapear Nombre -> ID
-            opciones = {f"{e['id']} - {e['jugador_1']['nick']} & {e['jugador_2']['nick']}": e['id'] for e in equipos}
+            opciones = {f"{e['id']} - {e['jugador_1']} & {e['jugador_2']}": e['id'] for e in equipos}
             
             seleccion = st.selectbox(
                 "Seleccione un equipo para gestionar:",
