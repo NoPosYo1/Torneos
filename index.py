@@ -58,3 +58,22 @@ if len(equipos_db) > 0:
             st.caption(f"Estado J1: {est1} | Esperando integrante...")
         
         st.divider() # Línea para separar equipos
+
+st.markdown("""
+    <style>
+    /* Cambiar el fondo de la tarjeta del equipo */
+    [data-testid="stVerticalBlock"] > div:has(div.stAlert) {
+        background-color: #1e1e2e;
+        border-radius: 15px;
+        border: 1px solid #45475a;
+        padding: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    }
+    /* Estilo para los botones */
+    .stButton>button {
+        border-radius: 8px;
+        text-transform: uppercase;
+        font-weight: bold;
+    }
+    </style>
+    """, unsafe_allow_html=True)
