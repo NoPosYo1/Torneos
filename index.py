@@ -63,7 +63,8 @@ if len(equipos_db) > 0:
             pass  # Si no hay jugador2, lo ignoramos y seguimos con el siguiente equipo
             
         try:
-            st.subheader(f"Equipo: {equipo['id']}. Estado: {estado_equipo}")
-            st.info(f"Jugador 1: {equipo.get('jugador1', {}).get('nick', 'Sin nombre')} estado: {estado_jugador1}.Jugador 2: {equipo.get('jugador2', {}).get('nick', 'Sin Duo')} estado: {estado_jugador2}")
+            st.subheader(f"Equipo {equipo['id']} - Estado: {estado_equipo}")
+            st.info(f"{equipo.get('jugador1', {}).get('nick', 'Sin nombre')} -- {equipo.get('jugador2', {}).get('nick', 'Sin Duo')}")
+            st.info(f"{estado_jugador1} -- {estado_jugador2}")
         except AttributeError:
             st.info(f"Equipo: {equipo['id']}. Estado: {estado_equipo}.Jugador 1: {equipo.get('jugador1', {}).get('nick', 'Sin nombre')} estado: {estado_jugador1}.Jugador 2: Sin Duo'")
