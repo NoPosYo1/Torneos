@@ -18,6 +18,14 @@ else:
         Bienvenido al panel de control del torneo. Aquí puedes gestionar equipos, rondas y reportes.
         Usa el menú lateral para navegar entre las diferentes secciones de administración.
     """)
-    st.impute("Aquí puedes agregar funcionalidades de administración como editar equipos, gestionar rondas, revisar reportes, etc.")
-    st.markdown("**Nota:** Asegúrate de tener cuidado al modificar datos, ya que esto puede afectar el desarrollo del torneo.")
+    jugador_1 =st.text_input("Ingrese Nick del Jugador 1")
+    jugador_2 = st.text_input("Ingrese Nick del Jugador 2", key="nick_jugador2")
+    st.button("Registrar Equipo", on_click=registrar_equipo(jugador_1, jugador_2), use_container_width=True, type="primary")
 
+
+
+
+def registrar_equipo(jugador1, jugador2):
+    # Aquí iría la lógica para registrar el equipo en la base de datos
+    st.success(f"Equipo registrado: {jugador1} y {jugador2}")
+    pass
