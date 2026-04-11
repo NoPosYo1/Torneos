@@ -3,9 +3,15 @@ from supabase import create_client
 import re
 
 import os
-st.write("Archivos en el servidor:", os.listdir("."))
-if os.path.exists("pages"):
-    st.write("Archivos en pages:", os.listdir("pages"))
+
+# Buscamos la ruta real del archivo
+path_rondas = os.path.join("pages", "rondas.py")
+
+if st.button("Ir a rondas"):
+    if os.path.exists(path_rondas):
+        st.switch_page(path_rondas)
+    else:
+        st.error(f"No encuentro el archivo en: {path_rondas}")
 
 # 1. Configuración y Estilo LoL (Hextech)
 st.set_page_config(page_title="Torneo 2v2 GGReport", layout="wide")
