@@ -11,7 +11,15 @@ st.sidebar.image("imagenes/ARAM_Banner.ACCESSORIES_16_3.png", use_container_widt
 #url_logo = "https://brand.riotgames.com/static/a91d1b2d395128a38e388c3d13b63249/00631/lol-logo.png"
 #st.sidebar.image(url_logo, caption="Temporada 2026", use_container_width=True)
 
-st.sidebar.title("Menú de Navegación")
+st.sidebar.title("Reglas del Torneo")
+st.sidebar.markdown("""
+- Formato: 2v2 eliminatoria directa.)
+""")
+st.sidebar.markdown("""- Inscripción: Abierta hasta el 15 de Octubre.
+- Requisitos: Ambos jugadores deben tener una cuenta de LoL con al menos 100 partidas jugadas.
+- Reportes: Después de cada partida, el equipo ganador debe reportar el resultado en el formulario de reporte.
+- Sanciones: Reportes falsos o falta de reporte pueden resultar en descalificación
+""")
 
 # Inicializamos el estado de la página si no existe
 if 'vista' not in st.session_state:
