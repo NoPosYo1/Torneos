@@ -21,7 +21,9 @@ res = supabase.table("equipo").select("""
 
 equipos_db = res.data
 
-if equipos_db:
+if len(equipos_db) < 2:
+    st.warning("Faltan equipos en la base de datos.")
+else:
     col1, vs_col, col2 = st.columns([4, 1, 4])
 
     for eq in equipos_db:
@@ -59,6 +61,3 @@ if equipos_db:
 
     with vs_col:
         st.markdown("<h2 style='text-align: center;'>VS</h2>", unsafe_allow_html=True)
-
-else:
-    st.warning("No hay equipos registrados aún.")
