@@ -23,23 +23,6 @@ st.markdown("""
         letter-spacing: 4px;
     }
     
-    /* Centrar y dar margen al título */
-    .stApp h1 {
-        text-align: center;
-        margin-top: 50px; /* Aleja el título del borde superior */
-        margin-bottom: 30px; /* Espacio antes de los equipos */
-        color: #c8aa6e;
-        font-family: 'Beaufort for LoL', serif;
-        text-transform: uppercase;
-        letter-spacing: 3px;
-        text-shadow: 0 0 10px rgba(200, 170, 110, 0.5);
-    }
-
-    /* Centrar subheaders si los usas */
-    .stApp h2, .stApp h3 {
-        text-align: center;
-        color: #f0e6d2;
-    }
 
     /* Tarjeta de Equipo Estilo Hextech */
     .team-card {
