@@ -100,36 +100,28 @@ equipos_db = res.data
 
 # 4. Renderizado de la Interfaz
 if len(equipos_db) > 0:
-    # Mostramos de 1 en 1 para evitar problemas de indexación
-    for i in equipos_db:
-        col1, vs_text, col2 = st.columns([4, 1, 4])
-        
-        for idx, col_actual in enumerate([col1, col2]):
-            pos = i + idx
-            if pos < len(equipos_db):
-                equipo = equipos_db[pos]
-                
-                # Extracción segura
-                j1 = equipo.get('jugador1')
-                j2 = equipo.get('jugador2')
-                estado_eq = equipo.get('estado', 'activo')
+    # Mostramos de 1 en 1
+    for equipo in equipos_db:
+        # Extracción segura
+        j1 = equipo.get('jugador1')
+        j2 = equipo.get('jugador2')
+        estado_eq = equipo.get('estado', 'activo')
 
-                nick1 = j1.get('nick', 'Sin nombre') if isinstance(j1, dict) else "Sin nombre"
-                nick2 = j2.get('nick', 'Sin Duo') if isinstance(j2, dict) else "Sin Duo"
-                est1 = j1.get('estado', 'N/A') if isinstance(j1, dict) else "N/A"
-                est2 = j2.get('estado', 'N/A') if isinstance(j2, dict) else "N/A"
+        nick1 = j1.get('nick', 'Sin nombre') if isinstance(j1, dict) else "Sin nombre"
+        nick2 = j2.get('nick', 'Sin Duo') if isinstance(j2, dict) else "Sin Duo"
+        est1 = j1.get('estado', 'N/A') if isinstance(j1, dict) else "N/A"
+        est2 = j2.get('estado', 'N/A') if isinstance(j2, dict) else "N/A"
 
-                with col_actual:
-                    # Contenedor visual (El "Rectángulo" de tu dibujo)
-                    st.markdown(f"""
-                        <div class="team-card">
-                            <div class="status-badge">Equipo {equipo['id']} • {estado_eq}</div>
-                            <div class="nick-display">👤 {nick1} <span style="color:#45475a;">  -- </span> 👤 {nick2}</div>
-                            <div style="text-align: center; font-size: 0.7rem; color: #a09b8c;">
-                                {est1} | {est2 if nick2 != 'Sin Duo' else 'ESPERANDO...'}
-                            </div>
-                        </div>
-                    """, unsafe_allow_html=True)
+        # Contenedor visual (El "Rectángulo" de tu dibujo)
+        st.markdown(f"""
+            <div class="team-card">
+                <div class="status-badge">Equipo {equipo['id']} • {estado_eq}</div>
+                <div class="nick-display">👤 {nick1} <span style="color:#45475a;">  -- </span> 👤 {nick2}</div>
+                <div style="text-align: center; font-size: 0.7rem; color: #a09b8c;">
+                    {est1} | {est2 if nick2 != 'Sin Duo' else 'ESPERANDO...'}
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
 
 else:
     st.info("No hay equipos en la base de datos.")
