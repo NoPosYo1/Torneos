@@ -12,16 +12,22 @@ st.title("🏆 Gestión de Torneo")
 st.subheader("Lista de Equipos")
 
 st.button("Actualizar Lista", on_click=st.rerun)  # Botón para actualizar la lista de equipos
-# Fíjate en el formato de los dos puntos
+
+# Fíjate bien en los paréntesis y los nombres
 res = supabase.table("equipo").select("""
     id,
     estado,
-    jugador1:jugador_1(nick),
-    jugador2:jugador_2(nick)
+    jugador1:jugador_1 (
+        nick,
+        estado
+    ),
+    jugador2:jugador_2 (
+        nick,
+        estado
+    )
 """).execute()
 
 equipos_db = res.data
-
 
 #Lista de equipos
 if len(equipos_db) < 1:
