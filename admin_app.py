@@ -139,7 +139,6 @@ def llamada_db_duos():
     res_ocupados = supabd.table("equipo").select("jugador_1, jugador_2").execute()
 
 def avanzar_equipo_completo(supabd, id_equipo_ganador, ronda_actual):
-    """Maneja el paso de un equipo de una ronda a la siguiente."""
     orden_rondas = ["Ronda 1", "Ronda 2", "Ronda 3", "Ronda 4", "Ronda 5", "Semifinal", "Final"]
     
     try:
@@ -152,7 +151,7 @@ def avanzar_equipo_completo(supabd, id_equipo_ganador, ronda_actual):
     except ValueError:
         return
 
-    # Buscar si hay un hueco (equipo_2 es NULL) en la próxima ronda
+    # 1. Buscar si hay un duelo en la próxima ronda esperando pareja (equipo_2 es NULL)
     partido_pendiente = supabd.table("encuentros")\
         .select("id")\
         .eq("ronda", proxima)\
@@ -160,13 +159,13 @@ def avanzar_equipo_completo(supabd, id_equipo_ganador, ronda_actual):
         .execute()
 
     if partido_pendiente.data:
-        # Llenamos el espacio del segundo equipo en un duelo existente
+        # 2. ACTUALIZACIÓN: Llenamos el hueco del segundo equipo
         id_partido = partido_pendiente.data[0]['id']
-        # FORMA CORRECTA
+        # AQUÍ ESTABA EL ERROR:
         supabd.table("encuentros").update({"equipo_2": id_equipo_ganador}).eq("id", id_partido).execute()
         st.toast(f"Duelo completado en {proxima}", icon="⚔️")
     else:
-        # Creamos un duelo nuevo donde el ganador espera rival
+        # 3. INSERCIÓN: Creamos un duelo nuevo donde el ganador espera rival
         supabd.table("encuentros").insert({
             "ronda": proxima,
             "equipo_1": id_equipo_ganador,
