@@ -230,6 +230,26 @@ def resetear_torneo_completo(supabd):
     except Exception as e:
         st.error(f"Error al resetear: {e}")
 
+def obtener_estilo_estado(estado):
+    # Colores Hextech adaptados a tus estados
+    colores = {
+        "Ausente": "rgba(0, 200, 255, 0.2)",  # Azul traslúcido
+        "Perdió": "rgba(255, 75, 75, 0.2)",   # Rojo traslúcido
+        "En Partida": "rgba(255, 200, 0, 0.2)", # Amarillo/Dorado
+        "Normal": "rgba(9, 20, 40, 0.5)"       # Azul oscuro estándar
+    }
+    bg_color = colores.get(estado, colores["Normal"])
+    
+    return f"""
+        <style>
+        div[data-testid="stVerticalBlockBorderWrapper"] {{
+            background-color: {bg_color};
+            border: 1px solid #785a28;
+            border-radius: 10px;
+            padding: 10px;
+        }}
+        </style>
+    """
 
 
 if st.session_state.logged_in == False:
@@ -426,6 +446,15 @@ else:
                 # --- COLUMNA 1: EQUIPO 1 ---
                 with col_e1:
                     e1 = enc.get('equipo_1')
+                    estilo = f"""
+                    <div style="
+                        background-color: {obtener_estilo_estado(estado_e1)}; 
+                        border: 2px solid #785a28; 
+                        padding: 15px; 
+                        border-radius: 10px;
+                        margin-bottom: 10px;">
+                    """
+                    st.markdown(estilo, unsafe_allow_html=True)
                     if e1:
                         estado_e1 = supabd.table("equipo").select("estado").eq("id", e1['id']).execute().data[0]['estado'] if e1 else "desconocido"
                         
@@ -448,7 +477,7 @@ else:
                                 if st.button("Equipo Ausente", key=f"ausente_e1_{enc['id']}", use_container_width=True):
                                     st.toast("¡Marcado como ausente! El equipo contrario avanzará automáticamente. Recuerda actualizar el resultado una vez finalizada la partida.", icon="⚠️")
                                     supabd.table("equipo").update({"estado": "Ausente"}).eq("id", e1['id']).execute()
-                                    col_e1.color_picker("Selecciona color para marcar ausente", key=f"color_ausente_e1_{enc['id']}", label_visibility="collapsed")
+
                                     st.rerun()
                             with c3:
                                 if st.button("En Partida", key=f"partida_e1_{enc['id']}", use_container_width=True):
