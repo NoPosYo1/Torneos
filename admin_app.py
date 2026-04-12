@@ -237,27 +237,12 @@ def resetear_torneo_completo(supabd):
     except Exception as e:
         st.error(f"Error al resetear: {e}")
 
-def obtener_estilo_estado(estado):
-    # Colores Hextech adaptados a tus estados
-    colores = {
-        "Ausente": "rgba(0, 200, 255, 0.2)",  # Azul traslúcido
-        "Perdió": "rgba(255, 75, 75, 0.2)",   # Rojo traslúcido
-        "En Partida": "rgba(255, 200, 0, 0.2)", # Amarillo/Dorado
-        "Normal": "rgba(9, 20, 40, 0.5)"       # Azul oscuro estándar
-    }
-    bg_color = colores.get(estado, colores["Normal"])
-    
-    return f"""
-        <style>
-        div[data-testid="stVerticalBlockBorderWrapper"] {{
-            background-color: {bg_color};
-            border: 1px solid #785a28;
-            border-radius: 10px;
-            padding: 10px;
-        }}
-        </style>
-    """
-
+def cambiar_estado_equipo(supabd, id_equipo, nuevo_estado):
+    try:
+        supabd.table("equipo").update({"estado": nuevo_estado}).eq("id", id_equipo).execute()
+        st.toast(f"Estado del equipo actualizado a '{nuevo_estado}'", icon="🔄")
+    except Exception as e:
+        st.error(f"Error al actualizar estado: {e}")
 
 if st.session_state.logged_in == False:
     st.title("🔒 PANEL DE CONTROL - ADMINISTRADOR")
@@ -530,11 +515,12 @@ else:
                             with c2:                                                        
                                 if st.button("Equipo Ausente", key=f"ausente_e2_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
                                     st.toast("¡Marcado como ausente!", icon="⚠️")
-                                    supabd.table("equipo").update({"estado": "Ausente"}).eq("id", e2['id']).execute()
+                                    cambiar_estado_equipo(supabd, e2['id'], "Ausente")
                             with c3:
                                 if st.button("Eliminado", key=f"eliminado_e2_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
                                     st.toast("¡Marcado como eliminado!")
-                                    supabd.table("equipo").update({"estado": "Eliminado"}).eq("id", e2['id']).execute()
+                                    cambiar_estado_equipo(supabd, e2['id'], "Eliminado")
+
                             if ya_tiene_ganador:
 
                                 st.markdown(f"<div style='color: green; font-weight: bold;'>GANADOR</div>", unsafe_allow_html=True)
