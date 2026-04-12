@@ -23,20 +23,6 @@ st.markdown("""
                 border-bottom: 2px solid #785a28 !important;
                 box-shadow: 0 4px 6px rgba(0,0,0,0.5) !important;
             }}
-            [data-test-id="stVerticalBlockBorder"]{{
-                border: 1px solid #785a28 !important;
-                background-color: #091428 !important;
-                border-radius: 5px !important;
-            }}
-            .stButton>button{{
-                color: #f0e6d2 !important;
-                border: 1px solid #c8aa6e !important;
-                background: linear-gradient(to bottom, #1e2328, #091428) !important;
-            }}
-            .stButton>button:hover{{
-                border-color: #f0e6d2 !important;
-                color: #ffffff !important;
-            }}
     </style>
 """, unsafe_allow_html=True)
 
