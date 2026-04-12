@@ -230,6 +230,18 @@ def resetear_torneo_completo(supabd):
     except Exception as e:
         st.error(f"Error al resetear: {e}")
 
+def nick_copiable(nick):
+    # Generamos un ID único para evitar conflictos entre botones
+    html_code = f"""
+    <div style="cursor: pointer; display: inline-block;" 
+         onclick="navigator.clipboard.writeText('{nick}'); alert('Nick copiado: {nick}');">
+        <span style="color: #cdbe91; font-weight: bold; border-bottom: 1px dashed #785a28;">
+            📋 {nick}
+        </span>
+    </div>
+    """
+    st.markdown(html_code, unsafe_allow_html=True)
+
 
 if st.session_state.logged_in == False:
     st.title("🔒 PANEL DE CONTROL - ADMINISTRADOR")
@@ -435,10 +447,10 @@ else:
 
                             nick_j1 = e1.get('j1', {}).get('nick', '???')
                             nick_j2 = e1.get('j2', {}).get('nick', 'Solo')
-                            #st.markdown(f"**{nick_j1}**" , unsafe_allow_html=True)
                             st.code(f"{nick_j1}", language="None")
-                            #st.markdown(f"**{nick_j2}**", unsafe_allow_html=True)
-                            st.code(f"{nick_j2}", language="None")
+                            #st.code(f"{nick_j2}", language="None")
+                            nick_copiable(nick_j2)
+                            
 
                             c1, c2, c3 = st.columns(3)
                             with c1:
