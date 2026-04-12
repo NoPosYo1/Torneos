@@ -435,7 +435,7 @@ else:
                         elif st.button("Equipo Ausente", key=f"ausente_e1_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
                             st.toast("¡Marcado como ausente! El equipo contrario avanzará automáticamente. Recuerda actualizar el resultado una vez finalizada la partida.", icon="⚠️")
                             st.rerun()
-                        elif st.button("En Partida"):
+                        elif st.button("En Partida", key=f"partida_e1_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
                             st.toast("¡Marcado como en partida! Recuerda actualizar el resultado una vez finalizada la partida.")
                             st.rerun()
 
