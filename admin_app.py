@@ -143,14 +143,14 @@ else:
             <style>
             [data-testid="stSidebar"] {{
                 background-image: url("https://images6.alphacoders.com/909/909375.jpg");
-                background-size: cover;
-                background-position: center;
-                background-repeat: no-repeat;
+                background-size: cover !important;
+                background-position: center !important;
+                background-repeat: no-repeat !important;
             }}
             /* Esto hace que los widgets encima del fondo sean legibles */
             [data-testid="stSidebar"] .stMarkdown, [data-testid="stSidebar"] .stButton {{
-                background-color: rgba(0, 0, 0, 0.4); /* Fondo semi-transparente para botones */
-                border-radius: 10px;
+                background-color: rgba(0, 0, 0, 0.4) !important; /* Fondo semi-transparente para botones */
+                border-radius: 10px !important;
             }}
             </style>
             """,
