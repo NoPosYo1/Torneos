@@ -225,12 +225,12 @@ else:
                 # El selector corregido
                 nuevo_j2_nick = st.selectbox(
                     f"Pareja para {nick_j1}",
-                    options=list(dict_jugadores.keys()),
+                    options=["Selecciona un jugador"] + list(dict_jugadores.keys()),
                     key=f"sel_{eq['id']}",
                     label_visibility="collapsed"
                 )
                 
-                if nuevo_j2_nick:
+                if nuevo_j2_nick != "Selecciona un jugador" and nuevo_j2_nick != nick_j1:
                     id_j2 = dict_jugadores[nuevo_j2_nick]
                     if st.button("Confirmar", key=f"btn_{eq['id']}"):
                         # UPDATE en la tabla equipo
