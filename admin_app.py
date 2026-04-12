@@ -191,42 +191,40 @@ else:
         st.markdown("""
             Bienvenido al panel de control del torneo. -- Aquí puedes añadir Jugadores en solitario y a equipos de 2 jugadores.
         """)
-        st.markdown("""
-            <style>
-            /* Aquí puedes agregar estilos personalizados para el panel de administración */
-            .stApp {
-               background-color: #010a13;
-               color: #f0e6d2;
-            }
-            .stButton button {
-                background-color: #007bff;
-                color: white;
-                border-radius: 5px;
-                padding: 0.5em 1em;
-                font-size: 1rem;
-                border: none;
-            }
-            .stButton button:hover {
-                background-color: #0056b3;
-            }
-            </style>
-        """, unsafe_allow_html=True)
-        
-        st.subheader("Registrar Equipo")
-        st.text("Aquí puedes registrar un nuevo equipo (2 jugadores no registrados anteriormente) para el torneo. Ingresa los nicks de ambos jugadores.")
-        st.info("Si deseas unir a 2 jugadores solitarios en un equipo, ve a la sección de Edición de Equipos y asigna un dúo a cada uno.")
-        jugador_1 =st.text_input("Ingrese Nick del Jugador 1")
-        jugador_2 = st.text_input("Ingrese Nick del Jugador 2")
-        st.button("Registrar Equipo", on_click=registrar_equipo, args=(jugador_1, jugador_2), use_container_width=True, type="primary")
+        # Creamos un contenedor con una "llave" o simplemente lo aislamos
+        with st.container():
+            # Inyectamos el CSS usando el selector de jerarquía
+            st.markdown("""
+                <style>
+                /* Solo afecta a botones dentro de este contenedor específico */
+                div[data-testid="stVerticalBlock"] > div:nth-child(2) .stButton button {
+                    background-color: #785a28 !important; /* Dorado Hextech */
+                    color: #f0e6d2 !important;
+                    border: 2px solid #c8aa6e !important;
+                }
+                </style>
+            """, unsafe_allow_html=True)
+            
+            st.button("Botón Especial (Hextech)")
 
-        st.divider()
+            # Este botón estará fuera del contenedor y tendrá el diseño normal de Streamlit
+            st.button("Botón Normal")
+            
+            st.subheader("Registrar Equipo")
+            st.text("Aquí puedes registrar un nuevo equipo (2 jugadores no registrados anteriormente) para el torneo. Ingresa los nicks de ambos jugadores.")
+            st.info("Si deseas unir a 2 jugadores solitarios en un equipo, ve a la sección de Edición de Equipos y asigna un dúo a cada uno.")
+            jugador_1 =st.text_input("Ingrese Nick del Jugador 1")
+            jugador_2 = st.text_input("Ingrese Nick del Jugador 2")
+            st.button("Registrar Equipo", on_click=registrar_equipo, args=(jugador_1, jugador_2), use_container_width=True, type="primary")
 
-        st.subheader("Agregar Player en Solitario")
-        st.text("Si un jugador no tiene dúo, puedes registrarlo aquí como solitario. Luego podrás asignarle un dúo desde el panel de edición.")
-        jugador_1 = st.text_input("Ingrese Nick del Jugador Solitario")
-        st.button("Registrar Jugador Solitario", on_click=registrar_player_solitario, args=(jugador_1,), use_container_width=True, type="primary")
+            st.divider()
 
-        st.info("Si quieres unir a 2 players solitarios en un equipo, vaya a la seccion de Edicion de Equipos y asignale un dúo a cada uno.")
+            st.subheader("Agregar Player en Solitario")
+            st.text("Si un jugador no tiene dúo, puedes registrarlo aquí como solitario. Luego podrás asignarle un dúo desde el panel de edición.")
+            jugador_1 = st.text_input("Ingrese Nick del Jugador Solitario")
+            st.button("Registrar Jugador Solitario", on_click=registrar_player_solitario, args=(jugador_1,), use_container_width=True, type="primary")
+
+            st.info("Si quieres unir a 2 players solitarios en un equipo, vaya a la seccion de Edicion de Equipos y asignale un dúo a cada uno.")
 #---------------------------------------------------------------------------------------------+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     def panel_editar_equipo():
 
