@@ -222,6 +222,26 @@ def generar_ronda_1_automatica(supabd):
     except Exception as e:
         st.error(f"Error al generar ronda: {e}")
 
+def resetear_torneo_completo(supabd):
+    try:
+        # 1. Eliminar todos los enfrentamientos (Brackets)
+        # Usamos un filtro que siempre sea cierto para borrar todo
+        supabd.table("encuentros").delete().neq("id", 0).execute()
+        
+        # 2. Resetear estados en la tabla Equipo
+        # Ponemos ganador_id en NULL y el estado en 'activo'
+        supabd.table("equipo").update({
+            "estado": "activo" 
+        }).neq("id", 0).execute()
+
+        # 3. Opcional: Si quieres disolver los dúos también
+        # supabd.table("jugador").update({"EnDuo": False}).neq("id", 0).execute()
+        # supabd.table("equipo").delete().neq("id", 0).execute()
+
+        st.success("✅ Torneo reseteado. Brackets eliminados y equipos reactivados.")
+    except Exception as e:
+        st.error(f"Error al resetear: {e}")
+
 
 if st.session_state.logged_in == False:
     st.title("🔒 PANEL DE CONTROL - ADMINISTRADOR")
@@ -249,7 +269,15 @@ else:
         cambiar_vista('editar_equipo')
     if st.sidebar.button("📊 IR A RONDAS Y RESULTADOS", key="btn_rondas_resultados"):
         cambiar_vista('rondas_resultados')
-    
+
+    with st.sidebar.expander("⚠️ ZONA DE PELIGRO - GESTIÓN CRÍTICA"):
+        st.warning("Al resetear se borrarán todos los avances de las rondas. Los equipos y jugadores permanecerán registrados.")
+        
+        confirmacion = st.checkbox("Confirmo que deseo borrar todos los resultados.")
+        
+        if st.button("🚨 RESETEAR RONDAS Y VOLVER A R1", disabled=not confirmacion, type="primary"):
+            resetear_torneo_completo(supabd)
+            st.rerun()
 # --- FUNCIONES DE CADA PANEL ---
 #---------------------------------------------------------------------------------------------+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     def panel_control_admin():
