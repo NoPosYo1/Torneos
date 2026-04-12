@@ -181,15 +181,21 @@ else:
             }
             </style>
         """, unsafe_allow_html=True)
-        # Formulario para registrar equipos
+        
+        st.title("Registrar Equipo")
+        st.text("Aquí puedes registrar un nuevo equipo para el torneo. Ingresa los nicks de ambos jugadores.")
+
         jugador_1 =st.text_input("Ingrese Nick del Jugador 1")
         jugador_2 = st.text_input("Ingrese Nick del Jugador 2")
         st.button("Registrar Equipo", on_click=registrar_equipo, args=(jugador_1, jugador_2), use_container_width=True, type="primary")
 
 
         st.title("Agregar Player en Solitario")
+        st.text("Si un jugador no tiene dúo, puedes registrarlo aquí como solitario. Luego podrás asignarle un dúo desde el panel de edición.")
         jugador_1 = st.text_input("Ingrese Nick del Jugador Solitario")
         st.button("Registrar Jugador Solitario", on_click=registrar_player_solitario, args=(jugador_1,), use_container_width=True, type="primary")
+
+        st.markdown("Si quieres unir a 2 players solitarios en un equipo, vaya a la seccion de Edicion de Equipos y asignale un dúo a cada uno.")
 
     def panel_editar_equipo():
 
