@@ -386,37 +386,41 @@ else:
         # 3. Listado de Duelos
 # 3. Listado de Duelos
         for enc in res.data:
-            # Ahora enc['ganador_id'] sí existirá porque lo pusimos en el select
             ya_tiene_ganador = enc.get('ganador_id') is not None
             
             with st.container(border=True):
-                col_e1, col_vs, col_e2 = st.columns([4, 1, 4])
+                # Usamos columnas con anchos proporcionales
+                col_e1, col_vs, col_e2 = st.columns([10, 2, 10]) 
                 
-                # --- EQUIPO 1 ---
+                # --- COLUMNA 1: EQUIPO 1 ---
                 with col_e1:
                     e1 = enc.get('equipo_1')
-                    # Definición segura de nicks
-                    nick_j1 = "Sin Jugador"
-                    nick_j2 = ""
-
                     if e1:
-                        # Acceso seguro a los diccionarios anidados
-                        # Usamos .get() para evitar errores si las llaves no existen
-                        j1_data = e1.get('j1')
-                        j2_data = e1.get('j2')
-                        
-                        nick_j1 = j1_data.get('nick', '???') if j1_data else "???"
-                        nick_j2 = j2_data.get('nick', 'Solo') if j2_data else "Solo"
-                    
-                    # Ahora st.markdown siempre encontrará las variables definidas
-                    st.markdown(f"**{nick_j1}** <br> & {nick_j2}", unsafe_allow_html=True)
-                    
-                    if st.button(f"Ganador E1", key=f"win_e1_{enc['id']}", disabled=ya_tiene_ganador):
-                        if e1: # Solo avanzar si el equipo existe
+                        nick_j1 = e1.get('j1', {}).get('nick', '???')
+                        nick_j2 = e1.get('j2', {}).get('nick', 'Solo')
+                        st.markdown(f"**{nick_j1}**<br>& {nick_j2}", unsafe_allow_html=True)
+                        if st.button(f"Ganador E1", key=f"win_e1_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
                             avanzar_equipo_completo(supabd, e1['id'], ronda_actual, enc['id'])
                             st.rerun()
 
+                # --- COLUMNA 2: VS (SIEMPRE VISIBLE) ---
+                with col_vs:
+                    # Añadimos espacio arriba para centrar verticalmente el VS
+                    st.markdown("<p style='text-align:center; font-size:20px; padding-top:15px;'>VS</p>", unsafe_allow_html=True)
 
+                # --- COLUMNA 3: EQUIPO 2 ---
+                with col_e2:
+                    e2 = enc.get('equipo_2')
+                    if e2:
+                        nick2_j1 = e2.get('j1', {}).get('nick', '???')
+                        nick2_j2 = e2.get('j2', {}).get('nick', 'Solo')
+                        st.markdown(f"**{nick2_j1}**<br>& {nick2_j2}", unsafe_allow_html=True)
+                        if st.button(f"Ganador E2", key=f"win_e2_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
+                            avanzar_equipo_completo(supabd, e2['id'], ronda_actual, enc['id'])
+                            st.rerun()
+                    else:
+                        # Placeholder para que la columna no se colapse
+                        st.markdown("<p style='color:gray; font-style:italic; padding-top:10px;'>Esperando rival...</p>", unsafe_allow_html=True)
 
 
 
