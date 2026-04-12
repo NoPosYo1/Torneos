@@ -200,6 +200,10 @@ else:
                         color: #f0e6d2 !important;
                         border: 2px solid #c8aa6e !important;
                     }
+                    #primary .stButton button:hover {
+                        background-color: #c8aa6e !important; /* Dorado más claro al pasar el mouse */
+                    }
+                    
             </style>
         """, unsafe_allow_html=True)
 
