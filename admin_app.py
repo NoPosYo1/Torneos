@@ -1,3 +1,5 @@
+import time
+
 import streamlit as st
 import random
 from supabase import create_client
@@ -184,6 +186,9 @@ def generar_ronda_1_automatica(supabd):
         supabd.table("equipo").update({"estado": "En Linea"}).eq("id", equipo['id']).execute()
     equipos = [e['id'] for e in res.data]
 
+    st.toast("Generando Ronda 1... Esto puede tardar unos segundos.", icon="⚔️")
+    time.sleep(5)  # Pequeña pausa para asegurar que los estados se actualicen antes de generar la ronda
+
     if not equipos:
         st.error("No hay equipos activos para emparejar.")
         return
@@ -197,7 +202,7 @@ def generar_ronda_1_automatica(supabd):
         equipo_1 = equipos[i]
         # Si el número es impar, el último equipo queda solo (jugador_2 = None)
         equipo_2 = equipos[i+1] if (i + 1) < len(equipos) else None
-        
+
         duelos_a_insertar.append({
             "ronda": "Ronda 1",
             "equipo_1": equipo_1,
