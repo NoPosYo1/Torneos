@@ -448,20 +448,17 @@ else:
                     e1 = enc.get('equipo_1')
                     
                     estado_e1 = supabd.table("equipo").select("estado").eq("id", e1['id']).execute().data[0]['estado'] if e1 else "desconocido"
-                        
-                    estilo = f"""
-                        <div style="
-                            background-color: {obtener_estilo_estado(estado_e1)};
-                            border: 2px solid #785a28; 
-                            padding: 15px; 
-                            border-radius: 10px;
-                            margin-bottom: 10px;">
-                        """
-                    st.markdown(estilo, unsafe_allow_html=True)
-                    
 
                     if e1:
-                        
+                        estilo = f"""
+                            <div style="
+                                background-color: {obtener_estilo_estado(estado_e1)};
+                                border: 2px solid #785a28; 
+                                padding: 15px; 
+                                border-radius: 10px;
+                                margin-bottom: 10px;">
+                            """
+                        st.markdown(estilo, unsafe_allow_html=True)
 
                         if estado_e1 == "eliminado":
                             st.markdown(f"<div style='color: red; font-weight: bold;'>E1 ELIMINADO</div>", unsafe_allow_html=True)
