@@ -457,7 +457,7 @@ else:
 
                 # --- COLUMNA 2: VS (SIEMPRE VISIBLE) ---
                 with col_vs:
-                    st.markdown()
+                    st.markdown("""""", unsafe_allow_html=True)  # Espaciador para centrar el VS
                     st.markdown("""
                         <p style='
                             text-align: center; 
