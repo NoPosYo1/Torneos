@@ -383,24 +383,38 @@ else:
 
         # 3. Listado de Duelos
         for enc in res.data:
-            ya_tiene_ganador = enc.get('ganador_id') is not None
-            
             with st.container(border=True):
                 col_e1, col_vs, col_e2 = st.columns([4, 1, 4])
                 
+                # --- EQUIPO 1 ---
                 with col_e1:
-                    # Deshabilitamos el botón si ya hay un ganador en este duelo
-                    if st.button(f"Ganador E1", key=f"btn_e1_{enc['id']}", disabled=ya_tiene_ganador):
-                        avanzar_equipo_completo(supabd, enc['equipo_1']['id'], ronda_actual, enc['id'])
+                    e1 = enc['equipo_1']
+                    nick_j1 = e1['j1']['nick'] if e1['j1'] else "???"
+                    nick_j2 = e1['j2']['nick'] if e1['j2'] else "Solo"
+                    
+                    st.markdown(f"**{nick_j1}** <br> & {nick_j2}", unsafe_allow_html=True)
+                    if st.button(f"Ganador", key=f"win_e1_{enc['id']}"):
+                        avanzar_equipo_completo(supabd, e1['id'], ronda_actual)
                         st.rerun()
 
-                with col_vs: st.write("VS")
+                # --- VS ---
+                with col_vs:
+                    st.markdown("<h3 style='text-align:center;'>VS</h3>", unsafe_allow_html=True)
 
+                # --- EQUIPO 2 ---
                 with col_e2:
                     if enc['equipo_2']:
-                        if st.button(f"Ganador E2", key=f"btn_e2_{enc['id']}", disabled=ya_tiene_ganador):
-                            avanzar_equipo_completo(supabd, enc['equipo_2']['id'], ronda_actual, enc['id'])
+                        e2 = enc['equipo_2']
+                        nick2_j1 = e2['j1']['nick'] if e2['j1'] else "???"
+                        nick2_j2 = e2['j2']['nick'] if e2['j2'] else "Solo"
+                        
+                        st.markdown(f"**{nick2_j1}** <br> & {nick2_j2}", unsafe_allow_html=True)
+                        if st.button(f"Ganador", key=f"win_e2_{enc['id']}"):
+                            avanzar_equipo_completo(supabd, e2['id'], ronda_actual)
                             st.rerun()
+                    else:
+                        st.warning("Esperando ganador de ronda anterior...")
+
 
 
 
