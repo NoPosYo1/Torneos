@@ -475,12 +475,12 @@ else:
                                     st.rerun()
                             with c2:                                                        
                                 if st.button("Equipo Ausente", key=f"ausente_e1_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
-                                    st.toast("¡Marcado como ausente! El equipo contrario avanzará automáticamente. Recuerda actualizar el resultado una vez finalizada la partida.", icon="⚠️")
+                                    st.toast("¡Marcado como ausente!", icon="⚠️")
                                     supabd.table("equipo").update({"estado": "Ausente"}).eq("id", e1['id']).execute()
                             with c3:
-                                if st.button("En Partida", key=f"partida_e1_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
-                                    st.toast("¡Marcado como en partida! Recuerda actualizar el resultado una vez finalizada la partida.")
-                                    supabd.table("equipo").update({"estado": "En Partida"}).eq("id", e1['id']).execute()
+                                if st.button("Eliminado", key=f"eliminado_e1_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
+                                    st.toast("¡Marcado como eliminado!")
+                                    supabd.table("equipo").update({"estado": "Eliminado"}).eq("id", e1['id']).execute()
                             if ya_tiene_ganador:
 
                                 st.markdown(f"<div style='color: green; font-weight: bold;'>GANADOR</div>", unsafe_allow_html=True)
@@ -501,6 +501,12 @@ else:
                             VS
                         </p>
                     """, unsafe_allow_html=True)
+                    if st.button("En Partida", key=f"en_partida_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
+                        st.toast("¡Marcado como en partida!", icon="🎮")
+                        if e1:
+                            supabd.table("equipo").update({"estado": "En Partida"}).eq("id", e1['id']).execute()
+                        if enc.get('equipo_2'):
+                            supabd.table("equipo").update({"estado": "En Partida"}).eq("id", enc['equipo_2']['id']).execute()
 
                 # --- COLUMNA 3: EQUIPO 2 ---
                 with col_e2:
