@@ -230,12 +230,12 @@ def resetear_torneo_completo(supabd):
     except Exception as e:
         st.error(f"Error al resetear: {e}")
 
-def nick_copiable(nick):
-    # Generamos un ID único para evitar conflictos entre botones
+def mostrar_nick_copiable(nick, id_unico):
+    # Esto genera el HTML que permite copiar al hacer clic
     html_code = f"""
-    <div style="cursor: pointer; display: inline-block;" 
-         onclick="navigator.clipboard.writeText('{nick}'); alert('Nick copiado: {nick}');">
-        <span style="color: #cdbe91; font-weight: bold; border-bottom: 1px dashed #785a28;">
+    <div id="copy_{id_unico}" style="cursor: pointer; display: inline-block; margin-bottom: 5px;" 
+         onclick="navigator.clipboard.writeText('{nick}');">
+        <span style="color: #cdbe91; font-weight: bold; border-bottom: 1px dashed #785a28; font-size: 18px;">
             📋 {nick}
         </span>
     </div>
@@ -450,7 +450,7 @@ else:
                             st.code(f"{nick_j1}", language="None")
                             #st.code(f"{nick_j2}", language="None")
                             nick_copiable(nick_j2)
-                            
+
 
                             c1, c2, c3 = st.columns(3)
                             with c1:
