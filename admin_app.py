@@ -174,16 +174,15 @@ else:
             }
             </style>
         """, unsafe_allow_html=True)
-
+        
         st.subheader("🛠️ Asignación de Dúos")
         
         # 1. Traer equipos que no tienen jugador_2
         res_equipos = supabd.table("equipo").select("id, jugador_1(nick)").is_("jugador_2", None).execute()
         
-        # 2. Traer todos los jugadores para el selector  AQUI SE PUEDE MODIFICAR PARA TRAER SOLO LOS JUGADORES QUE NO ESTEN EN EQUIPO O SOLO LOS QUE ESTEN EN EQUIPO PERO SIN DUO
-        # Traer jugadores donde el nick NO es nulo
+        # 2. Traer todos los jugadores para el selector
         res_jugadores = supabd.table("jugador").select("id, nick").not_.is_("nick", "null").execute()
-        dict_jugadores = {j['nick']: j['id'] for j in res_jugadores.data if j['nick']}.items()  # Solo jugadores con nick válido
+        dict_jugadores = {j['nick']: j['id'] for j in res_jugadores.data}
 
         if not res_equipos.data:
             st.info("No hay equipos pendientes de dúo.")
@@ -207,7 +206,7 @@ else:
                 # El selector corregido
                 nuevo_j2_nick = st.selectbox(
                     f"Pareja para {nick_j1}",
-                    options= list(dict_jugadores.keys()),
+                    options=[None] + list(dict_jugadores.keys()),
                     key=f"sel_{eq['id']}",
                     label_visibility="collapsed"
                 )
