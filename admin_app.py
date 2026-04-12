@@ -193,9 +193,11 @@ def generar_ronda_1_automatica(supabd):
     duelos_a_insertar = []
     for i in range(0, len(equipos), 2):
         equipo_1 = equipos[i]
+        supabd.table("equipo").update({"estado": "En Linea"}).eq("id", equipo_1).execute()
         # Si el número es impar, el último equipo queda solo (jugador_2 = None)
         equipo_2 = equipos[i+1] if (i + 1) < len(equipos) else None
-        
+        if equipo_2:
+            supabd.table("equipo").update({"estado": "En Linea"}).eq("id", equipo_2).execute()
         duelos_a_insertar.append({
             "ronda": "Ronda 1",
             "equipo_1": equipo_1,
@@ -478,6 +480,7 @@ else:
                                     supabd.table("equipo").update({"estado": "En Partida"}).eq("id", e1['id']).execute()
                                     st.rerun()
                             if ya_tiene_ganador:
+
                                 st.markdown(f"<div style='color: green; font-weight: bold;'>GANADOR</div>", unsafe_allow_html=True)
                             
 
