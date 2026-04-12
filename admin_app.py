@@ -206,21 +206,16 @@ else:
                 st.divider()
                 st.info("Funcionalidad de edición aún en desarrollo. Pronto podrás modificar los detalles del equipo seleccionado.")
 
-            # 1. Traemos los equipos que NO tienen Jugador 2 (NULL)
-            res_equipos = supabd.table("equipo").select("id, jugador_1(nick)").is_("jugador_2", "null").execute()
+                st.info("Grupos incompletos:")
 
-            # 2. Traemos todos los jugadores disponibles para ser el J2
-            res_jugadores = supabd.table("jugador").select("id, nick").execute()
-            dict_jugadores = {j['nick']: j['id'] for j in res_jugadores.data}
-
-            st.subheader("🛠️ Asignación de Dúos")
-
-            for eq in res_equipos.data:
-                # Creamos dos columnas: 40% para el J1 y 60% para el selector
-                col1, col2 = st.columns([2, 3])
+                res_equipos = supabd.table("equipo").select("id,jugador_1(nick)", "jugador_2(nick)").is_("jugador_2","null").order("id", desc=True).execute()
                 
-                with col1:
-                    # Estilo visual para el Jugador 1
+                res_jugadores = supabd.table("jugador").select("id,nick").order("id").execute()
+                dict_jugadores = {j['nick']: j['id'] for j in res_jugadores.data}
+
+                st.subheader("Equipos sin Dúo Asignado")
+                
+                for eq in res_equipos.data:
                     st.markdown(f"""
                         <div style="
                             background-color: #091428; 
@@ -230,27 +225,40 @@ else:
                             color: #cdbe91;
                             font-weight: bold;
                             text-align: center;">
-                            🛡️ {eq['jugador_1']['nick']}
+                            🛡️ {eq['jugador_1']['nick']} - Sin Duo
                         </div>
                     """, unsafe_allow_html=True)
-                
-                with col2:
-                    # Selector para buscar al nuevo Jugador 2
-                    nuevo_j2 = st.selectbox(
-                        f"Asignar pareja a {eq['jugador_1']['nick']}",
-                        options=[None] + list(dict_jugadores.keys()),
-                        key=f"sel_{eq['id']}", # Key única obligatoria en bucles
-                        label_visibility="collapsed" # Escondemos el texto para que quede alineado al div
-                    )
                     
-                    # Si selecciona a alguien, mostramos un botón de confirmar
-                    if nuevo_j2:
-                        if st.button(f"Confirmar Dúo", key=f"btn_{eq['id']}"):
-                            id_j2 = dict_jugadores[nuevo_j2]
-                            # Actualizamos en Supabase
-                            supabd.table("equipo").update({"jugador_2": id_j2}).eq("id", eq['id']).execute()
-                            st.success(f"¡Dúo formado!")
-                            st.rerun()
+                    col1, col2 = st.columns([2, 3])
+
+                    with col1:
+                        st.markdown(f"""
+                            <div style="
+                                background-color: #091428; 
+                                border: 1px solid #785a28; 
+                                padding: 10px; 
+                                border-radius: 5px;
+                                color: #cdbe91;
+                                font-weight: bold;
+                                text-align: center;">
+                                🛡️ {eq['jugador_1']['nick']}
+                            </div>
+                        """, unsafe_allow_html=True)
+
+                    with col2:
+                        nuevo_j2 = st.selectbox(
+                            f"Asignar pareja a {eq['jugador_1']['nick']}",
+                            options=[None] + list(dict_jugadores.keys()),
+                            key=f"sel_{eq['id']}", # Key única obligatoria en bucles
+                            label_visibility="collapsed" # Escondemos el texto para que quede alineado al div
+                        )
+                        
+                        if nuevo_j2:
+                            if st.button(f"Confirmar Dúo", key=f"btn_{eq['id']}"):
+                                id_j2 = dict_jugadores[nuevo_j2]
+                                supabd.table("equipo").update({"jugador_2": id_j2}).eq("id", eq['id']).execute()
+                                st.success(f"¡Dúo formado!")
+                                st.rerun()
                         
         else:
             st.warning("No hay equipos registrados aún.")
