@@ -396,12 +396,14 @@ else:
             equipo_1 (
                 id,
                 j1:jugador_1(nick),
-                j2:jugador_2(nick)
+                j2:jugador_2(nick),
+                estado
             ),
             equipo_2 (
                 id,
                 j1:jugador_1(nick),
-                j2:jugador_2(nick)
+                j2:jugador_2(nick),
+                estado
             )
         """).eq("ronda", ronda_actual).execute()
 
@@ -424,20 +426,30 @@ else:
                 with col_e1:
                     e1 = enc.get('equipo_1')
                     if e1:
-                        nick_j1 = e1.get('j1', {}).get('nick', '???')
-                        nick_j2 = e1.get('j2', {}).get('nick', 'Solo')
-                        st.markdown(f"**{nick_j1}**" , unsafe_allow_html=True)
-                        st.divider()
-                        st.markdown(f"**{nick_j2}**", unsafe_allow_html=True)
-                        if st.button(f"Ganador E1", key=f"win_e1_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
-                            avanzar_equipo_completo(supabd, e1['id'], ronda_actual, enc['id'])
-                            st.rerun()
-                        elif st.button("Equipo Ausente", key=f"ausente_e1_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
-                            st.toast("¡Marcado como ausente! El equipo contrario avanzará automáticamente. Recuerda actualizar el resultado una vez finalizada la partida.", icon="⚠️")
-                            st.rerun()
-                        elif st.button("En Partida", key=f"partida_e1_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
-                            st.toast("¡Marcado como en partida! Recuerda actualizar el resultado una vez finalizada la partida.")
-                            st.rerun()
+                        estado_e1 = supabd.table("equipo").select("estado").eq("id", e1['id']).execute().data[0]['estado'] if e1 else "desconocido"
+                        
+                        if estado_e1 == "eliminado":
+                            st.markdown(f"<div style='color: red; font-weight: bold;'>E1 ELIMINADO</div>", unsafe_allow_html=True)
+                            st.button("Reinscribir Equipo", key=f"reinscribir_e1_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True)
+                        else:
+
+                            nick_j1 = e1.get('j1', {}).get('nick', '???')
+                            nick_j2 = e1.get('j2', {}).get('nick', 'Solo')
+                            st.markdown(f"**{nick_j1}**" , unsafe_allow_html=True)
+                            st.markdown(f"**{nick_j2}**", unsafe_allow_html=True)
+                            
+
+                            if st.button(f"Ganador E1", key=f"win_e1_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
+                                avanzar_equipo_completo(supabd, e1['id'], ronda_actual, enc['id'])
+                                st.rerun()
+                            elif st.button("Equipo Ausente", key=f"ausente_e1_{enc['id']}", use_container_width=True):
+                                st.toast("¡Marcado como ausente! El equipo contrario avanzará automáticamente. Recuerda actualizar el resultado una vez finalizada la partida.", icon="⚠️")
+                                supabd.table("equipo").update({"estado": "Ausente"}).eq("id", e1['id']).execute()
+                                st.rerun()
+                            elif st.button("En Partida", key=f"partida_e1_{enc['id']}", use_container_width=True):
+                                st.toast("¡Marcado como en partida! Recuerda actualizar el resultado una vez finalizada la partida.")
+                                supabd.table("equipo").update({"estado": "En Partida"}).eq("id", e1['id']).execute()
+                                st.rerun()
 
                 # --- COLUMNA 2: VS (SIEMPRE VISIBLE) ---
                 with col_vs:
@@ -460,7 +472,8 @@ else:
                     if e2:
                         nick2_j1 = e2.get('j1', {}).get('nick', '???')
                         nick2_j2 = e2.get('j2', {}).get('nick', 'Solo')
-                        st.markdown(f"**{nick2_j1}**<br>& {nick2_j2}", unsafe_allow_html=True)
+                        st.markdown(f"**{nick2_j1}**", unsafe_allow_html=True)
+                        st.markdown(f"**{nick2_j2}**", unsafe_allow_html=True)
                         if st.button(f"Ganador E2", key=f"win_e2_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
                             avanzar_equipo_completo(supabd, e2['id'], ronda_actual, enc['id'])
                             st.rerun()
