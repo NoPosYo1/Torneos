@@ -242,6 +242,8 @@ else:
 
         if not jugadores_libres:
             st.info("No hay jugadores solitarios disponibles para asignar como dúo.")
+            st.write(f"Actualmente hay {len(jugadores_libres)} jugadores solitarios disponibles para asignar como dúo.")
+
             return
         
         st.write(f"Actualmente hay {len(jugadores_libres)} jugadores solitarios disponibles para asignar como dúo.")
