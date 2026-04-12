@@ -186,7 +186,9 @@ else:
 
         for reg in res_ocupados.data:
             if reg['jugador_1']: ids_ocupados.add(reg['jugador_1'])
-            if reg['jugador_2']: ids_ocupados.add(reg['jugador_2'])
+            if reg['jugador_2'] is None or reg['jugador_2'] == "": continue
+            else:
+                if reg['jugador_2']: ids_ocupados.add(reg['jugador_2'])
 
         # 2. Traer todos los jugadores
         res_todos = supabd.table("jugador").select("id, nick").execute()
