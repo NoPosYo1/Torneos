@@ -162,8 +162,7 @@ else:
     def panel_registro_equipo():
         st.title("Gestión de Equipos")
         st.markdown("""
-            Bienvenido al panel de control del torneo. \n Aquí puedes añadir Jugadores en solitario y a equipos de 2 jugadores.\n
-            Si deseas unir a 2 jugadores solitarios en un equipo, ve a la sección de Edición de Equipos y asigna un dúo a cada uno.
+            Bienvenido al panel de control del torneo. -- Aquí puedes añadir Jugadores en solitario y a equipos de 2 jugadores.
         """)
         st.markdown("""
             <style>
@@ -184,7 +183,7 @@ else:
         
         st.title("Registrar Equipo")
         st.text("Aquí puedes registrar un nuevo equipo (2 jugadores no registrados anteriormente) para el torneo. Ingresa los nicks de ambos jugadores.")
-
+        st.info("Si deseas unir a 2 jugadores solitarios en un equipo, ve a la sección de Edición de Equipos y asigna un dúo a cada uno.")
         jugador_1 =st.text_input("Ingrese Nick del Jugador 1")
         jugador_2 = st.text_input("Ingrese Nick del Jugador 2")
         st.button("Registrar Equipo", on_click=registrar_equipo, args=(jugador_1, jugador_2), use_container_width=True, type="primary")
