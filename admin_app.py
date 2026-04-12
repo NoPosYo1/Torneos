@@ -237,14 +237,7 @@ else:
                background-color: #010a13;
                color: #f0e6d2;
             }
-            .Button button {
-                background-color: #007bff;
-                color: white;
-                border-radius: 5px;
-                padding: 0.5em 1em;
-                font-size: 1rem;
-                border: none;
-            }
+            
             </style>
         """, unsafe_allow_html=True)
         
