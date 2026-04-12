@@ -245,6 +245,7 @@ else:
                             # UPDATE en la tabla equipo
                             supabd.table("equipo").update({"jugador_2": id_j2}).eq("id", eq['id']).execute()
                             st.toast(f"¡Dúo {nick_j1} & {nuevo_j2_nick} creado!", icon="⚔️")
+                            llamada_db_duos()  # Para actualizar las listas y evitar duplicados
                             st.rerun()
 
     # --- LÓGICA PRINCIPAL (EL SELECTOR) ---
