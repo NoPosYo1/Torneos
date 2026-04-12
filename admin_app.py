@@ -392,30 +392,29 @@ else:
             with st.container(border=True):
                 col_e1, col_vs, col_e2 = st.columns([4, 1, 4])
                 
+                # --- EQUIPO 1 ---
                 with col_e1:
-                    e1 = enc['equipo_1']
-                    # ... (nicks logic) ...
+                    e1 = enc.get('equipo_1')
+                    # Definición segura de nicks
+                    nick_j1 = "Sin Jugador"
+                    nick_j2 = ""
+
+                    if e1:
+                        # Acceso seguro a los diccionarios anidados
+                        # Usamos .get() para evitar errores si las llaves no existen
+                        j1_data = e1.get('j1')
+                        j2_data = e1.get('j2')
+                        
+                        nick_j1 = j1_data.get('nick', '???') if j1_data else "???"
+                        nick_j2 = j2_data.get('nick', 'Solo') if j2_data else "Solo"
+                    
+                    # Ahora st.markdown siempre encontrará las variables definidas
                     st.markdown(f"**{nick_j1}** <br> & {nick_j2}", unsafe_allow_html=True)
                     
-                    # EL CAMBIO AQUÍ: disabled=ya_tiene_ganador
                     if st.button(f"Ganador E1", key=f"win_e1_{enc['id']}", disabled=ya_tiene_ganador):
-                        avanzar_equipo_completo(supabd, e1['id'], ronda_actual, enc['id'])
-                        st.rerun()
-
-                with col_vs:
-                    st.markdown("<h3 style='text-align:center;'>VS</h3>", unsafe_allow_html=True)
-
-                with col_e2:
-                    if enc['equipo_2']:
-                        e2 = enc['equipo_2']
-                        # ... (nicks logic) ...
-                        st.markdown(f"**{nick2_j1}** <br> & {nick2_j2}", unsafe_allow_html=True)
-                        
-                        # EL CAMBIO AQUÍ: disabled=ya_tiene_ganador
-                        if st.button(f"Ganador E2", key=f"win_e2_{enc['id']}", disabled=ya_tiene_ganador):
-                            avanzar_equipo_completo(supabd, e2['id'], ronda_actual, enc['id'])
+                        if e1: # Solo avanzar si el equipo existe
+                            avanzar_equipo_completo(supabd, e1['id'], ronda_actual, enc['id'])
                             st.rerun()
-
 
 
 
