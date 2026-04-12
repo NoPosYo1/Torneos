@@ -1,4 +1,5 @@
 import streamlit as st
+import random
 from supabase import create_client
 import re
 
@@ -172,6 +173,40 @@ def avanzar_equipo_completo(supabd, id_equipo_ganador, ronda_actual):
         }).execute()
         st.toast(f"Esperando rival en {proxima}", icon="⏳")
 
+def generar_ronda_1_automatica(supabd):
+    # 1. Traer todos los equipos activos
+    res = supabd.table("equipo").select("id").eq("estado", "activo").execute()
+    equipos = [e['id'] for e in res.data]
+
+    if not equipos:
+        st.error("No hay equipos activos para emparejar.")
+        return
+
+    # 2. Mezclar aleatoriamente (Sorteo)
+    random.shuffle(equipos)
+
+    # 3. Emparejar de a dos
+    duelos_a_insertar = []
+    for i in range(0, len(equipos), 2):
+        equipo_1 = equipos[i]
+        # Si el número es impar, el último equipo queda solo (jugador_2 = None)
+        equipo_2 = equipos[i+1] if (i + 1) < len(equipos) else None
+        
+        duelos_a_insertar.append({
+            "ronda": "Ronda 1",
+            "equipo_1": equipo_1,
+            "equipo_2": equipo_2,
+            "formato": "eliminacion_directa"
+        })
+
+    # 4. Insertar en la BD
+    try:
+        supabd.table("encuentros").insert(duelos_a_insertar).execute()
+        st.success(f"✅ Ronda 1 generada con {len(duelos_a_insertar)} enfrentamientos.")
+    except Exception as e:
+        st.error(f"Error al generar ronda: {e}")
+
+
 if st.session_state.logged_in == False:
     st.title("🔒 PANEL DE CONTROL - ADMINISTRADOR")
     password = st.text_input("Ingresa clave de Moderador", type="password")
@@ -313,7 +348,8 @@ else:
 
     def panel_rondas():
         st.title("🏆 Panel de Control de Brackets")
-
+        if st.sidebar.button("🚀 Generar Sorteo Ronda 1"):
+            generar_ronda_1_automatica(supabd)
         # 1. Selector de Ronda (Slider para mejor UX)
         ronda_actual = st.select_slider(
             "Visualizar Fase:",
