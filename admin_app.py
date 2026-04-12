@@ -114,7 +114,6 @@ def registrar_player_solitario(jugador1):
         return
     st.toast(f"✅ Jugador registrado: {j1_limpio}", icon="🔥")
     
-
 def llamada_db_duos():
     res_equipos_sin_duo = supabd.table("equipo").select("id, jugador_1(nick)").is_("jugador_2", None).execute()
     res_ocupados = supabd.table("equipo").select("jugador_1, jugador_2").execute()
@@ -126,7 +125,6 @@ if st.session_state.logged_in == False:
     if password == st.secrets["ADMIN_PASSWORD"]:
         st.session_state.logged_in = True
         st.success("¡Acceso concedido! Redirigiendo...")
-        st.rerun()
     else:
         st.warning("Acceso restringido a moderadores.")
 else:
