@@ -299,7 +299,8 @@ else:
             Aquí podrás gestionar las rondas del torneo y reportar los resultados de cada enfrentamiento.
         """)
 
-
+        st.header("Gestión de Rondas")
+        st.title("Rondas y Resultados")
 
 
 
