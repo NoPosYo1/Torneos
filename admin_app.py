@@ -448,7 +448,7 @@ else:
                                 if st.button("Equipo Ausente", key=f"ausente_e1_{enc['id']}", use_container_width=True):
                                     st.toast("¡Marcado como ausente! El equipo contrario avanzará automáticamente. Recuerda actualizar el resultado una vez finalizada la partida.", icon="⚠️")
                                     supabd.table("equipo").update({"estado": "Ausente"}).eq("id", e1['id']).execute()
-                                    col_e1.markdown(f"<div style='color: blue; font-weight: bold;'>E1 AUSENTE</div>", unsafe_allow_html=True)
+                                    col_e1.markdown(f"<div style='background-color: blue; font-weight: bold;'>E1 AUSENTE</div>", unsafe_allow_html=True)
                                     st.rerun()
                             with c3:
                                 if st.button("En Partida", key=f"partida_e1_{enc['id']}", use_container_width=True):
