@@ -394,7 +394,7 @@ else:
                     
                     st.markdown(f"**{nick_j1}** <br> & {nick_j2}", unsafe_allow_html=True)
                     if st.button(f"Ganador", key=f"win_e1_{enc['id']}"):
-                        avanzar_equipo_completo(supabd, e1['id'], ronda_actual)
+                        avanzar_equipo_completo(supabd, e1['id'], ronda_actual, enc['id'])
                         st.rerun()
 
                 # --- VS ---
@@ -410,7 +410,7 @@ else:
                         
                         st.markdown(f"**{nick2_j1}** <br> & {nick2_j2}", unsafe_allow_html=True)
                         if st.button(f"Ganador", key=f"win_e2_{enc['id']}"):
-                            avanzar_equipo_completo(supabd, e2['id'], ronda_actual)
+                            avanzar_equipo_completo(supabd, e2['id'], ronda_actual, enc['id'])
                             st.rerun()
                     else:
                         st.warning("Esperando ganador de ronda anterior...")
