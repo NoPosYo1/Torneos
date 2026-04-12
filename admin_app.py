@@ -229,14 +229,18 @@ else:
                     key=f"sel_{eq['id']}",
                     label_visibility="collapsed"
                 )
-                
-                if nuevo_j2_nick != "Selecciona un jugador" and nuevo_j2_nick != nick_j1:
-                    id_j2 = dict_jugadores[nuevo_j2_nick]
-                    if st.button("Confirmar", key=f"btn_{eq['id']}"):
-                        # UPDATE en la tabla equipo
-                        supabd.table("equipo").update({"jugador_2": id_j2}).eq("id", eq['id']).execute()
-                        st.toast(f"¡Dúo {nick_j1} & {nuevo_j2_nick} creado!", icon="⚔️")
-                        st.rerun()
+                if nuevo_j2_nick == nick_j1:
+                    st.toast("No puedes seleccionar el mismo jugador como dúo.")
+                    continue
+                else:
+
+                    if nuevo_j2_nick:
+                        id_j2 = dict_jugadores[nuevo_j2_nick]
+                        if st.button("Confirmar", key=f"btn_{eq['id']}"):
+                            # UPDATE en la tabla equipo
+                            supabd.table("equipo").update({"jugador_2": id_j2}).eq("id", eq['id']).execute()
+                            st.toast(f"¡Dúo {nick_j1} & {nuevo_j2_nick} creado!", icon="⚔️")
+                            st.rerun()
 
     # --- LÓGICA PRINCIPAL (EL SELECTOR) ---
     if st.session_state.vista == 'reg_equipo':
