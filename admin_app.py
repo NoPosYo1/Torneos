@@ -511,7 +511,6 @@ else:
                             with c1:
                                 if st.button(f"Ganador E2", key=f"win_e2_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
                                     avanzar_equipo_completo(supabd, e2['id'], ronda_actual, enc['id'])
-                                    st.rerun()
                             with c2:                                                        
                                 if st.button("Equipo Ausente", key=f"ausente_e2_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
                                     st.toast("¡Marcado como ausente!", icon="⚠️")
