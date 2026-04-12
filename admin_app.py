@@ -180,9 +180,26 @@ else:
         # 1. Traer equipos que no tienen jugador_2
         res_equipos = supabd.table("equipo").select("id, jugador_1(nick)").is_("jugador_2", None).execute()
         
-        # 2. Traer todos los jugadores para el selector
-        res_jugadores = supabd.table("jugador").select("id, nick").not_.is_("nick", "null").execute()
-        dict_jugadores = {j['nick']: j['id'] for j in res_jugadores.data}
+        # 1. Traer IDs de jugadores que YA están en un equipo
+        res_ocupados = supabd.table("equipo").select("jugador_1, jugador_2").execute()
+        ids_ocupados = set()
+
+        for reg in res_ocupados.data:
+            if reg['jugador_1']: ids_ocupados.add(reg['jugador_1'])
+            if reg['jugador_2']: ids_ocupados.add(reg['jugador_2'])
+
+        # 2. Traer todos los jugadores
+        res_todos = supabd.table("jugador").select("id, nick").execute()
+
+        # 3. Filtrar: Solo los que NO están en la lista de ocupados
+        # Y también ignoramos al jugador "Sin Duo" si lo tienes como registro
+        jugadores_libres = [
+            j for j in res_todos.data 
+            if j['id'] not in ids_ocupados
+        ]
+
+        # 4. Crear el diccionario para el selector
+        dict_jugadores = {j['nick']: j['id'] for j in jugadores_libres}
 
         if not res_equipos.data:
             st.info("No hay equipos pendientes de dúo.")
@@ -206,7 +223,7 @@ else:
                 # El selector corregido
                 nuevo_j2_nick = st.selectbox(
                     f"Pareja para {nick_j1}",
-                    options= list(dict_jugadores.keys()),
+                    options=["Sin Duo"] + list(dict_jugadores.keys()),
                     key=f"sel_{eq['id']}",
                     label_visibility="collapsed"
                 )
