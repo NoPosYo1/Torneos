@@ -438,18 +438,21 @@ else:
                             st.markdown(f"**{nick_j1}**" , unsafe_allow_html=True)
                             st.markdown(f"**{nick_j2}**", unsafe_allow_html=True)
                             
-
-                            if st.button(f"Ganador E1", key=f"win_e1_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
-                                avanzar_equipo_completo(supabd, e1['id'], ronda_actual, enc['id'])
-                                st.rerun()
-                            elif st.button("Equipo Ausente", key=f"ausente_e1_{enc['id']}", use_container_width=True):
-                                st.toast("¡Marcado como ausente! El equipo contrario avanzará automáticamente. Recuerda actualizar el resultado una vez finalizada la partida.", icon="⚠️")
-                                supabd.table("equipo").update({"estado": "Ausente"}).eq("id", e1['id']).execute()
-                                st.rerun()
-                            elif st.button("En Partida", key=f"partida_e1_{enc['id']}", use_container_width=True):
-                                st.toast("¡Marcado como en partida! Recuerda actualizar el resultado una vez finalizada la partida.")
-                                supabd.table("equipo").update({"estado": "En Partida"}).eq("id", e1['id']).execute()
-                                st.rerun()
+                            c1, c2, c3 = st.columns(3)
+                            with c1:
+                                if st.button(f"Ganador E1", key=f"win_e1_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
+                                    avanzar_equipo_completo(supabd, e1['id'], ronda_actual, enc['id'])
+                                    st.rerun()
+                            with c2:                                                        
+                                if st.button("Equipo Ausente", key=f"ausente_e1_{enc['id']}", use_container_width=True):
+                                    st.toast("¡Marcado como ausente! El equipo contrario avanzará automáticamente. Recuerda actualizar el resultado una vez finalizada la partida.", icon="⚠️")
+                                    supabd.table("equipo").update({"estado": "Ausente"}).eq("id", e1['id']).execute()
+                                    st.rerun()
+                            with c3:
+                                if st.button("En Partida", key=f"partida_e1_{enc['id']}", use_container_width=True):
+                                    st.toast("¡Marcado como en partida! Recuerda actualizar el resultado una vez finalizada la partida.")
+                                    supabd.table("equipo").update({"estado": "En Partida"}).eq("id", e1['id']).execute()
+                                    st.rerun()
 
                 # --- COLUMNA 2: VS (SIEMPRE VISIBLE) ---
                 with col_vs:
