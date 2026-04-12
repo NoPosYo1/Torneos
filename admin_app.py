@@ -162,7 +162,7 @@ else:
     def panel_registro_equipo():
         st.title("Gestión de Equipos")
         st.markdown("""
-            Bienvenido al panel de control del torneo. \nAquí puedes añadir Jugadores y equipos de 2 jugadores.\n
+            Bienvenido al panel de control del torneo. \n Aquí puedes añadir Jugadores en solitario y a equipos de 2 jugadores.\n
             Si deseas unir a 2 jugadores solitarios en un equipo, ve a la sección de Edición de Equipos y asigna un dúo a cada uno.
         """)
         st.markdown("""
