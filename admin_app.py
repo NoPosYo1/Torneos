@@ -122,7 +122,7 @@ def llamada_db_duos():
 if st.session_state.logged_in == False:
     st.title("🔒 PANEL DE CONTROL - ADMINISTRADOR")
     password = st.text_input("Ingresa clave de Moderador", type="password")
-    if password == st.secrets["ADMIN_PASSWORD"]:
+    if password == supabd.table("passw").select("password").execute().data[0]["password"]:
         st.session_state.logged_in = True
         st.success("¡Acceso concedido! Redirigiendo...")
     else:
