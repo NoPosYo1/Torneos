@@ -138,20 +138,26 @@ def llamada_db_duos():
     res_equipos_sin_duo = supabd.table("equipo").select("id, jugador_1(nick)").is_("jugador_2", None).execute()
     res_ocupados = supabd.table("equipo").select("jugador_1, jugador_2").execute()
 
-def avanzar_equipo_completo(supabd, id_equipo_ganador, ronda_actual):
-    orden_rondas = ["Ronda 1", "Ronda 2", "Ronda 3", "Ronda 4", "Ronda 5", "Semifinal", "Final"]
+def avanzar_equipo_completo(supabd, id_equipo_ganador, ronda_actual, id_duelo_actual):
+    # 1. VALIDACIÓN CRÍTICA: ¿Ya se registró un ganador para este duelo?
+    duelo_check = supabd.table("encuentros").select("ganador_id").eq("id", id_duelo_actual).execute()
     
-    try:
-        idx = orden_rondas.index(ronda_actual)
-        if idx + 1 >= len(orden_rondas):
-            st.balloons()
-            st.success("¡Tenemos un Campeón!")
-            return
-        proxima = orden_rondas[idx + 1]
-    except ValueError:
+    if duelo_check.data and duelo_check.data[0]['ganador_id'] is not None:
+        st.warning("Este duelo ya tiene un ganador registrado.")
         return
 
-    # 1. Buscar si hay un duelo en la próxima ronda esperando pareja (equipo_2 es NULL)
+    # 2. Registrar el ganador en el duelo actual para "bloquearlo"
+    supabd.table("encuentros").update({"ganador_id": id_equipo_ganador}).eq("id", id_duelo_actual).execute()
+
+    # --- El resto de la lógica de avance sigue igual ---
+    orden_rondas = ["Ronda 1", "Ronda 2", "Ronda 3", "Ronda 4", "Ronda 5", "Semifinal", "Final"]
+    try:
+        idx = orden_rondas.index(ronda_actual)
+        proxima = orden_rondas[idx + 1]
+    except (ValueError, IndexError):
+        return
+
+    # 3. Buscar hueco en la próxima ronda
     partido_pendiente = supabd.table("encuentros")\
         .select("id")\
         .eq("ronda", proxima)\
@@ -159,19 +165,16 @@ def avanzar_equipo_completo(supabd, id_equipo_ganador, ronda_actual):
         .execute()
 
     if partido_pendiente.data:
-        # 2. ACTUALIZACIÓN: Llenamos el hueco del segundo equipo
-        id_partido = partido_pendiente.data[0]['id']
-        # AQUÍ ESTABA EL ERROR:
-        supabd.table("encuentros").update({"equipo_2": id_equipo_ganador}).eq("id", id_partido).execute()
-        st.toast(f"Duelo completado en {proxima}", icon="⚔️")
+        id_partido_next = partido_pendiente.data[0]['id']
+        supabd.table("encuentros").update({"equipo_2": id_equipo_ganador}).eq("id", id_partido_next).execute()
     else:
-        # 3. INSERCIÓN: Creamos un duelo nuevo donde el ganador espera rival
         supabd.table("encuentros").insert({
             "ronda": proxima,
             "equipo_1": id_equipo_ganador,
             "equipo_2": None
         }).execute()
-        st.toast(f"Esperando rival en {proxima}", icon="⏳")
+    
+    st.toast("Progreso guardado correctamente")
 
 def generar_ronda_1_automatica(supabd):
     # 1. Traer todos los equipos activos
@@ -380,38 +383,24 @@ else:
 
         # 3. Listado de Duelos
         for enc in res.data:
+            ya_tiene_ganador = enc.get('ganador_id') is not None
+            
             with st.container(border=True):
                 col_e1, col_vs, col_e2 = st.columns([4, 1, 4])
                 
-                # --- EQUIPO 1 ---
                 with col_e1:
-                    e1 = enc['equipo_1']
-                    nick_j1 = e1['j1']['nick'] if e1['j1'] else "???"
-                    nick_j2 = e1['j2']['nick'] if e1['j2'] else "Solo"
-                    
-                    st.markdown(f"**{nick_j1}** <br> & {nick_j2}", unsafe_allow_html=True)
-                    if st.button(f"Ganador", key=f"win_e1_{enc['id']}"):
-                        avanzar_equipo_completo(supabd, e1['id'], ronda_actual)
+                    # Deshabilitamos el botón si ya hay un ganador en este duelo
+                    if st.button(f"Ganador E1", key=f"btn_e1_{enc['id']}", disabled=ya_tiene_ganador):
+                        avanzar_equipo_completo(supabd, enc['equipo_1']['id'], ronda_actual, enc['id'])
                         st.rerun()
 
-                # --- VS ---
-                with col_vs:
-                    st.markdown("<h3 style='text-align:center;'>VS</h3>", unsafe_allow_html=True)
+                with col_vs: st.write("VS")
 
-                # --- EQUIPO 2 ---
                 with col_e2:
                     if enc['equipo_2']:
-                        e2 = enc['equipo_2']
-                        nick2_j1 = e2['j1']['nick'] if e2['j1'] else "???"
-                        nick2_j2 = e2['j2']['nick'] if e2['j2'] else "Solo"
-                        
-                        st.markdown(f"**{nick2_j1}** <br> & {nick2_j2}", unsafe_allow_html=True)
-                        if st.button(f"Ganador", key=f"win_e2_{enc['id']}"):
-                            avanzar_equipo_completo(supabd, e2['id'], ronda_actual)
+                        if st.button(f"Ganador E2", key=f"btn_e2_{enc['id']}", disabled=ya_tiene_ganador):
+                            avanzar_equipo_completo(supabd, enc['equipo_2']['id'], ronda_actual, enc['id'])
                             st.rerun()
-                    else:
-                        st.warning("Esperando ganador de ronda anterior...")
-
 
 
 
