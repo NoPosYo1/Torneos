@@ -181,7 +181,12 @@ else:
             .stApp {
                 background-color: #010a13;
                 color: #f0e6d2;
-            }            
+            }
+            [data-testid="stSidebar"] .stMarkdown, [data-testid="stSidebar"] .stButton {{
+                background-color: rgba(0, 0, 0, 0.4) !important; /* Fondo semi-transparente para botones */
+                border-radius: 10px !important;
+            }}
+
             .stButton button {
                 background-color: #007bff;
                 color: white;
