@@ -175,7 +175,7 @@ def avanzar_equipo_completo(supabd, id_equipo_ganador, ronda_actual):
 
 def generar_ronda_1_automatica(supabd):
     # 1. Traer todos los equipos activos
-    res = supabd.table("equipo").select("id").eq("estado", "activo").execute()
+    res = supabd.table("equipo").select("id").execute()
     equipos = [e['id'] for e in res.data]
 
     if not equipos:
