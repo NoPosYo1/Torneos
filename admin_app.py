@@ -206,7 +206,7 @@ else:
                 # El selector corregido
                 nuevo_j2_nick = st.selectbox(
                     f"Pareja para {nick_j1}",
-                    options=[None] + list(dict_jugadores.keys()),
+                    options= list(dict_jugadores.keys()),
                     key=f"sel_{eq['id']}",
                     label_visibility="collapsed"
                 )
