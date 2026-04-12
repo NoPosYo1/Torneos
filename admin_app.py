@@ -424,10 +424,10 @@ else:
                 with col_e1:
                     e1 = enc.get('equipo_1')
                     if e1:
-                        st.card(f"Enfrentamiento ID: {enc['id']}", border_color="#785a28", background_color="#091428")
                         nick_j1 = e1.get('j1', {}).get('nick', '???')
                         nick_j2 = e1.get('j2', {}).get('nick', 'Solo')
-                        st.markdown(f"**{nick_j1}**<br>& {nick_j2}", unsafe_allow_html=True)
+                        st.text_area(f"**{nick_j1}**\n& {nick_j2}", height=75, key=f"ta_e1_{enc['id']}", disabled=True)
+                        #st.markdown(f"**{nick_j1}**<br>& {nick_j2}", unsafe_allow_html=True)
                         if st.button(f"Ganador E1", key=f"win_e1_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
                             avanzar_equipo_completo(supabd, e1['id'], ronda_actual, enc['id'])
                             st.rerun()
