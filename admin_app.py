@@ -105,6 +105,8 @@ def registrar_player_solitario(jugador1):
             st.error(f"⚠️ Error: El nick '{j1_limpio}' ya está registrado en el torneo.")
         else:
             st.error(f"❌ Error en la base de datos: {error_msg}")
+        return
+    st.toast(f"✅ Jugador registrado: {j1_limpio}", icon="🔥")
     
 
 def llamada_db_duos():
