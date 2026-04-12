@@ -382,7 +382,11 @@ else:
         st.divider()
 
         # 3. Listado de Duelos
+# 3. Listado de Duelos
         for enc in res.data:
+            # Verificamos si este duelo ya tiene un ganador para bloquear botones
+            ya_tiene_ganador = enc.get('ganador_id') is not None
+            
             with st.container(border=True):
                 col_e1, col_vs, col_e2 = st.columns([4, 1, 4])
                 
@@ -393,7 +397,8 @@ else:
                     nick_j2 = e1['j2']['nick'] if e1['j2'] else "Solo"
                     
                     st.markdown(f"**{nick_j1}** <br> & {nick_j2}", unsafe_allow_html=True)
-                    if st.button(f"Ganador", key=f"win_e1_{enc['id']}"):
+                    # Agregamos disabled=ya_tiene_ganador
+                    if st.button(f"Ganador E1", key=f"win_e1_{enc['id']}", disabled=ya_tiene_ganador):
                         avanzar_equipo_completo(supabd, e1['id'], ronda_actual, enc['id'])
                         st.rerun()
 
@@ -409,12 +414,12 @@ else:
                         nick2_j2 = e2['j2']['nick'] if e2['j2'] else "Solo"
                         
                         st.markdown(f"**{nick2_j1}** <br> & {nick2_j2}", unsafe_allow_html=True)
-                        if st.button(f"Ganador", key=f"win_e2_{enc['id']}"):
+                        # Agregamos disabled=ya_tiene_ganador
+                        if st.button(f"Ganador E2", key=f"win_e2_{enc['id']}", disabled=ya_tiene_ganador):
                             avanzar_equipo_completo(supabd, e2['id'], ronda_actual, enc['id'])
                             st.rerun()
                     else:
-                        st.warning("Esperando ganador de ronda anterior...")
-
+                        st.warning("Esperando rival...")
 
 
 
