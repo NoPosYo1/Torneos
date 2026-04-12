@@ -211,7 +211,7 @@ else:
                 res_equipos = supabd.table("equipo").select("id,jugador_1(nick)", "jugador_2(nick)").is_("jugador_2","null").order("id", desc=True).execute()
                 
                 res_jugadores = supabd.table("jugador").select("id,nick").order("id").execute()
-                res_jugadores = supabd.table("equipo").select("jugador_1(id),jugador_1(nick)", "jugador_2").is_("jugador_2","null").order("jugador_1(id)", desc=True).execute()
+                res_jugadores = supabd.table("equipo").select("jugador_1,jugador_1(nick)", "jugador_2").is_("jugador_2","null").order("jugador_1", desc=True).execute()
 
                 dict_jugadores = {j['nick']: j['id'] for j in res_jugadores.data}
 
