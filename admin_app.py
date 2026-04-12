@@ -139,8 +139,11 @@ else:
         cambiar_vista('reg_equipo')
     if st.sidebar.button("✏️ IR A EDICIÓN DE EQUIPOS"):
         cambiar_vista('editar_equipo')
+    if st.sidebar.button("📊 IR A RONDAS Y RESULTADOS"):
+        cambiar_vista('rondas_resultados')
 
-
+# --- FUNCIONES DE CADA PANEL ---
+#---------------------------------------------------------------------------------------------+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     def panel_control_admin():
         st.title("🔧 PANEL DE CONTROL - ADMINISTRADOR")
         st.markdown("""
@@ -163,7 +166,7 @@ else:
             }
             </style>
         """, unsafe_allow_html=True)
-
+#---------------------------------------------------------------------------------------------+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     def panel_registro_equipo():
         st.title("Gestión de Equipos")
         st.markdown("""
@@ -201,7 +204,7 @@ else:
         st.button("Registrar Jugador Solitario", on_click=registrar_player_solitario, args=(jugador_1,), use_container_width=True, type="primary")
 
         st.info("Si quieres unir a 2 players solitarios en un equipo, vaya a la seccion de Edicion de Equipos y asignale un dúo a cada uno.")
-
+#---------------------------------------------------------------------------------------------+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     def panel_editar_equipo():
 
         st.title("Editar Equipos Registrados")
@@ -227,71 +230,58 @@ else:
         
         st.subheader("🛠️ Asignación de Dúos")
         
-        # 1. Traer equipos que no tienen jugador_2
-        res_equipos_sin_duo = supabd.table("equipo").select("id, jugador_1(nick)").is_("jugador_2", None).execute()
-        
-        # 1. Traer IDs de jugadores que YA están en un equipo
-        res_ocupados = supabd.table("equipo").select("jugador_1, jugador_2").execute()
-        ids_ocupados = set()
+        res_ocupados = supabd.table("jugador").select("id, nick, EnDuo").is_("EnDuo", True).execute()
+        players_ocupados = set()
 
         for reg in res_ocupados.data:
-            if reg['jugador_2'] is None or reg['jugador_2'] == "": continue
-            else:
-                if reg['jugador_1']: ids_ocupados.add(reg['jugador_1'])
-                if reg['jugador_2']: ids_ocupados.add(reg['jugador_2'])
-
-        # 2. Traer todos los jugadores
+            if reg['EnDuo'] == True:
+                players_ocupados.add(reg['id'])
         res_todos = supabd.table("jugador").select("id, nick").execute()
-
-        # 3. Filtrar: Solo los que NO están en la lista de ocupados
-        # Y también ignoramos al jugador "Sin Duo" si lo tienes como registro
-        jugadores_libres = [
-            j for j in res_todos.data 
-            if j['id'] not in ids_ocupados
-        ]
-
-        # 4. Crear el diccionario para el selector
+        jugadores_libres = [j for j in res_todos.data if j['id'] not in players_ocupados]
         dict_jugadores = {j['nick']: j['id'] for j in jugadores_libres}
 
-        if not res_equipos_sin_duo.data:
-            st.info("No hay equipos pendientes de dúo.")
+        if not jugadores_libres:
+            st.info("No hay jugadores solitarios disponibles para asignar como dúo.")
             return
 
-        for eq in res_equipos_sin_duo.data:
-            # Creamos la fila: Div (J1) | Selector (J2)
+        for player in jugadores_libres:
             col1, col2 = st.columns([2, 3])
-            
             with col1:
-                # Tu Div personalizado
-                nick_j1 = eq['jugador_1']['nick'] if eq['jugador_1'] else "Sin Nombre"
                 st.markdown(f"""
                     <div style="background-color: #091428; border: 1px solid #785a28; 
                     padding: 10px; border-radius: 5px; color: #cdbe91; text-align: center;">
-                        🛡️ {nick_j1}
+                        🛡️ {player['nick']}
                     </div>
                 """, unsafe_allow_html=True)
-                
             with col2:
-                # El selector corregido
                 nuevo_j2_nick = st.selectbox(
-                    f"Pareja para {nick_j1}",
+                    f"Duo para {player['nick']}",
                     options=[None] + list(dict_jugadores.keys()),
-                    key=f"sel_{eq['id']}",
+                    key=f"sel_{player['id']}",
                     label_visibility="collapsed"
                 )
-                if nuevo_j2_nick == nick_j1:
+                if nuevo_j2_nick == player['nick']:
                     st.toast("No puedes seleccionar el mismo jugador como dúo.")
                     continue
                 else:
 
                     if nuevo_j2_nick:
                         id_j2 = dict_jugadores[nuevo_j2_nick]
-                        if st.button("Confirmar", key=f"btn_{eq['id']}"):
+                        if st.button("Confirmar", key=f"btn_{player['id']}"):
                             # UPDATE en la tabla equipo
-                            supabd.table("equipo").update({"jugador_2": id_j2}).eq("id", eq['id']).execute()
-                            st.toast(f"¡Dúo {nick_j1} & {nuevo_j2_nick} creado!", icon="⚔️")
-                            llamada_db_duos()  # Para actualizar las listas y evitar duplicados
+                            supabd.table("equipo").insert({player['id']: id_j2}).eq("id", player['id']).execute()
+                            st.toast(f"¡Dúo {player['nick']} & {nuevo_j2_nick} creado!", icon="⚔️")
                             st.rerun()
+
+
+
+
+
+
+
+
+
+
 
     # --- LÓGICA PRINCIPAL (EL SELECTOR) ---
     if st.session_state.vista == 'reg_equipo':
