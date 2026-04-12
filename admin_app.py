@@ -511,17 +511,11 @@ else:
                             with c1:
                                 if st.button(f"Ganador E2", key=f"win_e2_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
                                     avanzar_equipo_completo(supabd, e2['id'], ronda_actual, enc['id'])
-                            with c2:
-                                if estado_e2 == "Ausente":
-                                    ausente = True
-                                else:
-                                    ausente = False
-                                if st.button("Equipo Ausente", key=f"ausente_e2_{enc['id']}", disabled=ya_tiene_ganador,disable=ausente, use_container_width=True):
-                                    st.toast("¡Marcado como ausente!", icon="⚠️")
+                            with c2:                                                        
+                                if st.button("Equipo Ausente", key=f"ausente_e2_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
                                     cambiar_estado_equipo(supabd, e2['id'], "Ausente")
                             with c3:
                                 if st.button("Eliminado", key=f"eliminado_e2_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
-                                    st.toast("¡Marcado como eliminado!")
                                     cambiar_estado_equipo(supabd, e2['id'], "Eliminado")
 
                             if ya_tiene_ganador:
