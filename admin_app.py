@@ -187,7 +187,7 @@ else:
 
         st.title("Agregar Player en Solitario")
         jugador_1 = st.text_input("Ingrese Nick del Jugador Solitario")
-        st.button("Registrar Jugador Solitario", on_click=registrar_player_solitario, args=(jugador_1), use_container_width=True, type="primary")
+        st.button("Registrar Jugador Solitario", on_click=registrar_player_solitario, args=(jugador_1,), use_container_width=True, type="primary")
 
     def panel_editar_equipo():
 
