@@ -158,13 +158,13 @@ else:
         )
     
     st.sidebar.title("Menú de Administración")
-    if st.sidebar.button("🏠 IR A PANEL PRINCIPAL"):
+    if st.sidebar.button("🏠 IR A PANEL PRINCIPAL", key="btn_principal"):
         cambiar_vista('principal')
-    if st.sidebar.button("⚔️ IR A GESTIÓN DE EQUIPOS"):
+    if st.sidebar.button("⚔️ IR A GESTIÓN DE EQUIPOS", key="btn_gestion_equipos"):
         cambiar_vista('reg_equipo')
-    if st.sidebar.button("✏️ IR A EDICIÓN DE EQUIPOS"):
+    if st.sidebar.button("✏️ IR A EDICIÓN DE EQUIPOS", key="btn_edicion_equipos"):
         cambiar_vista('editar_equipo')
-    if st.sidebar.button("📊 IR A RONDAS Y RESULTADOS"):
+    if st.sidebar.button("📊 IR A RONDAS Y RESULTADOS", key="btn_rondas_resultados"):
         cambiar_vista('rondas_resultados')
     
 # --- FUNCIONES DE CADA PANEL ---
@@ -182,22 +182,7 @@ else:
                 background-color: #010a13;
                 color: #f0e6d2;
             }
-            [data-testid="stSidebar"] .stMarkdown, [data-testid="stSidebar"] .stButton {{
-                background-color: rgba(0, 0, 0, 0.4) !important; /* Fondo semi-transparente para botones */
-                border-radius: 10px !important;
-            }}
-
-            .stButton button {
-                background-color: #007bff;
-                color: white;
-                border-radius: 5px;
-                padding: 0.5em 1em;
-                font-size: 1rem;
-                border: none;
-            }
-            .stButton button:hover {
-                background-color: #0056b3;
-            }
+            
             </style>
         """, unsafe_allow_html=True)
 #---------------------------------------------------------------------------------------------+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
