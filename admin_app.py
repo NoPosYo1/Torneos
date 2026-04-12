@@ -181,7 +181,7 @@ else:
             </style>
         """, unsafe_allow_html=True)
         
-        st.title("Registrar Equipo")
+        st.subheader("Registrar Equipo")
         st.text("Aquí puedes registrar un nuevo equipo (2 jugadores no registrados anteriormente) para el torneo. Ingresa los nicks de ambos jugadores.")
         st.info("Si deseas unir a 2 jugadores solitarios en un equipo, ve a la sección de Edición de Equipos y asigna un dúo a cada uno.")
         jugador_1 =st.text_input("Ingrese Nick del Jugador 1")
@@ -190,7 +190,7 @@ else:
 
         st.divider()
 
-        st.title("Agregar Player en Solitario")
+        st.subheader("Agregar Player en Solitario")
         st.text("Si un jugador no tiene dúo, puedes registrarlo aquí como solitario. Luego podrás asignarle un dúo desde el panel de edición.")
         jugador_1 = st.text_input("Ingrese Nick del Jugador Solitario")
         st.button("Registrar Jugador Solitario", on_click=registrar_player_solitario, args=(jugador_1,), use_container_width=True, type="primary")
