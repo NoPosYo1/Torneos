@@ -29,6 +29,7 @@ st.markdown(f"""
 )
 
 
+
 def cambiar_vista(nueva_vista):
     st.session_state.vista = nueva_vista
     st.rerun()
@@ -209,6 +210,26 @@ def generar_ronda_1_automatica(supabd):
     except Exception as e:
         st.error(f"Error al generar ronda: {e}")
 
+def resetear_torneo_completo(supabd):
+    try:
+        # 1. Eliminar todos los enfrentamientos (Brackets)
+        # Usamos un filtro que siempre sea cierto para borrar todo
+        supabd.table("encuentros").delete().neq("id", 0).execute()
+        
+        # 2. Resetear estados en la tabla Equipo
+        # Ponemos ganador_id en NULL y el estado en 'activo'
+        supabd.table("equipo").update({
+            "estado": "activo" 
+        }).neq("id", 0).execute()
+
+        # 3. Opcional: Si quieres disolver los dúos también
+        # supabd.table("jugador").update({"EnDuo": False}).neq("id", 0).execute()
+        # supabd.table("equipo").delete().neq("id", 0).execute()
+
+        st.success("✅ Torneo reseteado. Brackets eliminados y equipos reactivados.")
+    except Exception as e:
+        st.error(f"Error al resetear: {e}")
+
 
 if st.session_state.logged_in == False:
     st.title("🔒 PANEL DE CONTROL - ADMINISTRADOR")
@@ -236,7 +257,15 @@ else:
         cambiar_vista('editar_equipo')
     if st.sidebar.button("📊 IR A RONDAS Y RESULTADOS", key="btn_rondas_resultados"):
         cambiar_vista('rondas_resultados')
-    
+
+    with st.sidebar.expander("⚠️ ZONA DE PELIGRO - GESTIÓN CRÍTICA"):
+        st.warning("Al resetear se borrarán todos los avances de las rondas. Los equipos y jugadores permanecerán registrados.")
+        
+        confirmacion = st.checkbox("Confirmo que deseo borrar todos los resultados.")
+        
+        if st.button("🚨 RESETEAR RONDAS Y VOLVER A R1", disabled=not confirmacion, type="primary"):
+            resetear_torneo_completo(supabd)
+            st.rerun()
 # --- FUNCIONES DE CADA PANEL ---
 #---------------------------------------------------------------------------------------------+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     def panel_control_admin():
@@ -385,42 +414,52 @@ else:
 
         # 3. Listado de Duelos
 # 3. Listado de Duelos
-    for enc in res.data:
-        ya_tiene_ganador = enc.get('ganador_id') is not None
-        
-        with st.container(border=True):
-            # Usamos columnas con anchos proporcionales
-            col_e1, col_vs, col_e2 = st.columns([10, 2, 10]) 
+        for enc in res.data:
+            ya_tiene_ganador = enc.get('ganador_id') is not None
             
-            # --- COLUMNA 1: EQUIPO 1 ---
-            with col_e1:
-                e1 = enc.get('equipo_1')
-                if e1:
-                    nick_j1 = e1.get('j1', {}).get('nick', '???')
-                    nick_j2 = e1.get('j2', {}).get('nick', 'Solo')
-                    st.markdown(f"**{nick_j1}**<br>& {nick_j2}", unsafe_allow_html=True)
-                    if st.button(f"Ganador E1", key=f"win_e1_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
-                        avanzar_equipo_completo(supabd, e1['id'], ronda_actual, enc['id'])
-                        st.rerun()
+            with st.container(border=True):
+                # Usamos columnas con anchos proporcionales
+                col_e1, col_vs, col_e2 = st.columns([10, 2, 10]) 
+                
+                # --- COLUMNA 1: EQUIPO 1 ---
+                with col_e1:
+                    e1 = enc.get('equipo_1')
+                    if e1:
+                        nick_j1 = e1.get('j1', {}).get('nick', '???')
+                        nick_j2 = e1.get('j2', {}).get('nick', 'Solo')
+                        st.markdown(f"**{nick_j1}**<br>& {nick_j2}", unsafe_allow_html=True)
+                        if st.button(f"Ganador E1", key=f"win_e1_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
+                            avanzar_equipo_completo(supabd, e1['id'], ronda_actual, enc['id'])
+                            st.rerun()
 
-            # --- COLUMNA 2: VS (SIEMPRE VISIBLE) ---
-            with col_vs:
-                # Añadimos espacio arriba para centrar verticalmente el VS
-                st.markdown("<p style='text-align:center; font-size:20px; padding-top:15px;'>VS</p>", unsafe_allow_html=True)
+                # --- COLUMNA 2: VS (SIEMPRE VISIBLE) ---
+                with col_vs:
+                    st.markdown("""
+                        <p style='
+                            text-align: center; 
+                            color: #cdbe91; 
+                            font-weight: bold; 
+                            font-size: 24px; 
+                            padding-top: 10px;
+                            text-shadow: 0px 0px 10px rgba(205, 190, 145, 0.5);
+                        '>
+                            VS
+                        </p>
+                    """, unsafe_allow_html=True)
 
-            # --- COLUMNA 3: EQUIPO 2 ---
-            with col_e2:
-                e2 = enc.get('equipo_2')
-                if e2:
-                    nick2_j1 = e2.get('j1', {}).get('nick', '???')
-                    nick2_j2 = e2.get('j2', {}).get('nick', 'Solo')
-                    st.markdown(f"**{nick2_j1}**<br>& {nick2_j2}", unsafe_allow_html=True)
-                    if st.button(f"Ganador E2", key=f"win_e2_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
-                        avanzar_equipo_completo(supabd, e2['id'], ronda_actual, enc['id'])
-                        st.rerun()
-                else:
-                    # Placeholder para que la columna no se colapse
-                    st.markdown("<p style='color:gray; font-style:italic; padding-top:10px;'>Esperando rival...</p>", unsafe_allow_html=True)
+                # --- COLUMNA 3: EQUIPO 2 ---
+                with col_e2:
+                    e2 = enc.get('equipo_2')
+                    if e2:
+                        nick2_j1 = e2.get('j1', {}).get('nick', '???')
+                        nick2_j2 = e2.get('j2', {}).get('nick', 'Solo')
+                        st.markdown(f"**{nick2_j1}**<br>& {nick2_j2}", unsafe_allow_html=True)
+                        if st.button(f"Ganador E2", key=f"win_e2_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
+                            avanzar_equipo_completo(supabd, e2['id'], ronda_actual, enc['id'])
+                            st.rerun()
+                    else:
+                        # Placeholder para que la columna no se colapse
+                        st.markdown("<p style='color:gray; font-style:italic; padding-top:10px;'>Esperando rival...</p>", unsafe_allow_html=True)
 
 
 
