@@ -270,6 +270,8 @@ else:
                         if st.button("Confirmar", key=f"btn_{player['id']}"):
                             # UPDATE en la tabla equipo
                             supabd.table("equipo").insert({player['id']: id_j2}).eq("id", player['id']).execute()
+                            supabd.table("jugador").update({"EnDuo": True}).eq("id", player['id']).execute()
+                            supabd.table("jugador").update({"EnDuo": True}).eq("id", id_j2).execute()
                             st.toast(f"¡Dúo {player['nick']} & {nuevo_j2_nick} creado!", icon="⚔️")
                             st.rerun()
 
