@@ -9,24 +9,37 @@ st.set_page_config(page_title="Torneo 2v2 GGReport - Admin", layout="wide", init
 
 st.session_state.logged_in = st.session_state.get('logged_in', False)
 
-st.markdown(f"""
+st.markdown("""
     <style>
-    [data-testid="stSidebar"] {{
-        background-image: url("https://images6.alphacoders.com/909/909375.jpg");
-        background-size: cover !important;
-        background-position: center !important;
-        background-repeat: no-repeat !important;
-    }}
-    /* Esto hace que los widgets encima del fondo sean legibles */
-    [data-testid="stSidebar"] .stMarkdown, [data-testid="stSidebar"] .stButton {{
-        background-color: rgba(0, 0, 0, 0.4) !important; /* Fondo semi-transparente para botones */
-        border-radius: 10px !important;
-        border-bottom: 2px solid #785a28 !important;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.5) !important;
-    }}
+            [data-testid="stSidebar"]{{
+                background-image: url("https://images6.alphacoders.com/909/909375.jpg");
+                background-size: cover !important;
+                background-position: center !important;
+                background-repeat: no-repeat !important;
+            }}
+            [data-testid="stSidebar"] .stMarkdown, [data-testid="stSidebar"] .stButton{{
+                background-color: rgba(0, 0, 0, 0.4) !important;
+                border-radius: 10px !important;
+                border-bottom: 2px solid #785a28 !important;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.5) !important;
+            }}
+            [data-test-id="stVerticalBlockBorder"]{{
+                border: 1px solid #785a28 !important;
+                background-color: #091428 !important;
+                border-radius: 5px !important;
+            }}
+            .stButton>button{{
+                color: #f0e6d2 !important;
+                border: 1px solid #c8aa6e !important;
+                background: linear-gradient(to bottom, #1e2328, #091428) !important;
+            }}
+            .stButton>button:hover{{
+                border-color: #f0e6d2 !important;
+                color: #ffffff !important;
+            }}
     </style>
-""", unsafe_allow_html=True
-)
+""", unsafe_allow_html=True)
+
 
 
 def cambiar_vista(nueva_vista):
@@ -405,8 +418,18 @@ else:
 
                 # --- COLUMNA 2: VS (SIEMPRE VISIBLE) ---
                 with col_vs:
-                    # Añadimos espacio arriba para centrar verticalmente el VS
-                    st.markdown("<p style='text-align:center; font-size:20px; padding-top:15px;'>VS</p>", unsafe_allow_html=True)
+                    st.markdown("""
+                        <p style='
+                            text-align: center; 
+                            color: #cdbe91; 
+                            font-weight: bold; 
+                            font-size: 24px; 
+                            padding-top: 10px;
+                            text-shadow: 0px 0px 10px rgba(205, 190, 145, 0.5);
+                        '>
+                            VS
+                        </p>
+                    """, unsafe_allow_html=True)
 
                 # --- COLUMNA 3: EQUIPO 2 ---
                 with col_e2:
