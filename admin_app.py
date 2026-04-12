@@ -30,7 +30,9 @@ def registrar_equipo(jugador1, jugador2):
     if not j1_limpio:
         st.error("Error: El Jugador 1 es obligatorio.")
         return
-
+    if not j2_limpio:
+        st.error("Error: El Jugador 2 es obligatorio.")
+        return
     try:
         # 2. Registrar Jugador 1 y capturar su ID inmediatamente
         # El .data[0] accede directamente a la fila recién creada
