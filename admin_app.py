@@ -432,10 +432,10 @@ else:
                         if st.button(f"Ganador E1", key=f"win_e1_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
                             avanzar_equipo_completo(supabd, e1['id'], ronda_actual, enc['id'])
                             st.rerun()
-                        if st.button("Equipo Ausente", key=f"ausente_e1_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
+                        elif st.button("Equipo Ausente", key=f"ausente_e1_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
                             st.toast("¡Marcado como ausente! El equipo contrario avanzará automáticamente. Recuerda actualizar el resultado una vez finalizada la partida.", icon="⚠️")
                             st.rerun()
-                        if st.button("En Partida"):
+                        elif st.button("En Partida"):
                             st.toast("¡Marcado como en partida! Recuerda actualizar el resultado una vez finalizada la partida.")
                             st.rerun()
 
