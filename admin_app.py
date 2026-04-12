@@ -80,6 +80,11 @@ def registrar_equipo(jugador1, jugador2):
         else:
             st.error(f"❌ Error en la base de datos: {error_msg}")
 
+def llamada_db_duos():
+    res_equipos_sin_duo = supabd.table("equipo").select("id, jugador_1(nick)").is_("jugador_2", None).execute()
+    res_ocupados = supabd.table("equipo").select("jugador_1, jugador_2").execute()
+
+
 if st.session_state.logged_in == False:
     st.title("🔒 PANEL DE CONTROL - ADMINISTRADOR")
     password = st.text_input("Ingresa clave de Moderador", type="password")
@@ -178,7 +183,7 @@ else:
         st.subheader("🛠️ Asignación de Dúos")
         
         # 1. Traer equipos que no tienen jugador_2
-        res_equipos = supabd.table("equipo").select("id, jugador_1(nick)").is_("jugador_2", None).execute()
+        res_equipos_sin_duo = supabd.table("equipo").select("id, jugador_1(nick)").is_("jugador_2", None).execute()
         
         # 1. Traer IDs de jugadores que YA están en un equipo
         res_ocupados = supabd.table("equipo").select("jugador_1, jugador_2").execute()
@@ -203,11 +208,11 @@ else:
         # 4. Crear el diccionario para el selector
         dict_jugadores = {j['nick']: j['id'] for j in jugadores_libres}
 
-        if not res_equipos.data:
+        if not res_equipos_sin_duo.data:
             st.info("No hay equipos pendientes de dúo.")
             return
 
-        for eq in res_equipos.data:
+        for eq in res_equipos_sin_duo.data:
             # Creamos la fila: Div (J1) | Selector (J2)
             col1, col2 = st.columns([2, 3])
             
