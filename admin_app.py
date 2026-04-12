@@ -230,17 +230,6 @@ def resetear_torneo_completo(supabd):
     except Exception as e:
         st.error(f"Error al resetear: {e}")
 
-def mostrar_nick_copiable(nick, id_unico):
-    # Esto genera el HTML que permite copiar al hacer clic
-    html_code = f"""
-    <div id="copy_{id_unico}" style="cursor: pointer; display: inline-block; margin-bottom: 5px;" 
-         onclick="navigator.clipboard.writeText('{nick}');">
-        <span style="color: #cdbe91; font-weight: bold; border-bottom: 1px dashed #785a28; font-size: 18px;">
-            📋 {nick}
-        </span>
-    </div>
-    """
-    st.markdown(html_code, unsafe_allow_html=True)
 
 
 if st.session_state.logged_in == False:
@@ -448,9 +437,7 @@ else:
                             nick_j1 = e1.get('j1', {}).get('nick', '???')
                             nick_j2 = e1.get('j2', {}).get('nick', 'Solo')
                             st.code(f"{nick_j1}", language="None")
-                            #st.code(f"{nick_j2}", language="None")
-                            nick_copiable(nick_j2)
-
+                            st.code(f"{nick_j2}", language="None")
 
                             c1, c2, c3 = st.columns(3)
                             with c1:
