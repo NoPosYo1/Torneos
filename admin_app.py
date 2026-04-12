@@ -212,7 +212,7 @@ else:
                 
                 res_jugadores = res_equipos.data.copy() # Hacemos una copia para no modificar el original
                 # Creamos un diccionario de nick a ID para los jugadores sin dúo
-                dict_jugadores = {j['nick']: j['id'] for j in res_jugadores.data}
+                dict_jugadores = {j['nick']: j['id'] for j in res_jugadores if j['jugador_1']}
 
                 st.subheader("Equipos sin Dúo Asignado")
                 
