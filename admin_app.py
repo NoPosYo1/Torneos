@@ -269,7 +269,8 @@ else:
                         id_j2 = dict_jugadores[nuevo_j2_nick]
                         if st.button("Confirmar", key=f"btn_{player['id']}"):
                             # UPDATE en la tabla equipo
-                            supabd.table("equipo").insert({player['id']: "jugador_1",id_j2: "jugador_2"}).execute()
+                            # FORMA CORRECTA
+                            supabd.table("equipo").insert({"jugador_1": player['id'],"jugador_2": id_j2}).execute()
                             supabd.table("jugador").update({"EnDuo": True}).eq("id", player['id']).execute()
                             supabd.table("jugador").update({"EnDuo": True}).eq("id", id_j2).execute()
                             st.toast(f"¡Dúo {player['nick']} & {nuevo_j2_nick} creado!", icon="⚔️")
