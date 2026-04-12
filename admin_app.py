@@ -298,27 +298,6 @@ else:
         st.markdown("""
             Aquí podrás gestionar las rondas del torneo y reportar los resultados de cada enfrentamiento.
         """)
-        st.markdown("""
-            <style>
-            /* Aquí puedes agregar estilos personalizados para el panel de administración */
-            .stApp {
-                background-color: #010a13;
-                color: #f0e6d2;
-            }
-
-            .stButton button {
-                background-color: #007bff;
-                color: white;
-                border-radius: 5px;
-                padding: 0.5em 1em;
-                font-size: 1rem;
-                border: none;
-            }
-            .stButton button:hover {
-                background-color: #0056b3;
-            }
-            </style>
-        """, unsafe_allow_html=True)
 
 
 
