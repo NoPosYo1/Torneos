@@ -180,6 +180,8 @@ def avanzar_equipo_completo(supabd, id_equipo_ganador, ronda_actual, id_duelo_ac
 def generar_ronda_1_automatica(supabd):
     # 1. Traer todos los equipos activos
     res = supabd.table("equipo").select("id").execute()
+    for equipo in res.data:
+        supabd.table("equipo").update({"estado": "En Linea"}).eq("id", equipo['id']).execute()
     equipos = [e['id'] for e in res.data]
 
     if not equipos:
@@ -193,11 +195,9 @@ def generar_ronda_1_automatica(supabd):
     duelos_a_insertar = []
     for i in range(0, len(equipos), 2):
         equipo_1 = equipos[i]
-        supabd.table("equipo").update({"estado": "En Linea"}).eq("id", equipo_1).execute()
         # Si el número es impar, el último equipo queda solo (jugador_2 = None)
         equipo_2 = equipos[i+1] if (i + 1) < len(equipos) else None
-        if equipo_2:
-            supabd.table("equipo").update({"estado": "En Linea"}).eq("id", equipo_2).execute()
+        
         duelos_a_insertar.append({
             "ronda": "Ronda 1",
             "equipo_1": equipo_1,
