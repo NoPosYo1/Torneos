@@ -152,50 +152,72 @@ else:
         jugador_2 = st.text_input("Ingrese Nick del Jugador 2")
         st.button("Registrar Equipo", on_click=registrar_equipo, args=(jugador_1, jugador_2), use_container_width=True, type="primary")
 
-def panel_editar_equipo():
-    st.subheader("🛠️ Asignación de Dúos")
-    
-    # 1. Traer equipos que no tienen jugador_2
-    res_equipos = supabd.table("equipo").select("id, jugador_1(nick)").is_("jugador_2", "null").execute()
-    
-    # 2. Traer todos los jugadores para el selector
-    res_jugadores = supabd.table("jugador").select("id, nick").execute()
-    dict_jugadores = {j['nick']: j['id'] for j in res_jugadores.data}
+    def panel_editar_equipo():
 
-    if not res_equipos.data:
-        st.info("No hay equipos pendientes de dúo.")
-        return
-
-    for eq in res_equipos.data:
-        # Creamos la fila: Div (J1) | Selector (J2)
-        col1, col2 = st.columns([2, 3])
+        st.title("Editar Equipos Registrados")
+        st.markdown("""
+            Aquí podrás editar los detalles de un equipo registrado. Selecciona el equipo que deseas modificar y actualiza la información.
+        """)
+        st.markdown("""
+            <style>
+            /* Aquí puedes agregar estilos personalizados para el panel de administración */
+            .stButton button {
+                background-color: #007bff;
+                color: white;
+                border-radius: 5px;
+                padding: 0.5em 1em;
+                font-size: 1rem;
+                border: none;
+            }
+            .stButton button:hover {
+                background-color: #0056b3;
+            }
+            </style>
+        """, unsafe_allow_html=True)
         
-        with col1:
-            # Tu Div personalizado
-            nick_j1 = eq['jugador_1']['nick'] if eq['jugador_1'] else "Sin Nombre"
-            st.markdown(f"""
-                <div style="background-color: #091428; border: 1px solid #785a28; 
-                padding: 10px; border-radius: 5px; color: #cdbe91; text-align: center;">
-                    🛡️ {nick_j1}
-                </div>
-            """, unsafe_allow_html=True)
+        st.subheader("🛠️ Asignación de Dúos")
+        
+        # 1. Traer equipos que no tienen jugador_2
+        res_equipos = supabd.table("equipo").select("id, jugador_1(nick)").is_("jugador_2", "null").execute()
+        
+        # 2. Traer todos los jugadores para el selector
+        res_jugadores = supabd.table("jugador").select("id, nick").execute()
+        dict_jugadores = {j['nick']: j['id'] for j in res_jugadores.data}
+
+        if not res_equipos.data:
+            st.info("No hay equipos pendientes de dúo.")
+            return
+
+        for eq in res_equipos.data:
+            # Creamos la fila: Div (J1) | Selector (J2)
+            col1, col2 = st.columns([2, 3])
             
-        with col2:
-            # El selector corregido
-            nuevo_j2_nick = st.selectbox(
-                f"Pareja para {nick_j1}",
-                options=[None] + list(dict_jugadores.keys()),
-                key=f"sel_{eq['id']}",
-                label_visibility="collapsed"
-            )
-            
-            if nuevo_j2_nick:
-                id_j2 = dict_jugadores[nuevo_j2_nick]
-                if st.button("Confirmar", key=f"btn_{eq['id']}"):
-                    # UPDATE en la tabla equipo
-                    supabd.table("equipo").update({"jugador_2": id_j2}).eq("id", eq['id']).execute()
-                    st.toast(f"¡Dúo {nick_j1} & {nuevo_j2_nick} creado!", icon="⚔️")
-                    st.rerun()
+            with col1:
+                # Tu Div personalizado
+                nick_j1 = eq['jugador_1']['nick'] if eq['jugador_1'] else "Sin Nombre"
+                st.markdown(f"""
+                    <div style="background-color: #091428; border: 1px solid #785a28; 
+                    padding: 10px; border-radius: 5px; color: #cdbe91; text-align: center;">
+                        🛡️ {nick_j1}
+                    </div>
+                """, unsafe_allow_html=True)
+                
+            with col2:
+                # El selector corregido
+                nuevo_j2_nick = st.selectbox(
+                    f"Pareja para {nick_j1}",
+                    options=[None] + list(dict_jugadores.keys()),
+                    key=f"sel_{eq['id']}",
+                    label_visibility="collapsed"
+                )
+                
+                if nuevo_j2_nick:
+                    id_j2 = dict_jugadores[nuevo_j2_nick]
+                    if st.button("Confirmar", key=f"btn_{eq['id']}"):
+                        # UPDATE en la tabla equipo
+                        supabd.table("equipo").update({"jugador_2": id_j2}).eq("id", eq['id']).execute()
+                        st.toast(f"¡Dúo {nick_j1} & {nuevo_j2_nick} creado!", icon="⚔️")
+                        st.rerun()
 
     # --- LÓGICA PRINCIPAL (EL SELECTOR) ---
     if st.session_state.vista == 'reg_equipo':
