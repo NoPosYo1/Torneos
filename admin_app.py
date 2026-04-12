@@ -179,6 +179,10 @@ else:
         st.markdown("""
             <style>
             /* Aquí puedes agregar estilos personalizados para el panel de administración */
+            .stApp {
+               background-color: #010a13;
+               color: #f0e6d2;
+            }
             .stButton button {
                 background-color: #007bff;
                 color: white;
@@ -218,6 +222,10 @@ else:
         st.markdown("""
             <style>
             /* Aquí puedes agregar estilos personalizados para el panel de administración */
+           .stApp {
+               background-color: #010a13;
+               color: #f0e6d2;
+            }
             .stButton button {
                 background-color: #007bff;
                 color: white;
@@ -292,6 +300,11 @@ else:
         st.markdown("""
             <style>
             /* Aquí puedes agregar estilos personalizados para el panel de administración */
+            .stApp {
+                background-color: #010a13;
+                color: #f0e6d2;
+            }
+
             .stButton button {
                 background-color: #007bff;
                 color: white;
