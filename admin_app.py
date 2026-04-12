@@ -457,6 +457,7 @@ else:
 
                 # --- COLUMNA 2: VS (SIEMPRE VISIBLE) ---
                 with col_vs:
+                    st.markdown()
                     st.markdown("""
                         <p style='
                             text-align: center; 
