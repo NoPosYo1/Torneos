@@ -385,11 +385,10 @@ else:
         # 1. Selector de Ronda (Slider para mejor UX)
         ronda_actual = st.select_slider(
             "Visualizar Fase:",
-            options=["Ronda 1", "Ronda 2", "Ronda 3", "Ronda 4", "Ronda 5", "Semifinal", "Final"]
+            options=["Ronda 1", "Ronda 2", "Ronda 3", "Ronda 4", "Ronda 5","Ronda 6","Ronda 7", "Semifinal", "Final"]
         )
 
         # 2. Consulta con Doble Join para traer nicks de los 4 posibles jugadores
-# 2. Consulta con Doble Join (Agregamos ganador_id al inicio)
         res = supabd.table("encuentros").select("""
             id,
             ronda,
