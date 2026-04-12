@@ -11,17 +11,11 @@ st.session_state.logged_in = st.session_state.get('logged_in', False)
 
 st.markdown("""
     <style>
-            [data-testid="stSidebar"]{{
+            [data-testid="st.sidebar"]{{
                 background-image: url("https://images6.alphacoders.com/909/909375.jpg");
-                background-size: cover !important;
+                background-size: cover !important; 
                 background-position: center !important;
                 background-repeat: no-repeat !important;
-            }}
-            [data-testid="stSidebar"] .stMarkdown, [data-testid="stSidebar"] .stButton{{
-                background-color: rgba(0, 0, 0, 0.4) !important;
-                border-radius: 10px !important;
-                border-bottom: 2px solid #785a28 !important;
-                box-shadow: 0 4px 6px rgba(0,0,0,0.5) !important;
             }}
     </style>
 """, unsafe_allow_html=True)
