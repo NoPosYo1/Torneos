@@ -181,7 +181,8 @@ else:
         res_equipos = supabd.table("equipo").select("id, jugador_1(nick)").is_("jugador_2", None).execute()
         
         # 2. Traer todos los jugadores para el selector  AQUI SE PUEDE MODIFICAR PARA TRAER SOLO LOS JUGADORES QUE NO ESTEN EN EQUIPO O SOLO LOS QUE ESTEN EN EQUIPO PERO SIN DUO
-        res_jugadores = supabd.table("jugador").select("id, nick").is_("nick", "is not null").execute()
+        # Traer jugadores donde el nick NO es nulo
+        res_jugadores = supabd.table("jugador").select("id, nick").not_.is_("nick", "null").execute()
         dict_jugadores = {j['nick']: j['id'] for j in res_jugadores.data if j['nick']}.items()  # Solo jugadores con nick válido
 
         if not res_equipos.data:
