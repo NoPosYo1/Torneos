@@ -481,7 +481,6 @@ else:
                                 if st.button("En Partida", key=f"partida_e1_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
                                     st.toast("¡Marcado como en partida! Recuerda actualizar el resultado una vez finalizada la partida.")
                                     supabd.table("equipo").update({"estado": "En Partida"}).eq("id", e1['id']).execute()
-                                    st.rerun()
                             if ya_tiene_ganador:
 
                                 st.markdown(f"<div style='color: green; font-weight: bold;'>GANADOR</div>", unsafe_allow_html=True)
