@@ -75,7 +75,6 @@ def registrar_equipo(jugador1, jugador2):
             st.error(f"❌ Error al crear el equipo: {e}")
             return
         st.toast(f"✅ Equipo registrado: {id_equipo}", icon="🔥")
-        st.rerun()
 
     except Exception as e:
         # Capturamos el error específico de Supabase (ej: Nick duplicado)
