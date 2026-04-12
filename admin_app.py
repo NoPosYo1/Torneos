@@ -7,42 +7,19 @@ supabd = create_client(st.secrets["SUPABASE_URL"], st.secrets["SUPABASE_KEY"])
 st.set_page_config(page_title="Torneo 2v2 GGReport - Admin", layout="wide", initial_sidebar_state="collapsed")
 
 st.session_state.logged_in = st.session_state.get('logged_in', False)
-# Usamos markdown para inyectar CSS globalmente
+
 st.markdown("""
     <style>
-    /* Apuntamos al contenedor del header */
     [data-testid="stAppViewHeader"] {
-        /* Fondo transparente para que se vea tu imagen detrás */
-        background-color: transparent !important;
-        /* Efecto de desenfoque opcional (Glassmorphism) */
-        backdrop-filter: blur(5px);
-        /* Quitamos bordes y sombras si existen */
-        border-bottom: None !important;
-        box-shadow: None !important;
-    }
-    
-    /* Si quieres hacer que los iconos (como el menú) resalten más */
-    [data-testid="stAppViewHeader"] svg {
-        fill: #cdbe91 !important; /* Dorado Hextech */
+        /* Degradado oscuro Hextech */
+        background: linear-gradient(to right, #091428, #1e2328, #091428) !important;
+        /* Borde dorado de Riot Games */
+        border-bottom: 2px solid #785a28 !important;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.5) !important;
     }
     </style>
 """, unsafe_allow_html=True)
-st.markdown(f"""
-    <style>
-    [data-testid="stSidebar"] {{
-        background-image: url("https://images6.alphacoders.com/909/909375.jpg");
-        background-size: cover !important;
-        background-position: center !important;
-        background-repeat: no-repeat !important;
-    }}
-    /* Esto hace que los widgets encima del fondo sean legibles */
-    [data-testid="stSidebar"] .stMarkdown, [data-testid="stSidebar"] .stButton {{
-        background-color: rgba(0, 0, 0, 0.4) !important; /* Fondo semi-transparente para botones */
-        border-radius: 10px !important;
-    }}
-    </style>
-""", unsafe_allow_html=True
-)
+
 
 
 def cambiar_vista(nueva_vista):
@@ -308,11 +285,12 @@ else:
                             st.toast(f"¡Dúo {player['nick']} & {nuevo_j2_nick} creado!", icon="⚔️")
                             st.rerun()
 
-    def panel_rondas_resultados():
+    def panel_rondas():
         st.title("Rondas y Resultados")
         st.markdown("""
             Aquí podrás gestionar las rondas del torneo y reportar los resultados de cada enfrentamiento.
         """)
+
 
 
 
@@ -330,5 +308,5 @@ else:
     elif st.session_state.vista == 'editar_equipo':
         panel_editar_equipo()
     elif st.session_state.vista == 'rondas_resultados':
-        panel_rondas_resultados()
+        panel_rondas()
     
