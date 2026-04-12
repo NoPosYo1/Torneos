@@ -142,7 +142,7 @@ else:
             f"""
             <style>
             [data-testid="stSidebar"] {{
-                background-image: url("https://images6.alphacoders.com/909/909375.jpg");
+                background-image: url("imagenes/ARAM_Banner.ACCESSORIES_16_3.png");
                 background-size: cover;
                 background-position: center;
                 background-repeat: no-repeat;
@@ -167,7 +167,6 @@ else:
     if st.sidebar.button("📊 IR A RONDAS Y RESULTADOS"):
         cambiar_vista('rondas_resultados')
     
-    st.sidebar.image("imagenes/ARAM_Banner.ACCESSORIES_16_3.png", use_container_width=True)
 # --- FUNCIONES DE CADA PANEL ---
 #---------------------------------------------------------------------------------------------+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     def panel_control_admin():
