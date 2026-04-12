@@ -190,20 +190,6 @@ else:
             Bienvenido al panel de control del torneo. -- Aquí puedes añadir Jugadores en solitario y a equipos de 2 jugadores.
         """)
         
-        
-        st.markdown("""
-            <style>
-                    .primary .stButton button {
-                        background-color: #785a28 !important; /* Dorado Hextech */
-                        color: #f0e6d2 !important;
-                        border: 2px solid #c8aa6e !important;
-                    }
-                    #primary .stButton button:hover {
-                        background-color: #c8aa6e !important; /* Dorado más claro al pasar el mouse */
-                    }
-                    
-            </style>
-        """, unsafe_allow_html=True)
 
 
         st.subheader("Registrar Equipo")
