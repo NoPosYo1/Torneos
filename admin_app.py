@@ -237,16 +237,13 @@ else:
                background-color: #010a13;
                color: #f0e6d2;
             }
-            .stButton button {
+            .Button button {
                 background-color: #007bff;
                 color: white;
                 border-radius: 5px;
                 padding: 0.5em 1em;
                 font-size: 1rem;
                 border: none;
-            }
-            .stButton button:hover {
-                background-color: #0056b3;
             }
             </style>
         """, unsafe_allow_html=True)
