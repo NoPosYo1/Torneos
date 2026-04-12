@@ -436,6 +436,7 @@ else:
                             nick_j1 = e1.get('j1', {}).get('nick', '???')
                             nick_j2 = e1.get('j2', {}).get('nick', 'Solo')
                             st.markdown(f"**{nick_j1}**" , unsafe_allow_html=True)
+                            st.code(f"**{nick_j1}**", language="None")
                             st.markdown(f"**{nick_j2}**", unsafe_allow_html=True)
                             
                             c1, c2, c3 = st.columns(3)
