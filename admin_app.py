@@ -178,7 +178,7 @@ else:
         st.subheader("🛠️ Asignación de Dúos")
         
         # 1. Traer equipos que no tienen jugador_2
-        res_equipos = supabd.table("equipo").select("id, jugador_1(nick)").is_("jugador_2", "null").execute()
+        res_equipos = supabd.table("equipo").select("id, jugador_1(nick)").is_("jugador_2", None).execute()
         
         # 2. Traer todos los jugadores para el selector  AQUI SE PUEDE MODIFICAR PARA TRAER SOLO LOS JUGADORES QUE NO ESTEN EN EQUIPO O SOLO LOS QUE ESTEN EN EQUIPO PERO SIN DUO
         res_jugadores = supabd.table("jugador").select("id, nick").is_("nick", "is not null").execute()
