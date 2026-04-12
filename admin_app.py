@@ -212,7 +212,7 @@ else:
                 
                 res_jugadores = supabd.table("equipo").select("jugador_1,jugador_1(nick)", "jugador_2").is_("jugador_2","null").order("jugador_1", desc=True).execute()
 
-                dict_jugadores = {j['jugador_1']['nick']: j['id'] for j in res_jugadores.data}
+                dict_jugadores = {j['jugador_1']['nick']: j['jugador_1']['id'] for j in res_jugadores.data}
 
                 st.subheader("Equipos sin Dúo Asignado")
                 
