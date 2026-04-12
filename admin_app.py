@@ -185,7 +185,7 @@ def generar_ronda_1_automatica(supabd):
     for equipo in res.data:
         supabd.table("equipo").update({"estado": "En Linea"}).eq("id", equipo['id']).execute()
     equipos = [e['id'] for e in res.data]
-
+    supabd.table("encuentros").delete().neq("id", 0).execute()  # Limpiar rondas anteriores antes de generar la nueva
     st.toast("Generando Ronda 1... Esto puede tardar unos segundos.", icon="⚔️")
     time.sleep(5)  # Pequeña pausa para asegurar que los estados se actualicen antes de generar la ronda
 
