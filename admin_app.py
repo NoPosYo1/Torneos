@@ -138,25 +138,24 @@ else:
 
 
     st.sidebar.title("Reglas del Torneo")
-    st.sidebar.markdown("""
-                <style>
-                .stSidebar {
-                    background-color: #010a13;
-                    color: #f0e6d2;
-                }            
-                .stButton button {
-                    background-color: #007bff;
-                    color: white;
-                    border-radius: 5px;
-                    padding: 0.5em 1em;
-                    font-size: 1rem;
-                    border: none;
-                }
-                .stButton button:hover {
-                    background-color: #0056b3;
-                }
-                </style>
-            """, unsafe_allow_html=True)
+    st.markdown(
+            f"""
+            <style>
+            [data-testid="stSidebar"] {{
+                background-image: url("imagenes/ARAM_Banner.ACCESSORIES_16_3.png");
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+            }}
+            /* Esto hace que los widgets encima del fondo sean legibles */
+            [data-testid="stSidebar"] .stMarkdown, [data-testid="stSidebar"] .stButton {{
+                background-color: rgba(0, 0, 0, 0.4); /* Fondo semi-transparente para botones */
+                border-radius: 10px;
+            }}
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
     
     st.sidebar.title("Menú de Administración")
     if st.sidebar.button("🏠 IR A PANEL PRINCIPAL"):
