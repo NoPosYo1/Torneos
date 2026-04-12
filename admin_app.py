@@ -162,8 +162,8 @@ else:
     def panel_registro_equipo():
         st.title("Gestión de Equipos")
         st.markdown("""
-            Bienvenido al panel de control del torneo. Aquí puedes gestionar equipos, rondas y reportes.
-            Usa el menú lateral para navegar entre las diferentes secciones de administración.
+            Bienvenido al panel de control del torneo. Aquí puedes añadir Jugadores y equipos de 2 jugadores.
+            Si deseas unir a 2 jugadores solitarios en un equipo, ve a la sección de Edición de Equipos y asigna un dúo a cada uno.
         """)
         st.markdown("""
             <style>
