@@ -80,6 +80,33 @@ def registrar_equipo(jugador1, jugador2):
         else:
             st.error(f"❌ Error en la base de datos: {error_msg}")
 
+def registrar_player_solitario(jugador1):
+    
+    j1_limpio = sanitizar_input(jugador1)
+
+    if not j1_limpio:
+        st.error("Error: El Jugador 1 es obligatorio.")
+        return
+
+    try:
+
+        try:
+            res_j1 = supabd.table("jugador").insert({"nick": j1_limpio}).execute()
+        except Exception as e:
+            if "duplicate key" in str(e):
+                st.toast(f"⚠️ Error: El nick '{j1_limpio}' ya está registrado en el torneo.")
+            else:                
+                st.error(f"❌ Error al registrar Jugador 1: {e}")
+            return
+    except Exception as e:
+        # Capturamos el error específico de Supabase (ej: Nick duplicado)
+        error_msg = str(e)
+        if "duplicate key" in error_msg:
+            st.error(f"⚠️ Error: El nick '{j1_limpio}' ya está registrado en el torneo.")
+        else:
+            st.error(f"❌ Error en la base de datos: {error_msg}")
+    
+
 def llamada_db_duos():
     res_equipos_sin_duo = supabd.table("equipo").select("id, jugador_1(nick)").is_("jugador_2", None).execute()
     res_ocupados = supabd.table("equipo").select("jugador_1, jugador_2").execute()
@@ -156,6 +183,11 @@ else:
         jugador_1 =st.text_input("Ingrese Nick del Jugador 1")
         jugador_2 = st.text_input("Ingrese Nick del Jugador 2")
         st.button("Registrar Equipo", on_click=registrar_equipo, args=(jugador_1, jugador_2), use_container_width=True, type="primary")
+
+
+        st.title("Agregar Player en Solitario")
+        jugador_1 = st.text_input("Ingrese Nick del Jugador Solitario")
+        st.button("Registrar Jugador Solitario", on_click=registrar_player_solitario, args=(jugador_1), use_container_width=True, type="primary")
 
     def panel_editar_equipo():
 
