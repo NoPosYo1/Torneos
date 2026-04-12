@@ -477,8 +477,6 @@ else:
                                 if st.button("Equipo Ausente", key=f"ausente_e1_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
                                     st.toast("¡Marcado como ausente! El equipo contrario avanzará automáticamente. Recuerda actualizar el resultado una vez finalizada la partida.", icon="⚠️")
                                     supabd.table("equipo").update({"estado": "Ausente"}).eq("id", e1['id']).execute()
-
-                                    st.rerun()
                             with c3:
                                 if st.button("En Partida", key=f"partida_e1_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
                                     st.toast("¡Marcado como en partida! Recuerda actualizar el resultado una vez finalizada la partida.")
