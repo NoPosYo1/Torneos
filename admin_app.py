@@ -191,27 +191,19 @@ else:
         st.markdown("""
             Bienvenido al panel de control del torneo. -- Aquí puedes añadir Jugadores en solitario y a equipos de 2 jugadores.
         """)
-        # Creamos un contenedor con una "llave" o simplemente lo aislamos
-        with st.container():
-            # Inyectamos el CSS usando el selector de jerarquía
-            st.markdown("""
-                <style>
-                /* Solo afecta a botones dentro de este contenedor específico */
-                div[data-testid="stVerticalBlock"] > div:nth-child(2) .stButton button {
-                    background-color: #785a28 !important; /* Dorado Hextech */
-                    color: #f0e6d2 !important;
-                    border: 2px solid #c8aa6e !important;
-                }
-                .primary .stButton button {
-                    background-color: #785a28 !important; /* Dorado Hextech */
-                </style>
-            """, unsafe_allow_html=True)
-            
-            st.button("Botón Especial (Hextech)")
-
-        # Este botón estará fuera del contenedor y tendrá el diseño normal de Streamlit
-        st.button("Botón Normal")
         
+        
+        st.markdown("""
+            <style>
+                    .primary .stButton button {
+                        background-color: #785a28 !important; /* Dorado Hextech */
+                        color: #f0e6d2 !important;
+                        border: 2px solid #c8aa6e !important;
+                    }
+            </style>
+        """, unsafe_allow_html=True)
+
+
         st.subheader("Registrar Equipo")
         st.text("Aquí puedes registrar un nuevo equipo (2 jugadores no registrados anteriormente) para el torneo. Ingresa los nicks de ambos jugadores.")
         st.info("Si deseas unir a 2 jugadores solitarios en un equipo, ve a la sección de Edición de Equipos y asigna un dúo a cada uno.")
