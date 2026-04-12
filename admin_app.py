@@ -63,8 +63,7 @@ def registrar_equipo(jugador1, jugador2):
         try:
             res_equipo = supabd.table("equipo").insert({
                 "jugador_1": id_j1, 
-                "jugador_2": id_j2,
-                "estado": "activo" # Siempre inicializar con un estado
+                "jugador_2": id_j2
             }).execute()
             id_equipo = res_equipo.data[0]["id"]
         except Exception as e:
@@ -141,7 +140,8 @@ else:
         cambiar_vista('editar_equipo')
     if st.sidebar.button("📊 IR A RONDAS Y RESULTADOS"):
         cambiar_vista('rondas_resultados')
-
+    
+    
 # --- FUNCIONES DE CADA PANEL ---
 #---------------------------------------------------------------------------------------------+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     def panel_control_admin():
@@ -153,6 +153,10 @@ else:
         st.markdown("""
             <style>
             /* Aquí puedes agregar estilos personalizados para el panel de administración */
+            .stApp {
+                background-color: #010a13;
+                color: #f0e6d2;
+            }            
             .stButton button {
                 background-color: #007bff;
                 color: white;
@@ -280,6 +284,27 @@ else:
                             st.toast(f"¡Dúo {player['nick']} & {nuevo_j2_nick} creado!", icon="⚔️")
                             st.rerun()
 
+    def panel_rondas_resultados():
+        st.title("Rondas y Resultados")
+        st.markdown("""
+            Aquí podrás gestionar las rondas del torneo y reportar los resultados de cada enfrentamiento.
+        """)
+        st.markdown("""
+            <style>
+            /* Aquí puedes agregar estilos personalizados para el panel de administración */
+            .stButton button {
+                background-color: #007bff;
+                color: white;
+                border-radius: 5px;
+                padding: 0.5em 1em;
+                font-size: 1rem;
+                border: none;
+            }
+            .stButton button:hover {
+                background-color: #0056b3;
+            }
+            </style>
+        """, unsafe_allow_html=True)
 
 
 
