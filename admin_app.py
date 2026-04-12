@@ -91,7 +91,7 @@ def registrar_player_solitario(jugador1):
     try:
 
         try:
-            res_j1 = supabd.table("jugador").insert({"nick": j1_limpio}).execute()
+            supabd.table("jugador").insert({"nick": j1_limpio}).execute()
         except Exception as e:
             if "duplicate key" in str(e):
                 st.toast(f"⚠️ Error: El nick '{j1_limpio}' ya está registrado en el torneo.")
