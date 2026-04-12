@@ -514,6 +514,8 @@ else:
                             with c2:
                                 if estado_e2 == "Ausente":
                                     ausente = True
+                                else:
+                                    ausente = False
                                 if st.button("Equipo Ausente", key=f"ausente_e2_{enc['id']}", disabled=ya_tiene_ganador,disable=ausente, use_container_width=True):
                                     st.toast("¡Marcado como ausente!", icon="⚠️")
                                     cambiar_estado_equipo(supabd, e2['id'], "Ausente")
