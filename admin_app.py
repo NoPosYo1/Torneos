@@ -8,29 +8,9 @@ st.set_page_config(page_title="Torneo 2v2 GGReport - Admin", layout="wide", init
 
 st.session_state.logged_in = st.session_state.get('logged_in', False)
 
-#sidebar
 
-st.sidebar.image("imagenes/ARAM_Banner.ACCESSORIES_16_3.png", use_container_width=True)
-st.sidebar.title("Reglas del Torneo")
-st.sidebar.markdown("""
-            <style>
-            .stSidebar {
-                background-color: #010a13;
-                color: #f0e6d2;
-            }            
-            .stButton button {
-                background-color: #007bff;
-                color: white;
-                border-radius: 5px;
-                padding: 0.5em 1em;
-                font-size: 1rem;
-                border: none;
-            }
-            .stButton button:hover {
-                background-color: #0056b3;
-            }
-            </style>
-        """, unsafe_allow_html=True)
+
+
 
 
 def cambiar_vista(nueva_vista):
@@ -156,6 +136,28 @@ else:
     if 'vista' not in st.session_state:
         st.session_state.vista = 'principal'
 
+
+    st.sidebar.title("Reglas del Torneo")
+    st.sidebar.markdown("""
+                <style>
+                .stSidebar {
+                    background-color: #010a13;
+                    color: #f0e6d2;
+                }            
+                .stButton button {
+                    background-color: #007bff;
+                    color: white;
+                    border-radius: 5px;
+                    padding: 0.5em 1em;
+                    font-size: 1rem;
+                    border: none;
+                }
+                .stButton button:hover {
+                    background-color: #0056b3;
+                }
+                </style>
+            """, unsafe_allow_html=True)
+    
     st.sidebar.title("Menú de Administración")
     if st.sidebar.button("🏠 IR A PANEL PRINCIPAL"):
         cambiar_vista('principal')
@@ -166,7 +168,7 @@ else:
     if st.sidebar.button("📊 IR A RONDAS Y RESULTADOS"):
         cambiar_vista('rondas_resultados')
     
-    
+    st.sidebar.image("imagenes/ARAM_Banner.ACCESSORIES_16_3.png", use_container_width=True)
 # --- FUNCIONES DE CADA PANEL ---
 #---------------------------------------------------------------------------------------------+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     def panel_control_admin():
