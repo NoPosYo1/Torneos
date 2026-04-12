@@ -137,6 +137,40 @@ def llamada_db_duos():
     res_equipos_sin_duo = supabd.table("equipo").select("id, jugador_1(nick)").is_("jugador_2", None).execute()
     res_ocupados = supabd.table("equipo").select("jugador_1, jugador_2").execute()
 
+def avanzar_equipo_completo(supabd, id_equipo_ganador, ronda_actual):
+    """Maneja el paso de un equipo de una ronda a la siguiente."""
+    orden_rondas = ["Ronda 1", "Ronda 2", "Ronda 3", "Ronda 4", "Ronda 5", "Semifinal", "Final"]
+    
+    try:
+        idx = orden_rondas.index(ronda_actual)
+        if idx + 1 >= len(orden_rondas):
+            st.balloons()
+            st.success("¡Tenemos un Campeón!")
+            return
+        proxima = orden_rondas[idx + 1]
+    except ValueError:
+        return
+
+    # Buscar si hay un hueco (equipo_2 es NULL) en la próxima ronda
+    partido_pendiente = supabd.table("encuentros")\
+        .select("id")\
+        .eq("ronda", proxima)\
+        .is_("equipo_2", "null")\
+        .execute()
+
+    if partido_pendiente.data:
+        # Llenamos el espacio del segundo equipo en un duelo existente
+        id_partido = partido_pendiente.data[0]['id']
+        supabd.table("equipo_2", id_equipo_ganador).eq("id", id_partido).execute()
+        st.toast(f"Duelo completado en {proxima}", icon="⚔️")
+    else:
+        # Creamos un duelo nuevo donde el ganador espera rival
+        supabd.table("encuentros").insert({
+            "ronda": proxima,
+            "equipo_1": id_equipo_ganador,
+            "equipo_2": None
+        }).execute()
+        st.toast(f"Esperando rival en {proxima}", icon="⏳")
 
 if st.session_state.logged_in == False:
     st.title("🔒 PANEL DE CONTROL - ADMINISTRADOR")
@@ -278,21 +312,69 @@ else:
                             st.rerun()
 
     def panel_rondas():
-        st.title("Rondas y Resultados")
-        st.markdown("""
-            Aquí podrás gestionar las rondas del torneo y reportar los resultados de cada enfrentamiento.
-        """)
-        st.markdown("""
-            <style>
-            [data-testid="stAppViewHeader"] {
-                /* Degradado oscuro Hextech */
-                background: linear-gradient(to right, #091428, #1e2328, #091428) !important;
-                /* Borde dorado de Riot Games */
-                border-bottom: 2px solid #785a28 !important;
-                box-shadow: 0 4px 6px rgba(0,0,0,0.5) !important;
-            }
-            </style>
-        """, unsafe_allow_html=True)
+        st.title("🏆 Panel de Control de Brackets")
+
+        # 1. Selector de Ronda (Slider para mejor UX)
+        ronda_actual = st.select_slider(
+            "Visualizar Fase:",
+            options=["Ronda 1", "Ronda 2", "Ronda 3", "Ronda 4", "Ronda 5", "Semifinal", "Final"]
+        )
+
+        # 2. Consulta con Doble Join para traer nicks de los 4 posibles jugadores
+        res = supabd.table("encuentros").select("""
+            id,
+            ronda,
+            equipo_1 (
+                id,
+                j1:jugador_1(nick),
+                j2:jugador_2(nick)
+            ),
+            equipo_2 (
+                id,
+                j1:jugador_1(nick),
+                j2:jugador_2(nick)
+            )
+        """).eq("ronda", ronda_actual).execute()
+
+        if not res.data:
+            st.info(f"No hay encuentros generados para {ronda_actual}")
+            return
+
+        st.divider()
+
+        # 3. Listado de Duelos
+        for enc in res.data:
+            with st.container(border=True):
+                col_e1, col_vs, col_e2 = st.columns([4, 1, 4])
+                
+                # --- EQUIPO 1 ---
+                with col_e1:
+                    e1 = enc['equipo_1']
+                    nick_j1 = e1['j1']['nick'] if e1['j1'] else "???"
+                    nick_j2 = e1['j2']['nick'] if e1['j2'] else "Solo"
+                    
+                    st.markdown(f"**{nick_j1}** <br> & {nick_j2}", unsafe_allow_html=True)
+                    if st.button(f"Ganador", key=f"win_e1_{enc['id']}"):
+                        avanzar_equipo_completo(supabd, e1['id'], ronda_actual)
+                        st.rerun()
+
+                # --- VS ---
+                with col_vs:
+                    st.markdown("<h3 style='text-align:center;'>VS</h3>", unsafe_allow_html=True)
+
+                # --- EQUIPO 2 ---
+                with col_e2:
+                    if enc['equipo_2']:
+                        e2 = enc['equipo_2']
+                        nick2_j1 = e2['j1']['nick'] if e2['j1'] else "???"
+                        nick2_j2 = e2['j2']['nick'] if e2['j2'] else "Solo"
+                        
+                        st.markdown(f"**{nick2_j1}** <br> & {nick2_j2}", unsafe_allow_html=True)
+                        if st.button(f"Ganador", key=f"win_e2_{enc['id']}"):
+                            avanzar_equipo_completo(supabd, e2['id'], ronda_actual)
+                            st.rerun()
+                    else:
+                        st.warning("Esperando ganador de ronda anterior...")
 
 
 
