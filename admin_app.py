@@ -316,4 +316,6 @@ else:
         panel_control_admin()
     elif st.session_state.vista == 'editar_equipo':
         panel_editar_equipo()
+    elif st.session_state.vista == 'rondas_resultados':
+        panel_rondas_resultados()
     
