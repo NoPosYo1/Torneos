@@ -68,7 +68,12 @@ def registrar_equipo(jugador1, jugador2):
         except Exception as e:
             st.error(f"❌ Error al crear el equipo: {e}")
             return
-
+        try:
+            supabd.table("jugador").update({"en_duo": True}).eq("id", id_j1).execute()
+            supabd.table("jugador").update({"en_duo": True}).eq("id", id_j2).execute()
+        except Exception as e:
+            st.error(f"❌ Error al crear el equipo: {e}")
+            return
         st.toast(f"✅ Equipo registrado: {id_equipo}", icon="🔥")
         st.rerun()
 
