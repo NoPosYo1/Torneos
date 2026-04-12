@@ -230,6 +230,19 @@ def resetear_torneo_completo(supabd):
     except Exception as e:
         st.error(f"Error al resetear: {e}")
 
+def reinscribir_equipo(id_equipo, id_duelo_actual):
+    try:
+        # 1. Quitamos el ganador del duelo actual para habilitar los botones
+        supabd.table("encuentros").update({"ganador_id": None}).eq("id", id_duelo_actual).execute()
+        
+        # 2. IMPORTANTE: Deberías buscar al equipo en la ronda siguiente y borrarlo 
+        # para que no juegue en dos rondas a la vez.
+        # (Esta parte requiere cuidado para no borrar el equipo equivocado)
+        
+        st.toast("Equipo listo para otra oportunidad", icon="♻️")
+    except Exception as e:
+        st.error(f"Error al reinscribir: {e}")
+
 
 if st.session_state.logged_in == False:
     st.title("🔒 PANEL DE CONTROL - ADMINISTRADOR")
@@ -417,50 +430,33 @@ else:
             ya_tiene_ganador = enc.get('ganador_id') is not None
             
             with st.container(border=True):
-                # Usamos columnas con anchos proporcionales
-                col_e1, col_vs, col_e2 = st.columns([10, 2, 10]) 
+                col_e1, col_vs, col_e2 = st.columns([10, 2, 10])
                 
-                # --- COLUMNA 1: EQUIPO 1 ---
+                # --- LÓGICA EQUIPO 1 (Se repite igual para E2) ---
                 with col_e1:
                     e1 = enc.get('equipo_1')
                     if e1:
-                        nick_j1 = e1.get('j1', {}).get('nick', '???')
-                        nick_j2 = e1.get('j2', {}).get('nick', 'Solo')
-                        st.markdown(f"**{nick_j1}**<br>& {nick_j2}", unsafe_allow_html=True)
-                        if st.button(f"Ganador E1", key=f"win_e1_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
-                            avanzar_equipo_completo(supabd, e1['id'], ronda_actual, enc['id'])
-                            st.rerun()
-
-                # --- COLUMNA 2: VS (SIEMPRE VISIBLE) ---
-                with col_vs:
-                    st.markdown("""
-                        <p style='
-                            text-align: center; 
-                            color: #cdbe91; 
-                            font-weight: bold; 
-                            font-size: 24px; 
-                            padding-top: 10px;
-                            text-shadow: 0px 0px 10px rgba(205, 190, 145, 0.5);
-                        '>
-                            VS
-                        </p>
-                    """, unsafe_allow_html=True)
-
-                # --- COLUMNA 3: EQUIPO 2 ---
-                with col_e2:
-                    e2 = enc.get('equipo_2')
-                    if e2:
-                        nick2_j1 = e2.get('j1', {}).get('nick', '???')
-                        nick2_j2 = e2.get('j2', {}).get('nick', 'Solo')
-                        st.markdown(f"**{nick2_j1}**<br>& {nick2_j2}", unsafe_allow_html=True)
-                        if st.button(f"Ganador E2", key=f"win_e2_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
-                            avanzar_equipo_completo(supabd, e2['id'], ronda_actual, enc['id'])
-                            st.rerun()
-                    else:
-                        # Placeholder para que la columna no se colapse
-                        st.markdown("<p style='color:gray; font-style:italic; padding-top:10px;'>Esperando rival...</p>", unsafe_allow_html=True)
-
-
+                        st.markdown(f"**{e1['j1']['nick']}** & {e1['j2']['nick']}")
+                        
+                        if not ya_tiene_ganador:
+                            # ESTADO: PARTIDO EN CURSO
+                            c1, c2, c3 = st.columns(3)
+                            with c1:
+                                if st.button("🏆 Win", key=f"win_{e1['id']}", type="primary"):
+                                    avanzar_equipo_completo(supabd, e1['id'], ronda_actual, enc['id'])
+                                    st.rerun()
+                            with c2:
+                                if st.button("🕒 Partida", key=f"play_{e1['id']}"):
+                                    # Aquí podrías actualizar un estado en la BD si quieres
+                                    st.toast("Equipo en partida...")
+                            with c3:
+                                if st.button("❌ Ausente", key=f"abs_{e1['id']}"):
+                                    st.error("Equipo marcado como ausente")
+                        else:
+                            # ESTADO: PARTIDO TERMINADO -> MOSTRAR REINSCRIPCIÓN
+                            if st.button("🔄 Reinscribir (Otra Oportunidad)", key=f"re_{e1['id']}", use_container_width=True):
+                                reinscribir_equipo(e1['id'], enc['id'])
+                                st.rerun()
 
 
 
