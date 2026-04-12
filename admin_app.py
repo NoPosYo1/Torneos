@@ -125,6 +125,8 @@ if st.session_state.logged_in == False:
     if password == supabd.table("passw").select("password").execute().data[0]["password"]:
         st.session_state.logged_in = True
         st.success("¡Acceso concedido! Redirigiendo...")
+        st.sleep(2)
+        st.rerun()
     else:
         st.warning("Acceso restringido a moderadores.")
 else:
