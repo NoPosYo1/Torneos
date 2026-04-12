@@ -142,7 +142,7 @@ else:
             f"""
             <style>
             [data-testid="stSidebar"] {{
-                background-image: url("imagenes/ARAM_Banner.ACCESSORIES_16_3.png");
+                background-image: url("https://images6.alphacoders.com/909/909375.jpg");
                 background-size: cover;
                 background-position: center;
                 background-repeat: no-repeat;
