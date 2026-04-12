@@ -14,7 +14,7 @@ st.sidebar.image("imagenes/ARAM_Banner.ACCESSORIES_16_3.png", use_container_widt
 st.sidebar.title("Reglas del Torneo")
 st.sidebar.markdown("""
             <style>
-            .stApp {
+            .stSidebar {
                 background-color: #010a13;
                 color: #f0e6d2;
             }            
