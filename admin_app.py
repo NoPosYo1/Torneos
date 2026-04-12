@@ -162,7 +162,8 @@ def avanzar_equipo_completo(supabd, id_equipo_ganador, ronda_actual):
     if partido_pendiente.data:
         # Llenamos el espacio del segundo equipo en un duelo existente
         id_partido = partido_pendiente.data[0]['id']
-        supabd.table("equipo_2", id_equipo_ganador).eq("id", id_partido).execute()
+        # FORMA CORRECTA
+        supabd.table("encuentros").update({"equipo_2": id_equipo_ganador}).eq("id", id_partido).execute()
         st.toast(f"Duelo completado en {proxima}", icon="⚔️")
     else:
         # Creamos un duelo nuevo donde el ganador espera rival
