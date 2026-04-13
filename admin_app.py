@@ -31,11 +31,6 @@ st.markdown(f"""
 )
 
 
-# 20000 milisegundos = 20 segundos
-count = st_autorefresh(interval=30000, limit=None, key="frequence_refresh")
-
-if count:
-    pass
 
 def cambiar_vista(nueva_vista):
     st.session_state.vista = nueva_vista
@@ -394,6 +389,9 @@ else:
         if st.sidebar.button("🚀 Generar Sorteo Ronda 1"):
             generar_ronda_1_automatica(supabd)
         # 1. Selector de Ronda (Slider para mejor UX)
+        if st.session_state.vista == 'rondas_resultados':
+            st_autorefresh(interval=600000, key="refresh_rondas")
+
         ronda_actual = st.select_slider(
             "Visualizar Fase:",
             options=["Ronda 1", "Ronda 2", "Ronda 3", "Ronda 4", "Ronda 5","Ronda 6","Ronda 7", "Semifinal", "Final"]
