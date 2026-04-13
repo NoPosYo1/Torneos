@@ -525,14 +525,12 @@ else:
                         # Placeholder para que la columna no se colapse
                         st.markdown("<p style='color:gray; font-style:italic; padding-top:10px;'>Esperando rival...</p>", unsafe_allow_html=True)
                         
-                        dict_equipos_sinvs = {}
                         res_enc = supabd.table("encuentros").select("id, equipo_1(id), equipo_2(id)").execute()
                         grupos_ocupados = set()
                         for reg in res_enc.data:
-                            if reg['equipo_1']:
-                                grupos_ocupados.add(reg['equipo_1']['id'])
                             if reg['equipo_2']:
                                 grupos_ocupados.add(reg['equipo_2']['id'])
+                                grupos_ocupados.add(reg['equipo_1']['id'])
                         res_todos_equipos = supabd.table("equipo").select("id").execute()
                         equipos_libres = [e for e in res_todos_equipos.data if e['id'] not in grupos_ocupados]
                         dict_equipos_sinvs = {e['id']: e for e in equipos_libres}
