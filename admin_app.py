@@ -241,9 +241,8 @@ def cambiar_estado_equipo(id_equipo, nuevo_estado):
     try:
         supabd.table("equipo").update({"estado": nuevo_estado}).eq("id", id_equipo).execute()
         st.toast("Se esta actualizando el estado...")
-        time.sleep(5)
+        time.sleep(2)
         st.toast(f"Estado del equipo actualizado a '{nuevo_estado}'", icon="🔄")
-        st.rerun()
     except Exception as e:
         st.error(f"Error al actualizar estado: {e}")
 
@@ -519,7 +518,7 @@ else:
                             with c1:
                                 if st.button(f"Ganador E2", key=f"win_e2_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
                                     avanzar_equipo_completo(supabd, e2['id'], ronda_actual, enc['id'])
-                                    cambiar_estado_equipo(e1['id'],"En Espera")
+                                    cambiar_estado_equipo(e2['id'],"En Espera")
                             with c2:                                                        
                                 if st.button("Equipo Ausente", key=f"ausente_e2_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
                                     cambiar_estado_equipo(e2['id'], "Ausente")
