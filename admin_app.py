@@ -446,8 +446,8 @@ else:
                         st.code(f"{nick_j1}", language="None")
                         st.code(f"{nick_j2}", language="None")
                         if estado_e1 == "Eliminado" or (enc['ganador_id'] != e1.get('id',{}) and ya_tiene_ganador):
-                            st.markdown(f"<div style='color: red; font-weight: bold;'>E1 ELIMINADO</div>", unsafe_allow_html=True)
-                            st.button("Reinscribir Equipo", key=f"reinscribir_e1_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True)
+                            st.markdown(f"<div style='color: red; font-weight: bold;'>ELIMINADO</div>", unsafe_allow_html=True)
+                            st.button("Reinscribir Equipo", key=f"reinscribir_e1_{enc['id']}", use_container_width=True)
                         else:        
                             c1, c2, c3 = st.columns(3)
                             with c1:
@@ -464,7 +464,6 @@ else:
                                     supabd.table("equipo").update({"estado": "Eliminado"}).eq("id", e1['id']).execute()
                                     st.rerun()
                                 if ya_tiene_ganador:
-
                                     st.markdown(f"<div style='color: green; font-weight: bold;'>GANADOR</div>", unsafe_allow_html=True)
                             
 
