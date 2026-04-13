@@ -523,7 +523,7 @@ else:
                     else:
                         # Placeholder para que la columna no se colapse
                         st.markdown("<p style='color:gray; font-style:italic; padding-top:10px;'>Esperando rival...</p>", unsafe_allow_html=True)
-                        st.markdown("<p style='color:gray; font-style:italic; padding-top:10px;'>Se mostraran equipos que no consiguieron rivales de la ronda actual y anteriores </p>")
+                        st.markdown("<p style='color:gray; font-style:italic; padding-top:10px;'>Se mostraran equipos que no consiguieron rivales de la ronda actual y anteriores </p>", unsafe_allow_html=True)
                         
                         res_enc = supabd.table("encuentros").select("id, equipo_1(id,estado), equipo_2(id,estado),ronda,ganador_id").execute()
                         grupos_ocupados = set()
