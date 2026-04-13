@@ -389,33 +389,33 @@ else:
         if st.sidebar.button("🚀 Generar Sorteo Ronda 1"):
             generar_ronda_1_automatica(supabd)
         # 1. Espacio para el temporizador en la parte superior
-            timer_placeholder = st.empty()
+        timer_placeholder = st.empty()
             
             # --- Tu lógica actual de consultas a la BD (res = supabd.table...) ---
             # ... 
 
             # 2. Configuración del tiempo (20 segundos)
-            if "last_refresh" not in st.session_state:
-                st.session_state.last_refresh = time.time()
+        if "last_refresh" not in st.session_state:
+            st.session_state.last_refresh = time.time()
 
-            tiempo_transcurrido = time.time() - st.session_state.last_refresh
-            tiempo_restante = max(0, 20 - int(tiempo_transcurrido))
+        tiempo_transcurrido = time.time() - st.session_state.last_refresh
+        tiempo_restante = max(0, 20 - int(tiempo_transcurrido))
 
             # 3. Mostrar el temporizador visual
-            with timer_placeholder.container():
-                col_t1, col_t2 = st.columns([1, 4])
-                col_t1.metric("Próximo Refresh", f"{tiempo_restante}s")
-                col_t2.progress(tiempo_transcurrido / 20)
+        with timer_placeholder.container():
+            col_t1, col_t2 = st.columns([1, 4])
+            col_t1.metric("Próximo Refresh", f"{tiempo_restante}s")
+            col_t2.progress(tiempo_transcurrido / 20)
 
             # 4. Lógica de Refresh automático
-            if tiempo_transcurrido >= 20:
-                st.session_state.last_refresh = time.time()
-                st.rerun()
-            if st.session_state.vista == 'rondas_resultados':
-                st_autorefresh(interval=20000, key="refresh_rondas")
+        if tiempo_transcurrido >= 20:
+            st.session_state.last_refresh = time.time()
+            st.rerun()
+        if st.session_state.vista == 'rondas_resultados':
+            st_autorefresh(interval=20000, key="refresh_rondas")
                 
-            if st.button("🔄 Actualizar Ahora"):
-                st.rerun()
+        if st.button("🔄 Actualizar Ahora"):
+            st.rerun()
 
     # --- El resto de tu código de brackets y botones ---
             
