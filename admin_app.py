@@ -29,8 +29,7 @@ st.markdown(f"""
 """, unsafe_allow_html=True
 )
 
-global gupos_por_ronda
-grupos_por_ronda = 8
+global grupos_por_ronda
 
 #-------------------FUNCIONES-----------------------
 
@@ -185,6 +184,8 @@ def generar_ronda_1_automatica(supabd):
     # 1. Traer y resetear equipos
     res = supabd.table("equipo").select("id").execute()
     equipos = [e['id'] for e in res.data]
+
+    grupos_por_ronda = st.text_input("Ingresa cuantos grupos va a tener cada grupo")
     
     for eq_id in equipos:
         supabd.table("equipo").update({"estado": "En Espera"}).eq("id", eq_id).execute()
@@ -216,7 +217,7 @@ def generar_ronda_1_automatica(supabd):
         # LÓGICA AUTOMÁTICA: 
         # contador_duelos // 8 -> cada 8 duelos cambia de letra
         # chr(65 + 0) es 'A', chr(65 + 1) es 'B', etc.
-        letra_grupo = chr(65 + (contador_duelos // gupos_por_ronda))
+        letra_grupo = chr(65 + (contador_duelos // grupos_por_ronda))
         
         duelos_a_insertar.append({
             "ronda": "Ronda 1",
