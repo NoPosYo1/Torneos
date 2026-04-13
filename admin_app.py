@@ -568,7 +568,7 @@ else:
                                     if not e2 or e2['estado'] == "Eliminado":
                                         n1 = e1['jugador_1']['nick'] if e1['jugador_1'] else "???"
                                         n2 = e1['jugador_2']['nick'] if e1['jugador_2'] else "Solo"
-                                        label = f"{n1} & {n2} (Rival Eliminado)"
+                                        label = f"{n1} & {n2}"
                                         huerfanos[label] = e1['id']
 
                                 # Caso 2: Equipo 2 está vivo pero el 1 está eliminado
@@ -576,7 +576,7 @@ else:
                                     if e1 and e1['estado'] == "Eliminado":
                                         n1 = e2['jugador_1']['nick'] if e2['jugador_1'] else "???"
                                         n2 = e2['jugador_2']['nick'] if e2['jugador_2'] else "Solo"
-                                        label = f"{n1} & {n2} (Rival Eliminado)"
+                                        label = f"{n1} & {n2}"
                                         huerfanos[label] = e2['id']
 
                             # 2. Mostrar el Selectbox
