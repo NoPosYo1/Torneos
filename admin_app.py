@@ -534,7 +534,7 @@ else:
                             if reg['equipo_2']:
                                 grupos_ocupados.add(reg['equipo_2']['id'])
                         res_todos_equipos = supabd.table("equipo").select("id").execute()
-                        equipos_libres = [e for e in res_todos_equipos.data if e['id'] not in grupos_ocupados and e['estado'] == 'En Linea']
+                        equipos_libres = [e for e in res_todos_equipos.data if e['id'] not in grupos_ocupados]
                         dict_equipos_sinvs = {e['id']: e for e in equipos_libres}
                         opciones_e2 = {f"Equipo {e['id']} - {e['jugador_1']['nick']} & {e['jugador_2']['nick'] if e['jugador_2'] else 'Solo'}": e['id'] for e in equipos_libres}
                         seleccion_e2 = st.selectbox("Seleccionar Equipo 2 para este duelo", options=[None] + list(opciones_e2.keys()), key=f"select_e2_{enc['id']}")
