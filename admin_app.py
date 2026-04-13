@@ -271,7 +271,7 @@ else:
         cambiar_vista('rondas_resultados')
 
     st.sidebar.markdown(
-        f'<img src="https://media1.tenor.com/m/PYORpU4s_zAAAAAd/zoe-laugh.gif" width="200">',
+        f'<img src="https://media1.tenor.com/m/PYORpU4s_zAAAAAd/zoe-laugh.gif">',
         unsafe_allow_html=True,
     )
 
