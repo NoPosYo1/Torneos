@@ -495,6 +495,24 @@ else:
                 # --- COLUMNA 2: VS (SIEMPRE VISIBLE) ---
                 with col_vs:
                     st.markdown("""""", unsafe_allow_html=True)  # Espaciador para centrar el VS
+                    st.markdown("""
+                        <style>
+                        /* Estilo para botones primarios (Dorado Hextech) */
+                        .stButton > button[kind="primary"] {
+                            background-color: #cdbe91 !important;
+                            color: #010a13 !important;
+                            border: 1px solid #785a28 !important;
+                            font-weight: bold !important;
+                        }
+                        
+                        /* Efecto hover (al pasar el mouse) */
+                        .stButton > button[kind="primary"]:hover {
+                            background-color: #f0e6d2 !important;
+                            border-color: #c8aa6e !important;
+                            box-shadow: 0px 0px 15px rgba(205, 190, 145, 0.5) !important;
+                        }
+                        </style>
+                    """, unsafe_allow_html=True)
                     #color letra VS
                     st.markdown("""
                         <p style='
