@@ -524,6 +524,7 @@ else:
                     else:
                         # Placeholder para que la columna no se colapse
                         st.markdown("<p style='color:gray; font-style:italic; padding-top:10px;'>Esperando rival...</p>", unsafe_allow_html=True)
+                        st.selectbox("Asignar Rival", options=[None] + [e['equipo_1']['j1']['nick'] for e in res.data if e.get('equipo_1')], key=f"asignar_rival_{enc['id']}", label_visibility="collapsed")
 
 
 
