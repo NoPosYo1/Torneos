@@ -214,7 +214,7 @@ def generar_ronda_1_automatica(supabd):
         # LÓGICA AUTOMÁTICA: 
         # contador_duelos // 8 -> cada 8 duelos cambia de letra
         # chr(65 + 0) es 'A', chr(65 + 1) es 'B', etc.
-        letra_grupo = chr(65 + (contador_duelos // 8))
+        letra_grupo = chr(65 + (contador_duelos // 2))
         
         duelos_a_insertar.append({
             "ronda": "Ronda 1",
