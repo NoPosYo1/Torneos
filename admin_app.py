@@ -217,21 +217,16 @@ def generar_ronda_1_automatica(supabd):
     except Exception as e:
         st.error(f"Error al generar ronda: {e}")
 
-def resetear_torneo_completo(supabd):
+def resetear_torneo_completo():
     try:
-        # 1. Eliminar todos los enfrentamientos (Brackets)
-        # Usamos un filtro que siempre sea cierto para borrar todo
+
         supabd.table("encuentros").delete().neq("id", 0).execute()
         
-        # 2. Resetear estados en la tabla Equipo
-        # Ponemos ganador_id en NULL y el estado en 'activo'
+        # Ponemos ganador_id en NULL
         supabd.table("equipo").update({
-            "estado": "activo" 
+            "estado": "En Linea" 
         }).neq("id", 0).execute()
 
-        # 3. Opcional: Si quieres disolver los dúos también
-        # supabd.table("jugador").update({"EnDuo": False}).neq("id", 0).execute()
-        # supabd.table("equipo").delete().neq("id", 0).execute()
 
         st.success("✅ Torneo reseteado. Brackets eliminados y equipos reactivados.")
     except Exception as e:
@@ -370,7 +365,7 @@ def panel_rondas():
             confirmacion = st.checkbox("Confirmo que deseo borrar todos los resultados.")
             
             if st.button("🚨 RESETEAR RONDAS Y VOLVER A R1", disabled=not confirmacion, type="primary"):
-                resetear_torneo_completo(supabd)
+                resetear_torneo_completo()
                 st.rerun()        
 
         #BOTON ACTUALIZAR Y ACTUALIZACION AUTOMATICA CADA 1 MIN
