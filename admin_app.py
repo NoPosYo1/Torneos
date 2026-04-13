@@ -617,7 +617,7 @@ def panel_rondas():
 
     # --- CONSULTA A SUPABASE ---
     res = supabd.table("encuentros").select("""
-        id, ronda, ganador_id, grupo,
+        id, ronda, ganador_id,
         equipo_1 (id, j1:jugador_1(nick), j2:jugador_2(nick), estado),
         equipo_2 (id, j1:jugador_1(nick), j2:jugador_2(nick), estado)
     """).eq("ronda", ronda_actual).execute()
