@@ -242,7 +242,7 @@ def cambiar_estado_equipo(supabd, id_equipo, nuevo_estado):
         supabd.table("equipo").update({"estado": nuevo_estado}).eq("id", id_equipo).execute()
         st.rerun()
         st.toast("Se esta actualizando el estado...")
-        time.sleep(3)
+        time.sleep(10)
         st.toast(f"Estado del equipo actualizado a '{nuevo_estado}'", icon="🔄")
     except Exception as e:
         st.error(f"Error al actualizar estado: {e}")
