@@ -525,25 +525,73 @@ else:
                         st.markdown("<p style='color:gray; font-style:italic; padding-top:10px;'>Esperando rival...</p>", unsafe_allow_html=True)
                         st.markdown("<p style='color:gray; font-style:italic; padding-top:10px;'>Se mostraran equipos que no consiguieron rivales de la ronda actual y anteriores </p>", unsafe_allow_html=True)
                         
-                        res_enc = supabd.table("encuentros").select("id, equipo_1(id,estado), equipo_2(id,estado),ronda,ganador_id").execute()
-                        grupos_ocupados = set()
-                        grupos_ocupados.add(e1['id'])
-                        for reg in res_enc.data:
-                            if reg['equipo_2']:
-                                if reg['equipo_1']['estado'] == "Eliminado" and reg['ganador_id'] == None:
+                        c1,c2 = st.columns(2)
+                        with c1:
+                            res_enc = supabd.table("encuentros").select("id, equipo_1(id,estado), equipo_2(id,estado),ronda,ganador_id").execute()
+                            grupos_ocupados = set()
+                            grupos_ocupados.add(e1['id'])
+                            for reg in res_enc.data:
+                                if reg['equipo_2']:
                                     grupos_ocupados.add(reg['equipo_2']['id'])
-                                elif reg['equipo_2']['estado'] == "Eliminado" and reg['ganador_id'] == None:
                                     grupos_ocupados.add(reg['equipo_1']['id'])
-                        
-                        res_todos_equipos = supabd.table("equipo").select("id, jugador_1(nick), jugador_2(nick)").execute()
-                        equipos_libres = [e for e in res_todos_equipos.data if e['id'] not in grupos_ocupados]
-                        opciones_e2 = {f"Equipo {e['id']} - {e['jugador_1']['nick']} & {e['jugador_2']['nick'] if e['jugador_2'] else 'Solo'}": e['id'] for e in equipos_libres}
-                        seleccion_e2 = st.selectbox("Seleccionar Equipo 2 para este duelo", options=[None] + list(opciones_e2.keys()), key=f"select_e2_{enc['id']}")
-                        if seleccion_e2:
-                            id_equipo_2 = opciones_e2[seleccion_e2]
-                            supabd.table("encuentros").update({"equipo_2": id_equipo_2}).eq("id", enc['id']).execute()
-                            st.toast(f"Equipo 2 asignado: {seleccion_e2}", icon="✅")
-                            st.rerun()
+                            
+                            res_todos_equipos = supabd.table("equipo").select("id, jugador_1(nick), jugador_2(nick)").execute()
+                            equipos_libres = [e for e in res_todos_equipos.data if e['id'] not in grupos_ocupados]
+                            opciones_e2 = {f"Equipo {e['id']} - {e['jugador_1']['nick']} & {e['jugador_2']['nick'] if e['jugador_2'] else 'Solo'}": e['id'] for e in equipos_libres}
+                            seleccion_e2 = st.selectbox("Seleccionar Equipo 2 para este duelo", options=[None] + list(opciones_e2.keys()), key=f"select_e2_{enc['id']}")
+                            if seleccion_e2:
+                                id_equipo_2 = opciones_e2[seleccion_e2]
+                                supabd.table("encuentros").update({"equipo_2": id_equipo_2}).eq("id", enc['id']).execute()
+                                st.toast(f"Equipo 2 asignado: {seleccion_e2}", icon="✅")
+                                st.rerun()
+                        with c2:
+                            # 1. Obtener todos los encuentros para analizar estados
+                            res_enc = supabd.table("encuentros").select("""
+                                id, 
+                                ganador_id,
+                                equipo_1(id, jugador_1(nick), jugador_2(nick), estado), 
+                                equipo_2(id, jugador_1(nick), jugador_2(nick), estado)
+                            """).execute()
+
+                            huerfanos = {}
+
+                            for reg in res_enc.data:
+                                # Si el duelo ya se cerró (tiene ganador), no nos interesa para reubicar
+                                if reg.get('ganador_id'):
+                                    continue
+                                    
+                                e1 = reg.get('equipo_1')
+                                e2 = reg.get('equipo_2')
+
+                                # Caso 1: Equipo 1 está vivo pero el 2 no existe o está eliminado
+                                if e1 and e1['estado'] != "Eliminado":
+                                    if not e2 or e2['estado'] == "Eliminado":
+                                        n1 = e1['jugador_1']['nick'] if e1['jugador_1'] else "???"
+                                        n2 = e1['jugador_2']['nick'] if e1['jugador_2'] else "Solo"
+                                        label = f"ID: {e1['id']} | {n1} & {n2} (Rival Eliminado)"
+                                        huerfanos[label] = e1['id']
+
+                                # Caso 2: Equipo 2 está vivo pero el 1 está eliminado
+                                if e2 and e2['estado'] != "Eliminado":
+                                    if e1 and e1['estado'] == "Eliminado":
+                                        n1 = e2['jugador_1']['nick'] if e2['jugador_1'] else "???"
+                                        n2 = e2['jugador_2']['nick'] if e2['jugador_2'] else "Solo"
+                                        label = f"ID: {e2['id']} | {n1} & {n2} (Rival Eliminado)"
+                                        huerfanos[label] = e2['id']
+
+                            # 2. Mostrar el Selectbox
+                            seleccion_huerfano = st.selectbox(
+                                "Asignar equipo huérfano como rival",
+                                options=[None] + list(huerfanos.keys()),
+                                key=f"reubicar_{enc['id']}" # 'enc' es el duelo vacío donde lo quieres meter
+                            )
+
+                            if seleccion_huerfano:
+                                id_reubicado = huerfanos[seleccion_huerfano]
+                                # Actualizamos el duelo vacío con este equipo
+                                supabd.table("encuentros").update({"equipo_2": id_reubicado}).eq("id", enc['id']).execute()
+                                st.toast("Equipo reubicado correctamente", icon="🔄")
+                                st.rerun()
         
         res_equipos_reintegracion = supabd.table('equipo').select('id','jugador_1(nick)','jugador_2(nick)').execute()
 
