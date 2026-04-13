@@ -609,8 +609,6 @@ else:
                                             n2 = eq2['jugador_2']['nick'] if eq2['jugador_2'] else "Solo"
                                             label = f"{n1} & {n2}"
                                             huerfanos[label] = eq2['id']
-                                elif reg.get['ronda'] != "Ronda 1":
-                                    pass
 
                             # 2. Mostrar el Selectbox
                             seleccion_huerfano = st.selectbox(
