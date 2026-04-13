@@ -30,7 +30,7 @@ st.markdown(f"""
 )
 
 
-
+#-------------------FUNCIONES-----------------------
 
 def cambiar_vista(nueva_vista):
     st.session_state.vista = nueva_vista
@@ -244,52 +244,10 @@ def cambiar_estado_equipo(id_equipo, nuevo_estado):
     except Exception as e:
         st.error(f"Error al actualizar estado: {e}")
 
-if st.session_state.logged_in == False:
-    st.title("🔒 PANEL DE CONTROL - ADMINISTRADOR")
-    password = st.text_input("Ingresa clave de Moderador", type="password")
-    if password == supabd.table("passw").select("password").execute().data[0]["password"]:
-        st.session_state.logged_in = True
-        st.success("¡Acceso concedido! Redirigiendo...")
-        st.rerun()
-    else:
-        st.warning("Acceso restringido a moderadores.")
-else:
-    if 'vista' not in st.session_state:
-        st.session_state.vista = 'principal'
-
-
-    st.sidebar.title("Reglas del Torneo")
-    
-    st.sidebar.title("Menú de Administración")
-    if st.sidebar.button("🏠 IR A PANEL PRINCIPAL", key="btn_principal"):
-        cambiar_vista('principal')
-    if st.sidebar.button("⚔️ IR A GESTIÓN DE EQUIPOS", key="btn_gestion_equipos"):
-        cambiar_vista('reg_equipo')
-    if st.sidebar.button("✏️ IR A EDICIÓN DE EQUIPOS", key="btn_edicion_equipos"):
-        cambiar_vista('editar_equipo')
-    if st.sidebar.button("📊 IR A RONDAS Y RESULTADOS", key="btn_rondas_resultados"):
-        if st.sidebar.button("🚀 Generar Sorteo Ronda 1"):
-            generar_ronda_1_automatica(supabd)
-        
-        with st.sidebar.expander("⚠️ ZONA DE PELIGRO - GESTIÓN CRÍTICA"):
-            st.warning("Al resetear se borrarán todos los avances de las rondas. Los equipos y jugadores permanecerán registrados.")
-            
-            confirmacion = st.checkbox("Confirmo que deseo borrar todos los resultados.")
-            
-            if st.button("🚨 RESETEAR RONDAS Y VOLVER A R1", disabled=not confirmacion, type="primary"):
-                resetear_torneo_completo(supabd)
-                st.rerun()        
-        cambiar_vista('rondas_resultados')
-
-
-    st.sidebar.markdown(
-        f'<img src="https://media1.tenor.com/m/PYORpU4s_zAAAAAd/zoe-laugh.gif">',
-        unsafe_allow_html=True,
-    )
 
 # --- FUNCIONES DE CADA PANEL ---
 #---------------------------------------------------------------------------------------------+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    def panel_control_admin():
+def panel_control_admin():
         st.title("🔧 PANEL DE CONTROL - ADMINISTRADOR")
         st.markdown("""
             Bienvenido al panel de control del torneo. Aquí puedes gestionar equipos, rondas y reportes.
@@ -306,7 +264,7 @@ else:
             </style>
         """, unsafe_allow_html=True)
 #---------------------------------------------------------------------------------------------+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    def panel_registro_equipo():
+def panel_registro_equipo():
         st.title("Gestión de Equipos")
         st.markdown("""
             Bienvenido al panel de control del torneo. -- Aquí puedes añadir Jugadores en solitario y a equipos de 2 jugadores.
@@ -330,7 +288,7 @@ else:
 
         st.info("Si quieres unir a 2 players solitarios en un equipo, vaya a la seccion de Edicion de Equipos y asignale un dúo a cada uno.")
 #---------------------------------------------------------------------------------------------+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    def panel_editar_equipo():
+def panel_editar_equipo():
 
         st.title("Editar Equipos Registrados")
         st.markdown("""
@@ -399,35 +357,30 @@ else:
                             st.toast(f"¡Dúo {player['nick']} & {nuevo_j2_nick} creado!", icon="⚔️")
                             st.rerun()
 #---------------------------------------------------------------------------------------------+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    def panel_rondas():
+def panel_rondas():
         st.title("🏆 Panel de Control de Brackets")
 
-        # 1. Espacio para el temporizador en la parte superior
-        if st.session_state.vista == 'rondas_resultados':
-            st_autorefresh(interval=600000, key="refresh_rondas")
-                
-        timer_placeholder = st.empty()
-
-        if "last_refresh" not in st.session_state:
-            st.session_state.last_refresh = time.time()
-
-        tiempo_transcurrido = time.time() - st.session_state.last_refresh
-
-        # Si ya pasamos el tiempo, forzamos el refresh ANTES de intentar dibujar nada
-        if tiempo_transcurrido >= 20:
-            st.session_state.last_refresh = time.time()
-            st.rerun()
-
-        # Solo si no hemos llegado a 20, dibujamos
-        tiempo_restante = max(0, 20 - int(tiempo_transcurrido))
-        with timer_placeholder.container():
-            if tiempo_restante == 10 or tiempo_restante == 20:
-                st.toast(f"Quedan {tiempo_restante} para reiniciar la pagina")
+        #BOTONES RESETEAR RONDA Y BORRAR TORNEO
+        if st.sidebar.button("🚀 Generar Sorteo Ronda 1"):
+            generar_ronda_1_automatica(supabd)
         
+        with st.sidebar.expander("⚠️ ZONA DE PELIGRO - GESTIÓN CRÍTICA"):
+            st.warning("Al resetear se borrarán todos los avances de las rondas. Los equipos y jugadores permanecerán registrados.")
+            
+            confirmacion = st.checkbox("Confirmo que deseo borrar todos los resultados.")
+            
+            if st.button("🚨 RESETEAR RONDAS Y VOLVER A R1", disabled=not confirmacion, type="primary"):
+                resetear_torneo_completo(supabd)
+                st.rerun()        
+
+        #BOTON ACTUALIZAR Y ACTUALIZACION AUTOMATICA CADA 1 MIN
+        if st.session_state.vista == 'rondas_resultados':
+            st_autorefresh(interval=600000, key="refresh_rondas")        
 
         if st.button("🔄 Actualizar Ahora"):
             st.rerun()
         
+        #Seleccionar Ronda
         ronda_actual = st.select_slider(
             "Visualizar Fase:",
             options=["Ronda 1", "Ronda 2", "Ronda 3", "Ronda 4", "Ronda 5","Ronda 6","Ronda 7", "Semifinal", "Final"]
@@ -649,6 +602,39 @@ else:
                                 st.toast("Equipo reubicado correctamente", icon="🔄")
                                 st.rerun()
         
+
+
+if st.session_state.logged_in == False:
+    st.title("🔒 PANEL DE CONTROL - ADMINISTRADOR")
+    password = st.text_input("Ingresa clave de Moderador", type="password")
+    if password == supabd.table("passw").select("password").execute().data[0]["password"]:
+        st.session_state.logged_in = True
+        st.success("¡Acceso concedido! Redirigiendo...")
+        st.rerun()
+    else:
+        st.warning("Acceso restringido a moderadores.")
+else:
+    if 'vista' not in st.session_state:
+        st.session_state.vista = 'principal'
+
+
+    st.sidebar.title("Reglas del Torneo")
+    
+    st.sidebar.title("Menú de Administración")
+    if st.sidebar.button("🏠 IR A PANEL PRINCIPAL", key="btn_principal"):
+        cambiar_vista('principal')
+    if st.sidebar.button("⚔️ IR A GESTIÓN DE EQUIPOS", key="btn_gestion_equipos"):
+        cambiar_vista('reg_equipo')
+    if st.sidebar.button("✏️ IR A EDICIÓN DE EQUIPOS", key="btn_edicion_equipos"):
+        cambiar_vista('editar_equipo')
+    if st.sidebar.button("📊 IR A RONDAS Y RESULTADOS", key="btn_rondas_resultados"):        
+        cambiar_vista('rondas_resultados')
+
+    st.sidebar.markdown(
+        f'<img src="https://media1.tenor.com/m/PYORpU4s_zAAAAAd/zoe-laugh.gif">',
+        unsafe_allow_html=True,
+    )
+
 
     # --- LÓGICA PRINCIPAL (EL SELECTOR) ---
     if st.session_state.vista == 'reg_equipo':
