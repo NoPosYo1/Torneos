@@ -589,7 +589,7 @@ else:
                             
                             for reg in res_enc.data:
                                 # Si el duelo ya se cerró (tiene ganador), no nos interesa para reubicar
-                                if reg.get('ronda') == "Ronda 1":
+                                if reg['ronda'] == "Ronda 1":
                                     if reg.get('ganador_id'):
                                         continue
                                     eq1 = reg.get('equipo_1')
