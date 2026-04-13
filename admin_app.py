@@ -237,13 +237,13 @@ def resetear_torneo_completo(supabd):
     except Exception as e:
         st.error(f"Error al resetear: {e}")
 
-def cambiar_estado_equipo(supabd, id_equipo, nuevo_estado):
+def cambiar_estado_equipo(id_equipo, nuevo_estado):
     try:
         supabd.table("equipo").update({"estado": nuevo_estado}).eq("id", id_equipo).execute()
-        st.rerun()
         st.toast("Se esta actualizando el estado...")
-        time.sleep(10)
+        time.sleep(5)
         st.toast(f"Estado del equipo actualizado a '{nuevo_estado}'", icon="🔄")
+        st.rerun()
     except Exception as e:
         st.error(f"Error al actualizar estado: {e}")
 
@@ -457,13 +457,13 @@ else:
                             with c1:
                                 if st.button(f"Ganador E1", key=f"win_e1_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
                                     avanzar_equipo_completo(supabd, e1['id'], ronda_actual, enc['id'])
-                                    cambiar_estado_equipo(supabd, e1['id'],"En Espera")
+                                    cambiar_estado_equipo(e1['id'],"En Espera")
                             with c2:                                                        
                                 if st.button("Equipo Ausente", key=f"ausente_e1_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
-                                    cambiar_estado_equipo(supabd, e1['id'], "Ausente")
+                                    cambiar_estado_equipo(e1['id'], "Ausente")
                             with c3:
                                 if st.button("Eliminado", key=f"eliminado_e1_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
-                                    cambiar_estado_equipo(supabd,e1['id'],"Eliminado")
+                                    cambiar_estado_equipo(e1['id'],"Eliminado")
                                     st.rerun()
                                 if ya_tiene_ganador:
                                     st.markdown(f"<div style='color: green; font-weight: bold;'>GANADOR</div>", unsafe_allow_html=True)
@@ -472,10 +472,11 @@ else:
                 # --- COLUMNA 2: VS (SIEMPRE VISIBLE) ---
                 with col_vs:
                     st.markdown("""""", unsafe_allow_html=True)  # Espaciador para centrar el VS
+                    #color letra VS
                     st.markdown("""
                         <p style='
                             text-align: center; 
-                            color: red; 
+                            color: #cdbe91; 
                             font-weight: bold; 
                             font-size: 24px; 
                             padding-top: 10px;
@@ -496,8 +497,8 @@ else:
                         # 3. El botón cambia de color visualmente si ya están en partida
                         if st.button("En Partida", key=f"btn_p_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True, type=tipo_boton):
                             st.toast("¡Equipos en combate!", icon="⚔️")
-                            cambiar_estado_equipo(supabd, e1['id'], "En Partida")
-                            cambiar_estado_equipo(supabd, e2['id'], "En Partida")
+                            cambiar_estado_equipo(e1['id'], "En Partida")
+                            cambiar_estado_equipo(e2['id'], "En Partida")
                             st.rerun()
 
                 # --- COLUMNA 3: EQUIPO 2 ---
@@ -518,13 +519,13 @@ else:
                             with c1:
                                 if st.button(f"Ganador E2", key=f"win_e2_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
                                     avanzar_equipo_completo(supabd, e2['id'], ronda_actual, enc['id'])
-                                    cambiar_estado_equipo(supabd, e1['id'],"En Espera")
+                                    cambiar_estado_equipo(e1['id'],"En Espera")
                             with c2:                                                        
                                 if st.button("Equipo Ausente", key=f"ausente_e2_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
-                                    cambiar_estado_equipo(supabd, e2['id'], "Ausente")
+                                    cambiar_estado_equipo(e2['id'], "Ausente")
                             with c3:
                                 if st.button("Eliminado", key=f"eliminado_e2_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
-                                    cambiar_estado_equipo(supabd, e2['id'], "Eliminado")
+                                    cambiar_estado_equipo(e2['id'], "Eliminado")
                             if ya_tiene_ganador:
                                 st.markdown(f"<div style='color: green; font-weight: bold;'>GANADOR</div>", unsafe_allow_html=True)
                     else:
