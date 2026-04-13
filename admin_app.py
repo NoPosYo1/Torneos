@@ -457,9 +457,11 @@ else:
                                 if st.button(f"Ganador E1", key=f"win_e1_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
                                     avanzar_equipo_completo(supabd, e1['id'], ronda_actual, enc['id'])
                                     cambiar_estado_equipo(e1['id'],"En Espera")
+                                    st.rerun()
                             with c2:                                                        
                                 if st.button("Equipo Ausente", key=f"ausente_e1_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
                                     cambiar_estado_equipo(e1['id'], "Ausente")
+                                    st.rerun()
                             with c3:
                                 if st.button("Eliminado", key=f"eliminado_e1_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
                                     cambiar_estado_equipo(e1['id'],"Eliminado")
@@ -519,12 +521,15 @@ else:
                                 if st.button(f"Ganador E2", key=f"win_e2_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
                                     avanzar_equipo_completo(supabd, e2['id'], ronda_actual, enc['id'])
                                     cambiar_estado_equipo(e2['id'],"En Espera")
+                                    st.rerun()
                             with c2:                                                        
                                 if st.button("Equipo Ausente", key=f"ausente_e2_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
                                     cambiar_estado_equipo(e2['id'], "Ausente")
+                                    st.rerun()
                             with c3:
                                 if st.button("Eliminado", key=f"eliminado_e2_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
                                     cambiar_estado_equipo(e2['id'], "Eliminado")
+                                    st.rerun()
                             if ya_tiene_ganador:
                                 st.markdown(f"<div style='color: green; font-weight: bold;'>GANADOR</div>", unsafe_allow_html=True)
                     else:
@@ -596,8 +601,6 @@ else:
                                 st.toast("Equipo reubicado correctamente", icon="🔄")
                                 st.rerun()
         
-        res_equipos_reintegracion = supabd.table('equipo').select('id','jugador_1(nick)','jugador_2(nick)').execute()
-
 
     # --- LÓGICA PRINCIPAL (EL SELECTOR) ---
     if st.session_state.vista == 'reg_equipo':
