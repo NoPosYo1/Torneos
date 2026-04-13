@@ -406,7 +406,6 @@ def panel_rondas():
             return
 
         st.divider()
-        time.sleep(5)
         # 3. Listado de Duelos
         for enc in res.data:
             ya_tiene_ganador = enc.get('ganador_id') is not None
