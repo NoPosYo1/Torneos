@@ -576,7 +576,7 @@ else:
                                     if e1 and e1['estado'] == "Eliminado":
                                         n1 = e2['jugador_1']['nick'] if e2['jugador_1'] else "???"
                                         n2 = e2['jugador_2']['nick'] if e2['jugador_2'] else "Solo"
-                                        label = f"ID: {e2['id']} | {n1} & {n2} (Rival Eliminado)"
+                                        label = f"{n1} & {n2} (Rival Eliminado)"
                                         huerfanos[label] = e2['id']
 
                             # 2. Mostrar el Selectbox
