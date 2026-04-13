@@ -525,8 +525,9 @@ else:
                         # Placeholder para que la columna no se colapse
                         st.markdown("<p style='color:gray; font-style:italic; padding-top:10px;'>Esperando rival...</p>", unsafe_allow_html=True)
                         
-                        res_enc = supabd.table("encuentros").select("id, equipo_1(id), equipo_2(id)").execute()
+                        res_enc = supabd.table("encuentros").select("id, equipo_1(id),equipo_1(nick), equipo_2(id),equipo_2(nick)").execute()
                         grupos_ocupados = set()
+                        grupos_ocupados.add(e1['id'])
                         for reg in res_enc.data:
                             if reg['equipo_2']:
                                 grupos_ocupados.add(reg['equipo_2']['id'])
