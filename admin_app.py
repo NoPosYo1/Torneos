@@ -185,8 +185,6 @@ def generar_ronda_1_automatica(supabd):
     # 1. Traer y resetear equipos
     res = supabd.table("equipo").select("id").execute()
     equipos = [e['id'] for e in res.data]
-
-    grupos_por_ronda = st.text_input("Ingresa cuantos grupos va a tener cada grupo")
     
     for eq_id in equipos:
         supabd.table("equipo").update({"estado": "En Espera"}).eq("id", eq_id).execute()
