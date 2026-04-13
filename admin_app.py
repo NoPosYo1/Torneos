@@ -30,7 +30,7 @@ st.markdown(f"""
 )
 
 global grupos_por_ronda
-grupos_por_ronda = 4
+grupos_por_ronda = 1
 
 #-------------------FUNCIONES-----------------------
 
