@@ -522,7 +522,7 @@ else:
                                 if st.button("Eliminado", key=f"eliminado_e2_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
                                     cambiar_estado_equipo(supabd, e2['id'], "Eliminado")
 
-                            if enc['ganador_id'] == id_equipo_2:
+                            if enc['ganador_id'] == e2.get('id',{}):
 
                                 st.markdown(f"<div style='color: green; font-weight: bold;'>GANADOR</div>", unsafe_allow_html=True)
                     else:
