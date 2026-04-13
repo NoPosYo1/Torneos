@@ -627,9 +627,8 @@ else:
         cambiar_vista('reg_equipo')
     if st.sidebar.button("✏️ IR A EDICIÓN DE EQUIPOS", key="btn_edicion_equipos"):
         cambiar_vista('editar_equipo')
-    if st.sidebar.button("📊 IR A RONDAS Y RESULTADOS", key="btn_rondas_resultados"):        
+    if st.sidebar.button("📊 IR A RONDAS Y RESULTADOS", key="btn_rondas_resultados"):
         cambiar_vista('rondas_resultados')
-
     st.sidebar.markdown(
         f'<img src="https://media1.tenor.com/m/PYORpU4s_zAAAAAd/zoe-laugh.gif">',
         unsafe_allow_html=True,
