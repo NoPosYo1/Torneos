@@ -484,13 +484,21 @@ else:
                             VS
                         </p>
                     """, unsafe_allow_html=True)
-                    if e2:    
-                        if st.button("En Partida", key=f"en_partida_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
-                            st.toast("¡Marcado como en partida!", icon="🎮")
-                            if e1:
-                                cambiar_estado_equipo(supabd,e1['id'],"En Partida")
-                            if enc.get('equipo_2'):
-                                cambiar_estado_equipo(supabd,e2['id'],"En Partida")
+# --- LÓGICA DENTRO DEL BUCLE DE ENCUENTROS ---
+                    if e2:
+                        # 1. Determinar el estado actual (asumiendo que e1 y e2 traen el campo 'estado')
+                        # Si ambos están "En Partida", el botón debe resaltar
+                        estando_en_partida = (e1.get('estado') == "En Partida" and e2.get('estado') == "En Partida")
+                        
+                        # 2. Elegir el tipo de botón (primary es el color de marca, suele ser azul o naranja)
+                        tipo_boton = "primary" if estando_en_partida else "secondary"
+
+                        # 3. El botón cambia de color visualmente si ya están en partida
+                        if st.button("🎮 En Partida", key=f"btn_p_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True, type=tipo_boton):
+                            st.toast("¡Equipos en combate!", icon="⚔️")
+                            cambiar_estado_equipo(supabd, e1['id'], "En Partida")
+                            cambiar_estado_equipo(supabd, e2['id'], "En Partida")
+                            st.rerun()
 
                 # --- COLUMNA 3: EQUIPO 2 ---
                 with col_e2:
