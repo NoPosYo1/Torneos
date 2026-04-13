@@ -187,7 +187,7 @@ def generar_ronda_1_automatica(supabd):
     equipos = [e['id'] for e in res.data]
     supabd.table("encuentros").delete().neq("id", 0).execute()  # Limpiar rondas anteriores antes de generar la nueva
     st.toast("Generando Ronda 1... Esto puede tardar unos segundos.", icon="⚔️")
-
+    time.sleep(5)
     if not equipos:
         st.error("No hay equipos activos para emparejar.")
         return
@@ -358,7 +358,6 @@ def panel_rondas():
         #BOTONES RESETEAR RONDA Y BORRAR TORNEO
         if st.sidebar.button("🚀 Generar Sorteo Ronda 1"):
             generar_ronda_1_automatica(supabd)
-            time.sleep(5)
 
         
         with st.sidebar.expander("⚠️ ZONA DE PELIGRO - GESTIÓN CRÍTICA"):
