@@ -29,6 +29,8 @@ st.markdown(f"""
 """, unsafe_allow_html=True
 )
 
+global gupos_por_ronda
+grupos_por_ronda = 8
 
 #-------------------FUNCIONES-----------------------
 
@@ -214,7 +216,7 @@ def generar_ronda_1_automatica(supabd):
         # LÓGICA AUTOMÁTICA: 
         # contador_duelos // 8 -> cada 8 duelos cambia de letra
         # chr(65 + 0) es 'A', chr(65 + 1) es 'B', etc.
-        letra_grupo = chr(65 + (contador_duelos // 2))
+        letra_grupo = chr(65 + (contador_duelos // gupos_por_ronda))
         
         duelos_a_insertar.append({
             "ronda": "Ronda 1",
@@ -418,8 +420,8 @@ def panel_rondas():
     tabs = st.tabs([f"GRUPO {n}" for n in nombres_grupos])
 
     # Función interna para no repetir el código del renderizado del versus
-    def renderizar_duelos(lista_encuentros):
-        for enc in lista_encuentros[:8]: 
+    def renderizar_duelos(lista_encuentros,nombre_grupo):
+        for enc in lista_encuentros[:grupos_por_ronda]: 
             ya_tiene_ganador = enc.get('ganador_id') is not None
             e1 = enc.get('equipo_1')
             e2 = enc.get('equipo_2')
@@ -607,11 +609,36 @@ def panel_rondas():
                                 supabd.table("encuentros").update({"equipo_2": id_reubicado}).eq("id", enc['id']).execute()
                                 st.toast("Equipo reubicado correctamente", icon="🔄")
                                 st.rerun()
+        if len(lista_encuentros) < 8:
+            st.divider()
+            with st.expander(f"Añadir nuevo versus al {nombre_grupo}"):
+                res_eq = supabd.table("equipo").select("id, jugador_1(nick), jugador_2(nick)").execute()
+                opciones = {f"ID {e['id']} - {e['jugador_1']['nick']}": e['id'] for e in res_eq.data}
+                
+                col1, col2 = st.columns(2)
+                with col1:
+                    e1_sel = st.selectbox("Equipo 1", [None] + list(opciones.keys()), key=f"add_e1_{nombre_grupo}")
+                with col2:
+                    e2_sel = st.selectbox("Equipo 2", [None] + list(opciones.keys()), key=f"add_e2_{nombre_grupo}")
 
+                if st.button("Confirmar Nuevo Encuentro", use_container_width=True):
+                    if e1_sel and e2_sel:
+                        nuevo_duelo = {
+                            "ronda": ronda_actual, # Asegúrate de que esta variable sea accesible
+                            "equipo_1": opciones[e1_sel],
+                            "equipo_2": opciones[e2_sel],
+                            "grupo": nombre_grupo.replace("Grupo ", ""), # Extrae solo la letra 'A', 'B', etc.
+                            "formato": "eliminacion_directa"
+                        }
+                        supabd.table("encuentros").insert(nuevo_duelo).execute()
+                        st.success("Versus añadido!")
+                        st.rerun()
+                    else:
+                        st.error("Debes seleccionar ambos equipos.")
     # --- REPARTO DE DUELOS POR PESTAÑA ---
     for i, nombre in enumerate(nombres_grupos):
         with tabs[i]:
-            renderizar_duelos(grupos_detectados[nombre])
+            renderizar_duelos(grupos_detectados[nombre],nombre)
 
 
 
