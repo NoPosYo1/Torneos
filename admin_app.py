@@ -445,7 +445,7 @@ else:
                         nick_j2 = e1.get('j2', {}).get('nick', 'Solo')
                         st.code(f"{nick_j1}", language="None")
                         st.code(f"{nick_j2}", language="None")
-                        if estado_e1 == "Eliminado" or (enc['ganador_id'] != e1.get('id',{}) and ya_tiene_ganador):
+                        if estado_e1 == "Eliminado" or (enc['ganador_id'] != e1['id'] and ya_tiene_ganador):
                             st.markdown(f"<div style='color: red; font-weight: bold;'>ELIMINADO</div>", unsafe_allow_html=True)
                             st.button("Reinscribir Equipo", key=f"reinscribir_e1_{enc['id']}", use_container_width=True)
                         else:        
@@ -457,11 +457,11 @@ else:
                             with c2:                                                        
                                 if st.button("Equipo Ausente", key=f"ausente_e1_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
                                     st.toast("¡Marcado como ausente!", icon="⚠️")
-                                    supabd.table("equipo").update({"estado": "Ausente"}).eq("id", e1['id']).execute()
+                                    cambiar_estado_equipo(supabd, e1['id'], "Ausente")
                             with c3:
                                 if st.button("Eliminado", key=f"eliminado_e1_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
-                                    st.toast("¡Marcado como eliminado!")                                    
-                                    supabd.table("equipo").update({"estado": "Eliminado"}).eq("id", e1['id']).execute()
+                                    st.toast("¡Marcado como eliminado!")
+                                    cambiar_estado_equipo(supabd,e1['id'],"Eliminado")
                                     st.rerun()
                                 if ya_tiene_ganador:
                                     st.markdown(f"<div style='color: green; font-weight: bold;'>GANADOR</div>", unsafe_allow_html=True)
@@ -497,17 +497,11 @@ else:
                         nick2_j1 = e2.get('j1', {}).get('nick', '???')
                         nick2_j2 = e2.get('j2', {}).get('nick', 'Solo')
                         st.code(f"{nick2_j1}", language="None")
-                        st.code(f"{nick2_j2}", language="None")
-                        if ya_tiene_ganador and enc['ganador_id'] == e2.get('id',{}):
-                            st.markdown(f"<div style='color: green; font-weight: bold;'>GANADOR</div>", unsafe_allow_html=True)
-                        elif ya_tiene_ganador and enc['ganador_id'] != e2.get('id',{}):
-                            cambiar_estado_equipo(supabd,e2['id'], "Eliminado")
-                            st.markdown(f"<div style ='color: red; font-weight: bold; '>ELIMINADO</div>",unsafe_allow_html=True)
-                            st.button("Reinscribir Equipaso",key=f"reincribir_e2_{enc['id']}",use_container_width=True)
-                        
+                        st.code(f"{nick2_j2}", language="None")                        
 
-                        if estado_e2 == "eliminado":
-                            st.button("Reinscribir Equipo", key=f"reinscribir_e2_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True)
+                        if estado_e2 == "eliminado" or (enc['ganador_id'] != e2['id'] and ya_tiene_ganador):
+                            st.markdown("<div style='color': red; font-weight: bold; >ELIMINADO </div>",unsafe_allow_html=True)
+                            st.button("Reinscribir Equipo", key=f"reinscribir_e2_{enc['id']}", use_container_width=True)
                         else:
                             
                             c1, c2, c3 = st.columns(3)
