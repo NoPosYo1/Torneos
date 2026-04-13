@@ -352,7 +352,7 @@ def panel_editar_equipo():
                             st.toast(f"¡Dúo {player['nick']} & {nuevo_j2_nick} creado!", icon="⚔️")
                             st.rerun()
 #---------------------------------------------------------------------------------------------+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-def panel_rondas():
+def panel_rondas1():
         st.title("🏆 Panel de Control de Brackets")
 
         #BOTONES RESETEAR RONDA Y BORRAR TORNEO
@@ -595,7 +595,100 @@ def panel_rondas():
                                 supabd.table("encuentros").update({"equipo_2": id_reubicado}).eq("id", enc['id']).execute()
                                 st.toast("Equipo reubicado correctamente", icon="🔄")
                                 st.rerun()
-        
+
+def panel_rondas():
+    st.title("🏆 Panel de Control de Brackets")
+
+    # --- SIDEBAR Y CONFIGURACIÓN (Mantenemos tu lógica igual) ---
+    if st.sidebar.button("🚀 Generar Sorteo Ronda 1"):
+        generar_ronda_1_automatica(supabd)
+
+    with st.sidebar.expander("⚠️ ZONA DE PELIGRO - GESTIÓN CRÍTICA"):
+        st.warning("Al resetear se borrarán todos los avances...")
+        confirmacion = st.checkbox("Confirmo que deseo borrar todos los resultados.")
+        if st.button("🚨 RESETEAR RONDAS Y VOLVER A R1", disabled=not confirmacion, type="primary"):
+            # resetear_torneo_completo() # Asegúrate de que esta función exista
+            st.rerun()
+
+    ronda_actual = st.select_slider(
+        "Visualizar Fase:",
+        options=["Ronda 1", "Ronda 2", "Ronda 3", "Ronda 4", "Ronda 5", "Ronda 6", "Ronda 7", "Semifinal", "Final"]
+    )
+
+    # --- CONSULTA A SUPABASE ---
+    res = supabd.table("encuentros").select("""
+        id, ronda, ganador_id, grupo,
+        equipo_1 (id, j1:jugador_1(nick), j2:jugador_2(nick), estado),
+        equipo_2 (id, j1:jugador_1(nick), j2:jugador_2(nick), estado)
+    """).eq("ronda", ronda_actual).execute()
+
+    if not res.data:
+        st.info(f"No hay encuentros generados para {ronda_actual}")
+        return
+
+    st.divider()
+
+    # --- NUEVA ESTRUCTURA DE GRUPOS ---
+    # Creamos las pestañas para Grupo A y Grupo B
+    tab_a, tab_b = st.tabs(["📊 GRUPO A", "📊 GRUPO B"])
+
+    # Función interna para no repetir el código del renderizado del versus
+    def renderizar_duelos(lista_encuentros):
+        # Limitamos a 8 versus por grupo como pediste
+        for enc in lista_encuentros[:8]: 
+            ya_tiene_ganador = enc.get('ganador_id') is not None
+            
+            with st.container(border=True):
+                col_e1, col_vs, col_e2 = st.columns([10, 2, 10])
+                e1 = enc.get('equipo_1')
+                e2 = enc.get('equipo_2')
+
+                # --- LÓGICA EQUIPO 1 ---
+                with col_e1:
+                    if e1:
+                        st.code(f"{e1.get('j1', {}).get('nick', '???')}\n{e1.get('j2', {}).get('nick', 'Solo')}", language="None")
+                        # (Aquí va el resto de tu lógica de botones Ganador E1, Ausente, etc.)
+                        c1, c2, c3 = st.columns(3)
+                        if st.button(f"Ganador E1", key=f"win_e1_{enc['id']}", disabled=ya_tiene_ganador):
+                            avanzar_equipo_completo(supabd, e1['id'], ronda_actual, enc['id'])
+                            st.rerun()
+                        # ... (copiar el resto de tus botones de Ausente/Eliminado aquí)
+
+                # --- COLUMNA VS (Tu CSS y botón En Partida) ---
+                with col_vs:
+                    st.markdown("<p style='text-align:center; color:#cdbe91; font-weight:bold;'>VS</p>", unsafe_allow_html=True)
+                    if e2:
+                        estando_en_partida = (e1.get('estado') == "En Partida" and e2.get('estado') == "En Partida")
+                        if st.button("⚔️", key=f"btn_p_{enc['id']}", disabled=ya_tiene_ganador, type="primary" if estando_en_partida else "secondary"):
+                            cambiar_estado_equipo(e1['id'], "En Partida")
+                            cambiar_estado_equipo(e2['id'], "En Partida")
+                            st.rerun()
+
+                # --- LÓGICA EQUIPO 2 ---
+                with col_e2:
+                    if e2:
+                        st.code(f"{e2.get('j1', {}).get('nick', '???')}\n{e2.get('j2', {}).get('nick', 'Solo')}", language="None")
+                        # ... (copiar tus botones de Ganador E2, etc. aquí)
+                    else:
+                        st.caption("Esperando rival...")
+
+    # --- REPARTO DE DUELOS POR PESTAÑA ---
+    # Filtramos la data de Supabase por el campo 'grupo' (debes tenerlo en tu DB)
+    duelos_a = [d for d in res.data if d.get('grupo') == 'A']
+    duelos_b = [d for d in res.data if d.get('grupo') == 'B']
+
+    with tab_a:
+        if duelos_a:
+            renderizar_duelos(duelos_a)
+        else:
+            st.write("No hay encuentros en el Grupo A")
+
+    with tab_b:
+        if duelos_b:
+            renderizar_duelos(duelos_b)
+        else:
+            st.write("No hay encuentros en el Grupo B")
+
 
 
 if st.session_state.logged_in == False:
