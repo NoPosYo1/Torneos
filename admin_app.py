@@ -395,27 +395,33 @@ else:
             # ... 
 
             # 2. Configuración del tiempo (20 segundos)
+        # --- Dentro de panel_rondas ---
+
         if "last_refresh" not in st.session_state:
             st.session_state.last_refresh = time.time()
 
         tiempo_transcurrido = time.time() - st.session_state.last_refresh
-        tiempo_restante = max(0, 20 - int(tiempo_transcurrido))
 
-            # 3. Mostrar el temporizador visual
-        with timer_placeholder.container():
-            col_t1, col_t2 = st.columns([1, 4])
-            col_t1.metric("Próximo Refresh", f"{tiempo_restante}s")
-            col_t2.progress(tiempo_transcurrido / 20)
-
-            # 4. Lógica de Refresh automático
+        # Si ya pasamos el tiempo, forzamos el refresh ANTES de intentar dibujar nada
         if tiempo_transcurrido >= 20:
             st.session_state.last_refresh = time.time()
             st.rerun()
+
+        # Solo si no hemos llegado a 20, dibujamos
+        tiempo_restante = max(0, 20 - int(tiempo_transcurrido))
+        progreso = min(tiempo_transcurrido / 20, 1.0) # El min() es el salvavidas
+
+        with timer_placeholder.container():
+            col_t1, col_t2 = st.columns([1, 4])
+            col_t1.metric("Refrescando en...", f"{tiempo_restante}s")
+            col_t2.progress(progreso)
+        
         if st.session_state.vista == 'rondas_resultados':
             st_autorefresh(interval=20000, key="refresh_rondas")
                 
         if st.button("🔄 Actualizar Ahora"):
             st.rerun()
+        
 
     # --- El resto de tu código de brackets y botones ---
             
