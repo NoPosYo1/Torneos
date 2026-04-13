@@ -525,6 +525,8 @@ else:
                             if enc['ganador_id'] == e2.get('id',{}):
 
                                 st.markdown(f"<div style='color: green; font-weight: bold;'>GANADOR</div>", unsafe_allow_html=True)
+                            else:
+                                st.markdown(f"<div style ='color: red; font-weight: bold; '>ELIMINADO</div>",unsafe_allow_html=True)
                     else:
                         # Placeholder para que la columna no se colapse
                         st.markdown("<p style='color:gray; font-style:italic; padding-top:10px;'>Esperando rival...</p>", unsafe_allow_html=True)
