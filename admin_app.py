@@ -260,7 +260,7 @@ else:
 
     st.sidebar.title("Reglas del Torneo")
 
-    st.sidebar.image("https://tenor.com/es/view/zoe-laugh-lol-league-of-legends-netto-gif-22209792")
+    st.sidebar.image("https://media1.tenor.com/m/PYORpU4s_zAAAAAd/zoe-laugh.gif")
     
     st.sidebar.title("Menú de Administración")
     if st.sidebar.button("🏠 IR A PANEL PRINCIPAL", key="btn_principal"):
