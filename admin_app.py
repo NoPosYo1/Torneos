@@ -272,6 +272,12 @@ else:
     if st.sidebar.button("📊 IR A RONDAS Y RESULTADOS", key="btn_rondas_resultados"):
         cambiar_vista('rondas_resultados')
 
+    import streamlit as st
+
+    st.markdown(
+        f'<img src="https://media.giphy.com/media/ejm8tkCyK7SJJ6dhhc/giphy.gif" width="200">',
+        unsafe_allow_html=True,
+    )
 
 # --- FUNCIONES DE CADA PANEL ---
 #---------------------------------------------------------------------------------------------+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
