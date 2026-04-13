@@ -32,7 +32,7 @@ st.markdown(f"""
 
 
 # 20000 milisegundos = 20 segundos
-count = st_autorefresh(interval=10000, limit=None, key="frequence_refresh")
+count = st_autorefresh(interval=30000, limit=None, key="frequence_refresh")
 
 if count:
     pass
