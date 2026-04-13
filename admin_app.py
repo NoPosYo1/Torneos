@@ -187,7 +187,6 @@ def generar_ronda_1_automatica(supabd):
     equipos = [e['id'] for e in res.data]
     supabd.table("encuentros").delete().neq("id", 0).execute()  # Limpiar rondas anteriores antes de generar la nueva
     st.toast("Generando Ronda 1... Esto puede tardar unos segundos.", icon="⚔️")
-    time.sleep(5)  # Pequeña pausa para asegurar que los estados se actualicen antes de generar la ronda
 
     if not equipos:
         st.error("No hay equipos activos para emparejar.")
@@ -213,6 +212,7 @@ def generar_ronda_1_automatica(supabd):
     # 4. Insertar en la BD
     try:
         supabd.table("encuentros").insert(duelos_a_insertar).execute()
+
         st.success(f"✅ Ronda 1 generada con {len(duelos_a_insertar)} enfrentamientos.")
     except Exception as e:
         st.error(f"Error al generar ronda: {e}")
@@ -304,7 +304,7 @@ def panel_editar_equipo():
         
         res_ocupados = supabd.table("jugador").select("id, nick, EnDuo").is_("EnDuo", True).execute()
         players_ocupados = set()
-
+        
         for reg in res_ocupados.data:
             if reg['EnDuo'] == True:
                 players_ocupados.add(reg['id'])
@@ -358,6 +358,8 @@ def panel_rondas():
         #BOTONES RESETEAR RONDA Y BORRAR TORNEO
         if st.sidebar.button("🚀 Generar Sorteo Ronda 1"):
             generar_ronda_1_automatica(supabd)
+            time.sleep(5)
+
         
         with st.sidebar.expander("⚠️ ZONA DE PELIGRO - GESTIÓN CRÍTICA"):
             st.warning("Al resetear se borrarán todos los avances de las rondas. Los equipos y jugadores permanecerán registrados.")
@@ -406,7 +408,6 @@ def panel_rondas():
 
         st.divider()
 
-        # 3. Listado de Duelos
         # 3. Listado de Duelos
         for enc in res.data:
             ya_tiene_ganador = enc.get('ganador_id') is not None
