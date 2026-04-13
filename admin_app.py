@@ -583,7 +583,8 @@ else:
                                 id, 
                                 ganador_id,
                                 equipo_1(id, jugador_1(nick), jugador_2(nick), estado), 
-                                equipo_2(id, jugador_1(nick), jugador_2(nick), estado)
+                                equipo_2(id, jugador_1(nick), jugador_2(nick), estado),
+                                ronda
                             """).execute()
                             huerfanos = {}
                             
