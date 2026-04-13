@@ -389,6 +389,9 @@ else:
         if st.sidebar.button("🚀 Generar Sorteo Ronda 1"):
             generar_ronda_1_automatica(supabd)
         # 1. Espacio para el temporizador en la parte superior
+        if st.session_state.vista == 'rondas_resultados':
+            st_autorefresh(interval=20000, key="refresh_rondas")
+                
         timer_placeholder = st.empty()
             
             # --- Tu lógica actual de consultas a la BD (res = supabd.table...) ---
@@ -416,9 +419,7 @@ else:
             col_t1.metric("Refrescando en...", f"{tiempo_restante}s")
             col_t2.progress(progreso)
         
-        if st.session_state.vista == 'rondas_resultados':
-            st_autorefresh(interval=20000, key="refresh_rondas")
-                
+
         if st.button("🔄 Actualizar Ahora"):
             st.rerun()
         
