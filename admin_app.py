@@ -1,5 +1,5 @@
 import time
-
+from streamlit_autorefresh import st_autorefresh
 import streamlit as st
 import random
 from supabase import create_client
@@ -31,6 +31,11 @@ st.markdown(f"""
 )
 
 
+# 20000 milisegundos = 20 segundos
+count = st_autorefresh(interval=10000, limit=None, key="frequence_refresh")
+
+if count:
+    pass
 
 def cambiar_vista(nueva_vista):
     st.session_state.vista = nueva_vista
@@ -240,8 +245,6 @@ def resetear_torneo_completo(supabd):
 def cambiar_estado_equipo(id_equipo, nuevo_estado):
     try:
         supabd.table("equipo").update({"estado": nuevo_estado}).eq("id", id_equipo).execute()
-        st.toast("Se esta actualizando el estado...")
-        time.sleep(2)
         st.toast(f"Estado del equipo actualizado a '{nuevo_estado}'", icon="🔄")
     except Exception as e:
         st.error(f"Error al actualizar estado: {e}")
