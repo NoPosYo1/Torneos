@@ -543,18 +543,6 @@ else:
                             supabd.table("encuentros").update({"equipo_2": id_equipo_2}).eq("id", enc['id']).execute()
                             st.toast(f"Equipo 2 asignado: {seleccion_e2}", icon="✅")
                             st.rerun()
-                        
-                        """
-                        res_ocupados = supabd.table("jugador").select("id, nick, EnDuo").is_("EnDuo", True).execute()
-                        players_ocupados = set()
-
-                        for reg in res_ocupados.data:
-                            if reg['EnDuo'] == True:
-                                players_ocupados.add(reg['id'])
-                        res_todos = supabd.table("jugador").select("id, nick").execute()
-                        jugadores_libres = [j for j in res_todos.data if j['id'] not in players_ocupados]
-                        dict_jugadores = {j['nick']: j['id'] for j in jugadores_libres}
-                        """
 
     # --- LÓGICA PRINCIPAL (EL SELECTOR) ---
     if st.session_state.vista == 'reg_equipo':
