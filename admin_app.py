@@ -443,16 +443,18 @@ else:
 
                     if e1:
 
+                        
+
+                        nick_j1 = e1.get('j1', {}).get('nick', '???')
+                        nick_j2 = e1.get('j2', {}).get('nick', 'Solo')
+                        st.code(f"{nick_j1}", language="None")
+                        st.code(f"{nick_j2}", language="None")
+                        
                         if estado_e1 == "eliminado":
                             st.markdown(f"<div style='color: red; font-weight: bold;'>E1 ELIMINADO</div>", unsafe_allow_html=True)
                             st.button("Reinscribir Equipo", key=f"reinscribir_e1_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True)
-                        else:
-
-                            nick_j1 = e1.get('j1', {}).get('nick', '???')
-                            nick_j2 = e1.get('j2', {}).get('nick', 'Solo')
-                            st.code(f"{nick_j1}", language="None")
-                            st.code(f"{nick_j2}", language="None")
-
+                            
+                        else:        
                             c1, c2, c3 = st.columns(3)
                             with c1:
                                 if st.button(f"Ganador E1", key=f"win_e1_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
@@ -464,11 +466,11 @@ else:
                                     supabd.table("equipo").update({"estado": "Ausente"}).eq("id", e1['id']).execute()
                             with c3:
                                 if st.button("Eliminado", key=f"eliminado_e1_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
-                                    st.toast("¡Marcado como eliminado!")
+                                    st.toast("¡Marcado como eliminado!")                                    
                                     supabd.table("equipo").update({"estado": "Eliminado"}).eq("id", e1['id']).execute()
-                            if ya_tiene_ganador:
+                                if ya_tiene_ganador:
 
-                                st.markdown(f"<div style='color: green; font-weight: bold;'>GANADOR</div>", unsafe_allow_html=True)
+                                    st.markdown(f"<div style='color: green; font-weight: bold;'>GANADOR</div>", unsafe_allow_html=True)
                             
 
                 # --- COLUMNA 2: VS (SIEMPRE VISIBLE) ---
