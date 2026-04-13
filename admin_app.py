@@ -180,42 +180,58 @@ def avanzar_equipo_completo(supabd, id_equipo_ganador, ronda_actual, id_duelo_ac
     st.toast("Progreso guardado correctamente")
 
 def generar_ronda_1_automatica(supabd):
-    # 1. Traer todos los equipos activos
+    # 1. Traer y resetear equipos
     res = supabd.table("equipo").select("id").execute()
-    for equipo in res.data:
-        supabd.table("equipo").update({"estado": "En Espera"}).eq("id", equipo['id']).execute()
     equipos = [e['id'] for e in res.data]
-    supabd.table("encuentros").delete().neq("id", 0).execute()  # Limpiar rondas anteriores antes de generar la nueva
-    st.toast("Generando Ronda 1... Esto puede tardar unos segundos.", icon="⚔️")
-    time.sleep(5)
+    
+    for eq_id in equipos:
+        supabd.table("equipo").update({"estado": "En Espera"}).eq("id", eq_id).execute()
+    
+    # Limpiar encuentros previos
+    supabd.table("encuentros").delete().neq("id", 0).execute()
+    
+    st.toast("Generando Ronda 1...", icon="⚔️")
+    time.sleep(2)
+
     if not equipos:
-        st.error("No hay equipos activos para emparejar.")
+        st.error("No hay equipos activos.")
         return
 
-    # 2. Mezclar aleatoriamente (Sorteo)
+    # 2. Sorteo aleatorio
     random.shuffle(equipos)
 
-    # 3. Emparejar de a dos
+    # 3. Emparejar e insertar
     duelos_a_insertar = []
+    
+    # Usamos enumerate para tener un contador de duelos (0, 1, 2, 3...)
+    # independientemente de los IDs de los equipos.
+    contador_duelos = 0
+    
     for i in range(0, len(equipos), 2):
         equipo_1 = equipos[i]
-        # Si el número es impar, el último equipo queda solo (jugador_2 = None)
         equipo_2 = equipos[i+1] if (i + 1) < len(equipos) else None
 
+        # LÓGICA AUTOMÁTICA: 
+        # contador_duelos // 8 -> cada 8 duelos cambia de letra
+        # chr(65 + 0) es 'A', chr(65 + 1) es 'B', etc.
+        letra_grupo = chr(65 + (contador_duelos // 8))
+        
         duelos_a_insertar.append({
             "ronda": "Ronda 1",
             "equipo_1": equipo_1,
             "equipo_2": equipo_2,
-            "formato": "eliminacion_directa"
+            "formato": "eliminacion_directa",
+            "grupo": letra_grupo
         })
+        
+        contador_duelos += 1
 
     # 4. Insertar en la BD
     try:
         supabd.table("encuentros").insert(duelos_a_insertar).execute()
-
-        st.success(f"✅ Ronda 1 generada con {len(duelos_a_insertar)} enfrentamientos.")
+        st.success(f"✅ Ronda 1 generada: {len(duelos_a_insertar)} duelos en {contador_duelos // 8 + 1} grupos.")
     except Exception as e:
-        st.error(f"Error al generar ronda: {e}")
+        st.error(f"Error al insertar: {e}")
 
 def resetear_torneo_completo():
     try:
@@ -602,13 +618,19 @@ def panel_rondas():
     # --- SIDEBAR Y CONFIGURACIÓN (Mantenemos tu lógica igual) ---
     if st.sidebar.button("🚀 Generar Sorteo Ronda 1"):
         generar_ronda_1_automatica(supabd)
-
+    #eso, volver a fase inicial
     with st.sidebar.expander("⚠️ ZONA DE PELIGRO - GESTIÓN CRÍTICA"):
         st.warning("Al resetear se borrarán todos los avances...")
         confirmacion = st.checkbox("Confirmo que deseo borrar todos los resultados.")
         if st.button("🚨 RESETEAR RONDAS Y VOLVER A R1", disabled=not confirmacion, type="primary"):
-            # resetear_torneo_completo() # Asegúrate de que esta función exista
+            resetear_torneo_completo()
             st.rerun()
+    #Actualizar pagina cada minuto
+    if st.session_state.vista == 'rondas_resultados':
+        st_autorefresh(interval=600000, key="refresh_rondas")        
+    #actualizar ya
+    if st.button("🔄 Actualizar Ahora"):
+        st.rerun()
 
     ronda_actual = st.select_slider(
         "Visualizar Fase:",
@@ -620,7 +642,7 @@ def panel_rondas():
         id, ronda, ganador_id, grupo,
         equipo_1 (id, j1:jugador_1(nick), j2:jugador_2(nick), estado),
         equipo_2 (id, j1:jugador_1(nick), j2:jugador_2(nick), estado)
-    """).eq("ronda", ronda_actual).execute()
+    """).eq("ronda", ronda_actual).order("id").execute()
 
     if not res.data:
         st.info(f"No hay encuentros generados para {ronda_actual}")
@@ -629,65 +651,212 @@ def panel_rondas():
     st.divider()
 
     # --- NUEVA ESTRUCTURA DE GRUPOS ---
-    # Creamos las pestañas para Grupo A y Grupo B
-    tab_a, tab_b = st.tabs(["📊 GRUPO A", "📊 GRUPO B"])
+    grupos_detectados = {}
+    for enc in res.data:
+        g = enc.get('grupo', 'Sin Grupo')
+        if g not in grupos_detectados:
+            grupos_detectados[g] = []
+        grupos_detectados[g].append(enc)    
+
+    nombres_grupos = sorted(grupos_detectados.keys())
+    tabs = st.tabs([f"GRUPO {n}" for n in nombres_grupos])
 
     # Función interna para no repetir el código del renderizado del versus
     def renderizar_duelos(lista_encuentros):
-        # Limitamos a 8 versus por grupo como pediste
         for enc in lista_encuentros[:8]: 
             ya_tiene_ganador = enc.get('ganador_id') is not None
-            
+            e1 = enc.get('equipo_1')
+            e2 = enc.get('equipo_2')
+
             with st.container(border=True):
                 col_e1, col_vs, col_e2 = st.columns([10, 2, 10])
-                e1 = enc.get('equipo_1')
-                e2 = enc.get('equipo_2')
 
                 # --- LÓGICA EQUIPO 1 ---
                 with col_e1:
+                    estado_e1 = supabd.table("equipo").select("estado").eq("id", e1['id']).execute().data[0]['estado'] if e1 else "desconocido"
                     if e1:
-                        st.code(f"{e1.get('j1', {}).get('nick', '???')}\n{e1.get('j2', {}).get('nick', 'Solo')}", language="None")
-                        # (Aquí va el resto de tu lógica de botones Ganador E1, Ausente, etc.)
-                        c1, c2, c3 = st.columns(3)
-                        if st.button(f"Ganador E1", key=f"win_e1_{enc['id']}", disabled=ya_tiene_ganador):
-                            avanzar_equipo_completo(supabd, e1['id'], ronda_actual, enc['id'])
-                            st.rerun()
-                        # ... (copiar el resto de tus botones de Ausente/Eliminado aquí)
-
+                        nick_j1 = e1.get('j1', {}).get('nick', '???')
+                        nick_j2 = e1.get('j2', {}).get('nick', 'Solo')
+                        st.code(f"{nick_j1}", language="None")
+                        st.code(f"{nick_j2}", language="None")
+                         # (Aquí va el resto de tu lógica de botones Ganador E1, Ausente, etc.)
+                        if estado_e1 == "Eliminado" or (enc['ganador_1'] != e1['id'] and ya_tiene_ganador):
+                            st.markdown(f"<div style='color: red; font-weight: bold;'>ELIMINADO</div>", unsafe_allow_html=True)
+                            st.button("Reinscribir Equipo", key=f"reinscribir_e1_{enc['id']}", use_container_width=True)
+                        else:
+                            c1, c2, c3 = st.columns(3)
+                            
+                            with c1:
+                                if st.button(f"Ganador E1", key=f"win_e1_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
+                                    avanzar_equipo_completo(supabd, e1['id'], ronda_actual, enc['id'])
+                                    st.rerun()
+                            with c2:                                                        
+                                if st.button("Equipo Ausente", key=f"ausente_e1_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
+                                    cambiar_estado_equipo(e1['id'], "Ausente")
+                                    st.rerun()
+                            with c3:
+                                if st.button("Eliminado", key=f"eliminado_e1_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
+                                    cambiar_estado_equipo(e1['id'],"Eliminado")
+                                    st.rerun()
+                                if ya_tiene_ganador:
+                                    st.markdown(f"<div style='color: green; font-weight: bold;'>GANADOR</div>", unsafe_allow_html=True)
+    
                 # --- COLUMNA VS (Tu CSS y botón En Partida) ---
                 with col_vs:
-                    st.markdown("<p style='text-align:center; color:#cdbe91; font-weight:bold;'>VS</p>", unsafe_allow_html=True)
+                    st.markdown("""""", unsafe_allow_html=True)  # Espaciador para centrar el VS
+                    st.markdown("""
+                        <style>
+                        /* Estilo para botones primarios (Dorado Hextech) */
+                        .stButton > button[kind="primary"] {
+                            background-color: #cdbe91 !important;
+                            color: #010a13 !important;
+                            border: 1px solid #785a28 !important;
+                            font-weight: bold !important;
+                        }
+                        
+                        /* Efecto hover (al pasar el mouse) */
+                        .stButton > button[kind="primary"]:hover {
+                            background-color: #f0e6d2 !important;
+                            border-color: #c8aa6e !important;
+                            box-shadow: 0px 0px 15px rgba(205, 190, 145, 0.5) !important;
+                        }
+                        </style>
+                    """, unsafe_allow_html=True)
+                    #color letra VS
+                    st.markdown("""
+                        <p style='
+                            text-align: center; 
+                            color: #cdbe91; 
+                            font-weight: bold; 
+                            font-size: 24px; 
+                            padding-top: 10px;
+                            text-shadow: 0px 0px 10px rgba(205, 190, 145, 0.5);
+                        '>
+                            VS
+                        </p>
+                    """, unsafe_allow_html=True)
+                    # --- LÓGICA DENTRO DEL BUCLE DE ENCUENTROS ---
                     if e2:
+                        # 1. Determinar el estado actual (asumiendo que e1 y e2 traen el campo 'estado')
+                        # Si ambos están "En Partida", el botón debe resaltar
                         estando_en_partida = (e1.get('estado') == "En Partida" and e2.get('estado') == "En Partida")
-                        if st.button("⚔️", key=f"btn_p_{enc['id']}", disabled=ya_tiene_ganador, type="primary" if estando_en_partida else "secondary"):
+                        
+                        # 2. Elegir el tipo de botón (primary es el color de marca, suele ser azul o naranja)
+                        tipo_boton = "primary" if estando_en_partida else "secondary"
+
+                        # 3. El botón cambia de color visualmente si ya están en partida
+                        if st.button("En Partida", key=f"btn_p_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True, type=tipo_boton):
+                            st.toast("¡Equipos en combate!", icon="⚔️")
                             cambiar_estado_equipo(e1['id'], "En Partida")
                             cambiar_estado_equipo(e2['id'], "En Partida")
                             st.rerun()
 
                 # --- LÓGICA EQUIPO 2 ---
                 with col_e2:
+                    estado_e2 = supabd.table("equipo").select("estado").eq("id", e2['id']).execute().data[0]['estado'] if e2 else "desconocido"
                     if e2:
-                        st.code(f"{e2.get('j1', {}).get('nick', '???')}\n{e2.get('j2', {}).get('nick', 'Solo')}", language="None")
-                        # ... (copiar tus botones de Ganador E2, etc. aquí)
+                        nick2_j1 = e2.get('j1', {}).get('nick', '???')
+                        nick2_j2 = e2.get('j2', {}).get('nick', 'Solo')
+                        st.code(f"{nick2_j1}", language="None")
+                        st.code(f"{nick2_j2}", language="None")                        
+
+                        if estado_e2 == "eliminado" or (enc['ganador_id'] != e2['id'] and ya_tiene_ganador):
+                            st.markdown("<div style='color: red; font-weight: bold; '>ELIMINADO </div>",unsafe_allow_html=True)
+                            st.button("Reinscribir Equipo", key=f"reinscribir_e2_{enc['id']}", use_container_width=True)
+                        else:
+                            
+                            c1, c2, c3 = st.columns(3)
+                            with c1:
+                                if st.button(f"Ganador E2", key=f"win_e2_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
+                                    avanzar_equipo_completo(supabd, e2['id'], ronda_actual, enc['id'])
+                                    st.rerun()
+                            with c2:                                                        
+                                if st.button("Equipo Ausente", key=f"ausente_e2_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
+                                    cambiar_estado_equipo(e2['id'], "Ausente")
+                                    st.rerun()
+                            with c3:
+                                if st.button("Eliminado", key=f"eliminado_e2_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
+                                    cambiar_estado_equipo(e2['id'], "Eliminado")
+                                    st.rerun()
+                            if ya_tiene_ganador:
+                                st.markdown(f"<div style='color: green; font-weight: bold;'>GANADOR</div>", unsafe_allow_html=True)
                     else:
-                        st.caption("Esperando rival...")
+                        # Placeholder para que la columna no se colapse
+                        st.markdown("<p style='color:gray; font-style:italic; padding-top:10px;'>Esperando rival...</p>", unsafe_allow_html=True)
+                        st.markdown("<p style='color:gray; font-style:italic; padding-top:10px;'>Se mostraran equipos que no consiguieron rivales de la ronda actual y anteriores </p>", unsafe_allow_html=True)
+                        
+                        c1,c2 = st.columns(2)
+                        with c1:
+                            res_enc = supabd.table("encuentros").select("id, equipo_1(id,estado), equipo_2(id,estado),ronda,ganador_id").execute()
+                            grupos_ocupados = set()
+                            grupos_ocupados.add(e1['id'])
+                            for reg in res_enc.data:
+                                if reg['equipo_2']:
+                                    grupos_ocupados.add(reg['equipo_2']['id'])
+                                    grupos_ocupados.add(reg['equipo_1']['id'])
+                            
+                            res_todos_equipos = supabd.table("equipo").select("id, jugador_1(nick), jugador_2(nick)").execute()
+                            equipos_libres = [e for e in res_todos_equipos.data if e['id'] not in grupos_ocupados]
+                            opciones_e2 = {f"Equipo {e['id']} - {e['jugador_1']['nick']} & {e['jugador_2']['nick'] if e['jugador_2'] else 'Solo'}": e['id'] for e in equipos_libres}
+                            seleccion_e2 = st.selectbox("Seleccionar Equipo 2 para este duelo", options=[None] + list(opciones_e2.keys()), key=f"select_e2_{enc['id']}")
+                            if seleccion_e2:
+                                id_equipo_2 = opciones_e2[seleccion_e2]
+                                supabd.table("encuentros").update({"equipo_2": id_equipo_2}).eq("id", enc['id']).execute()
+                                st.toast(f"Equipo 2 asignado: {seleccion_e2}", icon="✅")
+                                st.rerun()
+                        with c2:
+                            # 1. Obtener todos los encuentros para analizar estados
+                            res_enc = supabd.table("encuentros").select("""
+                                id, 
+                                ganador_id,
+                                equipo_1(id, jugador_1(nick), jugador_2(nick), estado), 
+                                equipo_2(id, jugador_1(nick), jugador_2(nick), estado),
+                                ronda
+                            """).execute()
+                            huerfanos = {}
+                            
+                            for reg in res_enc.data:
+                                # Si el duelo ya se cerró (tiene ganador), no nos interesa para reubicar
+                                if reg['ronda'] == "Ronda 1":
+                                    if reg.get('ganador_id'):
+                                        continue
+                                    eq1 = reg.get('equipo_1')
+                                    eq2 = reg.get('equipo_2')
+                                    # Caso 1: Equipo 1 está vivo pero el 2 no existe o está eliminado
+                                    if (eq1 and eq1['estado'] != "Eliminado") and eq1['id'] != e1['id']:
+                                        if not eq2 or eq2['estado'] == "Eliminado":
+                                            n1 = eq1['jugador_1']['nick'] if eq1['jugador_1'] else "???"
+                                            n2 = eq1['jugador_2']['nick'] if eq1['jugador_2'] else "Solo"
+                                            label = f"{n1} & {n2}"
+                                            huerfanos[label] = eq1['id']
+
+                                    # Caso 2: Equipo 2 está vivo pero el 1 está eliminado
+                                    if (eq2 and eq2['estado'] != "Eliminado") and eq2['id'] != e1['id']:
+                                        if eq1 and eq1['estado'] == "Eliminado" :
+                                            n1 = eq2['jugador_1']['nick'] if eq2['jugador_1'] else "???"
+                                            n2 = eq2['jugador_2']['nick'] if eq2['jugador_2'] else "Solo"
+                                            label = f"{n1} & {n2}"
+                                            huerfanos[label] = eq2['id']
+
+                            # 2. Mostrar el Selectbox
+                            seleccion_huerfano = st.selectbox(
+                                "Asignar equipo huérfano como rival",
+                                options=[None] + list(huerfanos.keys()),
+                                key=f"reubicar_{enc['id']}" # 'enc' es el duelo vacío donde lo quieres meter
+                            )
+
+                            if seleccion_huerfano:
+                                id_reubicado = huerfanos[seleccion_huerfano]
+                                # Actualizamos el duelo vacío con este equipo
+                                supabd.table("encuentros").update({"equipo_2": id_reubicado}).eq("id", enc['id']).execute()
+                                st.toast("Equipo reubicado correctamente", icon="🔄")
+                                st.rerun()
 
     # --- REPARTO DE DUELOS POR PESTAÑA ---
-    # Filtramos la data de Supabase por el campo 'grupo' (debes tenerlo en tu DB)
-    duelos_a = [d for d in res.data if d.get('grupo') == 'A']
-    duelos_b = [d for d in res.data if d.get('grupo') == 'B']
+    for i, nombre in enumerate(nombres_grupos):
+        with tabs[i]:
+            renderizar_duelos(grupos_detectados[nombre])
 
-    with tab_a:
-        if duelos_a:
-            renderizar_duelos(duelos_a)
-        else:
-            st.write("No hay encuentros en el Grupo A")
-
-    with tab_b:
-        if duelos_b:
-            renderizar_duelos(duelos_b)
-        else:
-            st.write("No hay encuentros en el Grupo B")
 
 
 
