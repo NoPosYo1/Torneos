@@ -484,12 +484,13 @@ else:
                             VS
                         </p>
                     """, unsafe_allow_html=True)
-                    if st.button("En Partida", key=f"en_partida_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
-                        st.toast("¡Marcado como en partida!", icon="🎮")
-                        if e1:
-                            supabd.table("equipo").update({"estado": "En Partida"}).eq("id", e1['id']).execute()
-                        if enc.get('equipo_2'):
-                            supabd.table("equipo").update({"estado": "En Partida"}).eq("id", enc['equipo_2']['id']).execute()
+                    if e2:    
+                        if st.button("En Partida", key=f"en_partida_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
+                            st.toast("¡Marcado como en partida!", icon="🎮")
+                            if e1:
+                                cambiar_estado_equipo(supabd,e1['id'],"En Partida")
+                            if enc.get('equipo_2'):
+                                cambiar_estado_equipo(supabd,e2['id'],"En Partida")
 
                 # --- COLUMNA 3: EQUIPO 2 ---
                 with col_e2:
