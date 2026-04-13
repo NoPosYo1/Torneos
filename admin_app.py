@@ -500,7 +500,7 @@ else:
                         st.code(f"{nick2_j2}", language="None")                        
 
                         if estado_e2 == "eliminado" or (enc['ganador_id'] != e2['id'] and ya_tiene_ganador):
-                            st.markdown("<div style='color': red; font-weight: bold; >ELIMINADO </div>",unsafe_allow_html=True)
+                            st.markdown("<div style='color: red; font-weight: bold; '>ELIMINADO </div>",unsafe_allow_html=True)
                             st.button("Reinscribir Equipo", key=f"reinscribir_e2_{enc['id']}", use_container_width=True)
                         else:
                             
