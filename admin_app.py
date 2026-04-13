@@ -568,7 +568,7 @@ else:
                                     if not e2 or e2['estado'] == "Eliminado":
                                         n1 = e1['jugador_1']['nick'] if e1['jugador_1'] else "???"
                                         n2 = e1['jugador_2']['nick'] if e1['jugador_2'] else "Solo"
-                                        label = f"ID: {e1['id']} | {n1} & {n2} (Rival Eliminado)"
+                                        label = f"{n1} & {n2} (Rival Eliminado)"
                                         huerfanos[label] = e1['id']
 
                                 # Caso 2: Equipo 2 está vivo pero el 1 está eliminado
