@@ -407,9 +407,8 @@ else:
         # Solo si no hemos llegado a 20, dibujamos
         tiempo_restante = max(0, 20 - int(tiempo_transcurrido))
         with timer_placeholder.container():
-            col_t1, col_t2 = st.columns([1, 4])
-            col_t1.metric("Refrescando en...", f"{tiempo_restante}s")
-            st.toast(f"Quedan {tiempo_restante} para reiniciar la pagina")
+            if tiempo_restante == 10:
+                st.toast(f"Quedan {tiempo_restante} para reiniciar la pagina")
         
 
         if st.button("🔄 Actualizar Ahora"):
