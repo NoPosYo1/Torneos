@@ -475,7 +475,7 @@ else:
                     st.markdown("""
                         <p style='
                             text-align: center; 
-                            color: #cdbe91; 
+                            color: red; 
                             font-weight: bold; 
                             font-size: 24px; 
                             padding-top: 10px;
