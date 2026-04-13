@@ -517,9 +517,6 @@ else:
                                     st.rerun()
                             if ya_tiene_ganador:
                                 st.markdown(f"<div style='color: green; font-weight: bold;'>GANADOR</div>", unsafe_allow_html=True)
-
-                
-                        
                     else:
                         # Placeholder para que la columna no se colapse
                         st.markdown("<p style='color:gray; font-style:italic; padding-top:10px;'>Esperando rival...</p>", unsafe_allow_html=True)
@@ -552,32 +549,28 @@ else:
                                 equipo_1(id, jugador_1(nick), jugador_2(nick), estado), 
                                 equipo_2(id, jugador_1(nick), jugador_2(nick), estado)
                             """).execute()
-
                             huerfanos = {}
-
                             for reg in res_enc.data:
                                 # Si el duelo ya se cerró (tiene ganador), no nos interesa para reubicar
                                 if reg.get('ganador_id'):
                                     continue
-                                    
-                                e1 = reg.get('equipo_1')
-                                e2 = reg.get('equipo_2')
-
+                                eq1 = reg.get('equipo_1')
+                                eq2 = reg.get('equipo_2')
                                 # Caso 1: Equipo 1 está vivo pero el 2 no existe o está eliminado
-                                if e1 and e1['estado'] != "Eliminado":
-                                    if not e2 or e2['estado'] == "Eliminado":
-                                        n1 = e1['jugador_1']['nick'] if e1['jugador_1'] else "???"
-                                        n2 = e1['jugador_2']['nick'] if e1['jugador_2'] else "Solo"
+                                if eq1 and eq1['estado'] != "Eliminado":
+                                    if not eq2 or eq2['estado'] == "Eliminado" and eq1['id'] != e1['id']:
+                                        n1 = eq1['jugador_1']['nick'] if eq1['jugador_1'] else "???"
+                                        n2 = eq1['jugador_2']['nick'] if eq1['jugador_2'] else "Solo"
                                         label = f"{n1} & {n2}"
-                                        huerfanos[label] = e1['id']
+                                        huerfanos[label] = eq1['id']
 
                                 # Caso 2: Equipo 2 está vivo pero el 1 está eliminado
-                                if e2 and e2['estado'] != "Eliminado":
-                                    if e1 and e1['estado'] == "Eliminado":
-                                        n1 = e2['jugador_1']['nick'] if e2['jugador_1'] else "???"
-                                        n2 = e2['jugador_2']['nick'] if e2['jugador_2'] else "Solo"
+                                if eq2 and eq2['estado'] != "Eliminado":
+                                    if eq1 and eq1['estado'] == "Eliminado" and eq2['id'] != e1['id']:
+                                        n1 = eq2['jugador_1']['nick'] if eq2['jugador_1'] else "???"
+                                        n2 = eq2['jugador_2']['nick'] if eq2['jugador_2'] else "Solo"
                                         label = f"{n1} & {n2}"
-                                        huerfanos[label] = e2['id']
+                                        huerfanos[label] = eq2['id']
 
                             # 2. Mostrar el Selectbox
                             seleccion_huerfano = st.selectbox(
