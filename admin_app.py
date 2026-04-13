@@ -586,27 +586,31 @@ else:
                                 equipo_2(id, jugador_1(nick), jugador_2(nick), estado)
                             """).execute()
                             huerfanos = {}
+                            
                             for reg in res_enc.data:
                                 # Si el duelo ya se cerró (tiene ganador), no nos interesa para reubicar
-                                if reg.get('ganador_id'):
-                                    continue
-                                eq1 = reg.get('equipo_1')
-                                eq2 = reg.get('equipo_2')
-                                # Caso 1: Equipo 1 está vivo pero el 2 no existe o está eliminado
-                                if (eq1 and eq1['estado'] != "Eliminado") and eq1['id'] != e1['id']:
-                                    if not eq2 or eq2['estado'] == "Eliminado":
-                                        n1 = eq1['jugador_1']['nick'] if eq1['jugador_1'] else "???"
-                                        n2 = eq1['jugador_2']['nick'] if eq1['jugador_2'] else "Solo"
-                                        label = f"{n1} & {n2}"
-                                        huerfanos[label] = eq1['id']
+                                if reg.get('ronda') == "Ronda 1":
+                                    if reg.get('ganador_id'):
+                                        continue
+                                    eq1 = reg.get('equipo_1')
+                                    eq2 = reg.get('equipo_2')
+                                    # Caso 1: Equipo 1 está vivo pero el 2 no existe o está eliminado
+                                    if (eq1 and eq1['estado'] != "Eliminado") and eq1['id'] != e1['id']:
+                                        if not eq2 or eq2['estado'] == "Eliminado":
+                                            n1 = eq1['jugador_1']['nick'] if eq1['jugador_1'] else "???"
+                                            n2 = eq1['jugador_2']['nick'] if eq1['jugador_2'] else "Solo"
+                                            label = f"{n1} & {n2}"
+                                            huerfanos[label] = eq1['id']
 
-                                # Caso 2: Equipo 2 está vivo pero el 1 está eliminado
-                                if (eq2 and eq2['estado'] != "Eliminado") and eq2['id'] != e1['id']:
-                                    if eq1 and eq1['estado'] == "Eliminado" :
-                                        n1 = eq2['jugador_1']['nick'] if eq2['jugador_1'] else "???"
-                                        n2 = eq2['jugador_2']['nick'] if eq2['jugador_2'] else "Solo"
-                                        label = f"{n1} & {n2}"
-                                        huerfanos[label] = eq2['id']
+                                    # Caso 2: Equipo 2 está vivo pero el 1 está eliminado
+                                    if (eq2 and eq2['estado'] != "Eliminado") and eq2['id'] != e1['id']:
+                                        if eq1 and eq1['estado'] == "Eliminado" :
+                                            n1 = eq2['jugador_1']['nick'] if eq2['jugador_1'] else "???"
+                                            n2 = eq2['jugador_2']['nick'] if eq2['jugador_2'] else "Solo"
+                                            label = f"{n1} & {n2}"
+                                            huerfanos[label] = eq2['id']
+                                elif reg.get['ronda'] != "Ronda 1":
+                                    pass
 
                             # 2. Mostrar el Selectbox
                             seleccion_huerfano = st.selectbox(
