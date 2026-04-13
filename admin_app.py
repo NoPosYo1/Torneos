@@ -445,7 +445,7 @@ else:
                         nick_j2 = e1.get('j2', {}).get('nick', 'Solo')
                         st.code(f"{nick_j1}", language="None")
                         st.code(f"{nick_j2}", language="None")
-                        if estado_e1 == "Eliminado":
+                        if estado_e1 == "Eliminado" or (enc['ganador_id'] != e1.get('id',{}) and ya_tiene_ganador):
                             st.markdown(f"<div style='color: red; font-weight: bold;'>E1 ELIMINADO</div>", unsafe_allow_html=True)
                             st.button("Reinscribir Equipo", key=f"reinscribir_e1_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True)
                         else:        
@@ -521,6 +521,7 @@ else:
                             with c3:
                                 if st.button("Eliminado", key=f"eliminado_e2_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
                                     cambiar_estado_equipo(supabd, e2['id'], "Eliminado")
+                                    st.rerun()
                 
                         
                     else:
