@@ -411,6 +411,9 @@ else:
             if tiempo_transcurrido >= 20:
                 st.session_state.last_refresh = time.time()
                 st.rerun()
+            if st.session_state.vista == 'rondas_resultados':
+                st_autorefresh(interval=20000, key="refresh_rondas")
+                
             if st.button("🔄 Actualizar Ahora"):
                 st.rerun()
 
