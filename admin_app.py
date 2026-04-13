@@ -271,14 +271,7 @@ else:
     if st.sidebar.button("📊 IR A RONDAS Y RESULTADOS", key="btn_rondas_resultados"):
         cambiar_vista('rondas_resultados')
 
-    with st.sidebar.expander("⚠️ ZONA DE PELIGRO - GESTIÓN CRÍTICA"):
-        st.warning("Al resetear se borrarán todos los avances de las rondas. Los equipos y jugadores permanecerán registrados.")
-        
-        confirmacion = st.checkbox("Confirmo que deseo borrar todos los resultados.")
-        
-        if st.button("🚨 RESETEAR RONDAS Y VOLVER A R1", disabled=not confirmacion, type="primary"):
-            resetear_torneo_completo(supabd)
-            st.rerun()
+
 # --- FUNCIONES DE CADA PANEL ---
 #---------------------------------------------------------------------------------------------+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     def panel_control_admin():
@@ -401,6 +394,14 @@ else:
             options=["Ronda 1", "Ronda 2", "Ronda 3", "Ronda 4", "Ronda 5","Ronda 6","Ronda 7", "Semifinal", "Final"]
         )
 
+        with st.sidebar.expander("⚠️ ZONA DE PELIGRO - GESTIÓN CRÍTICA"):
+            st.warning("Al resetear se borrarán todos los avances de las rondas. Los equipos y jugadores permanecerán registrados.")
+            
+            confirmacion = st.checkbox("Confirmo que deseo borrar todos los resultados.")
+            
+            if st.button("🚨 RESETEAR RONDAS Y VOLVER A R1", disabled=not confirmacion, type="primary"):
+                resetear_torneo_completo(supabd)
+                st.rerun()
         # 2. Consulta con Doble Join para traer nicks de los 4 posibles jugadores
         res = supabd.table("encuentros").select("""
             id,
