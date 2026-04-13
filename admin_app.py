@@ -183,7 +183,7 @@ def generar_ronda_1_automatica(supabd):
     # 1. Traer todos los equipos activos
     res = supabd.table("equipo").select("id").execute()
     for equipo in res.data:
-        supabd.table("equipo").update({"estado": "En Espera"}).eq("id", equipo['id']).execute()
+        supabd.table("equipo").update({"estado": 5}).eq("id", equipo['id']).execute()
     equipos = [e['id'] for e in res.data]
     supabd.table("encuentros").delete().neq("id", 0).execute()  # Limpiar rondas anteriores antes de generar la nueva
     st.toast("Generando Ronda 1... Esto puede tardar unos segundos.", icon="⚔️")
@@ -547,7 +547,7 @@ else:
         
         res_equipos_reintegracion = supabd.table('equipo').select('id','jugador_1(nick)','jugador_2(nick)').execute()
 
-        
+
     # --- LÓGICA PRINCIPAL (EL SELECTOR) ---
     if st.session_state.vista == 'reg_equipo':
         panel_registro_equipo()
