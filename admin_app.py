@@ -423,12 +423,6 @@ else:
         if st.button("🔄 Actualizar Ahora"):
             st.rerun()
         
-
-    # --- El resto de tu código de brackets y botones ---
-            
-        if st.session_state.vista == 'rondas_resultados':
-            st_autorefresh(interval=600000, key="refresh_rondas")
-
         ronda_actual = st.select_slider(
             "Visualizar Fase:",
             options=["Ronda 1", "Ronda 2", "Ronda 3", "Ronda 4", "Ronda 5","Ronda 6","Ronda 7", "Semifinal", "Final"]
