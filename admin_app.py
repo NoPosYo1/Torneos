@@ -10,7 +10,6 @@ supabd = create_client(st.secrets["SUPABASE_URL"], st.secrets["SUPABASE_KEY"])
 st.set_page_config(page_title="Torneo 2v2 GGReport - Admin", layout="wide", initial_sidebar_state="collapsed")
 
 st.session_state.logged_in = st.session_state.get('logged_in', False)
-st.sidebar.image("https://tenor.com/es/view/zoe-laugh-lol-league-of-legends-netto-gif-22209792")
 st.markdown(f"""
     <style>
     [data-testid="stSidebar"] {{
@@ -261,6 +260,7 @@ else:
 
     st.sidebar.title("Reglas del Torneo")
 
+    st.sidebar.image("https://tenor.com/es/view/zoe-laugh-lol-league-of-legends-netto-gif-22209792")
     
     st.sidebar.title("Menú de Administración")
     if st.sidebar.button("🏠 IR A PANEL PRINCIPAL", key="btn_principal"):
