@@ -525,7 +525,7 @@ else:
                         st.markdown("<p style='color:gray; font-style:italic; padding-top:10px;'>Esperando rival...</p>", unsafe_allow_html=True)
                         st.markdown("<p style='color:gray; font-style:italic; padding-top:10px;'>Se mostraran equipos que no consiguieron rivales de la ronda actual y anteriores </p>")
                         
-                        res_enc = supabd.table("encuentros").select("id, equipo_1(id), equipo_2(id),ronda").execute()
+                        res_enc = supabd.table("encuentros").select("id, equipo_1(id,estado), equipo_2(id,estado),ronda").execute()
                         grupos_ocupados = set()
                         grupos_ocupados.add(e1['id'])
                         for reg in res_enc.data:
