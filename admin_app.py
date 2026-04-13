@@ -183,7 +183,7 @@ def generar_ronda_1_automatica(supabd):
     # 1. Traer todos los equipos activos
     res = supabd.table("equipo").select("id").execute()
     for equipo in res.data:
-        supabd.table("equipo").update({"estado": "En Linea"}).eq("id", equipo['id']).execute()
+        supabd.table("equipo").update({"estado": "En Espera"}).eq("id", equipo['id']).execute()
     equipos = [e['id'] for e in res.data]
     supabd.table("encuentros").delete().neq("id", 0).execute()  # Limpiar rondas anteriores antes de generar la nueva
     st.toast("Generando Ronda 1... Esto puede tardar unos segundos.", icon="⚔️")
@@ -427,7 +427,7 @@ else:
         st.divider()
 
         # 3. Listado de Duelos
-# 3. Listado de Duelos
+        # 3. Listado de Duelos
         for enc in res.data:
             ya_tiene_ganador = enc.get('ganador_id') is not None
             
@@ -442,7 +442,7 @@ else:
                     estado_e1 = supabd.table("equipo").select("estado").eq("id", e1['id']).execute().data[0]['estado'] if e1 else "desconocido"
 
                     if e1:
-
+                        
                         
 
                         nick_j1 = e1.get('j1', {}).get('nick', '???')
@@ -537,7 +537,6 @@ else:
                                 grupos_ocupados.add(reg['equipo_1']['id'])
                         res_todos_equipos = supabd.table("equipo").select("id, jugador_1(nick), jugador_2(nick)").execute()
                         equipos_libres = [e for e in res_todos_equipos.data if e['id'] not in grupos_ocupados]
-                        dict_equipos_sinvs = {e['id']: e for e in equipos_libres}
                         opciones_e2 = {f"Equipo {e['id']} - {e['jugador_1']['nick']} & {e['jugador_2']['nick'] if e['jugador_2'] else 'Solo'}": e['id'] for e in equipos_libres}
                         seleccion_e2 = st.selectbox("Seleccionar Equipo 2 para este duelo", options=[None] + list(opciones_e2.keys()), key=f"select_e2_{enc['id']}")
                         if seleccion_e2:
@@ -545,7 +544,10 @@ else:
                             supabd.table("encuentros").update({"equipo_2": id_equipo_2}).eq("id", enc['id']).execute()
                             st.toast(f"Equipo 2 asignado: {seleccion_e2}", icon="✅")
                             st.rerun()
+        
+        res_equipos_reintegracion = supabd.table('equipo').select('id','jugador_1(nick)','jugador_2(nick)').execute()
 
+        
     # --- LÓGICA PRINCIPAL (EL SELECTOR) ---
     if st.session_state.vista == 'reg_equipo':
         panel_registro_equipo()
