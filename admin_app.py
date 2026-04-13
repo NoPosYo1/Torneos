@@ -390,15 +390,9 @@ else:
             generar_ronda_1_automatica(supabd)
         # 1. Espacio para el temporizador en la parte superior
         if st.session_state.vista == 'rondas_resultados':
-            st_autorefresh(interval=20000, key="refresh_rondas")
+            st_autorefresh(interval=600000, key="refresh_rondas")
                 
         timer_placeholder = st.empty()
-            
-            # --- Tu lógica actual de consultas a la BD (res = supabd.table...) ---
-            # ... 
-
-            # 2. Configuración del tiempo (20 segundos)
-        # --- Dentro de panel_rondas ---
 
         if "last_refresh" not in st.session_state:
             st.session_state.last_refresh = time.time()
@@ -412,12 +406,10 @@ else:
 
         # Solo si no hemos llegado a 20, dibujamos
         tiempo_restante = max(0, 20 - int(tiempo_transcurrido))
-        progreso = min(tiempo_transcurrido / 20, 1.0) # El min() es el salvavidas
-
         with timer_placeholder.container():
             col_t1, col_t2 = st.columns([1, 4])
             col_t1.metric("Refrescando en...", f"{tiempo_restante}s")
-            col_t2.progress(progreso)
+            st.toast(f"Quedan {tiempo_restante} para reiniciar la pagina")
         
 
         if st.button("🔄 Actualizar Ahora"):
