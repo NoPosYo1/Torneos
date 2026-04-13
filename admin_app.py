@@ -468,6 +468,7 @@ else:
                                 if st.button("Eliminado", key=f"eliminado_e1_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
                                     st.toast("¡Marcado como eliminado!")                                    
                                     supabd.table("equipo").update({"estado": "Eliminado"}).eq("id", e1['id']).execute()
+                                    st.rerun()
                                 if ya_tiene_ganador:
 
                                     st.markdown(f"<div style='color: green; font-weight: bold;'>GANADOR</div>", unsafe_allow_html=True)
