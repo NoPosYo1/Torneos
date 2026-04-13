@@ -240,7 +240,9 @@ def resetear_torneo_completo(supabd):
 def cambiar_estado_equipo(supabd, id_equipo, nuevo_estado):
     try:
         supabd.table("equipo").update({"estado": nuevo_estado}).eq("id", id_equipo).execute()
-        time.sleep(4)
+        st.rerun()
+        st.toast("Se esta actualizando el estado...")
+        time.sleep(3)
         st.toast(f"Estado del equipo actualizado a '{nuevo_estado}'", icon="🔄")
     except Exception as e:
         st.error(f"Error al actualizar estado: {e}")
@@ -517,7 +519,6 @@ else:
                             with c3:
                                 if st.button("Eliminado", key=f"eliminado_e2_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
                                     cambiar_estado_equipo(supabd, e2['id'], "Eliminado")
-                                    st.rerun()
                             if ya_tiene_ganador:
                                 st.markdown(f"<div style='color: green; font-weight: bold;'>GANADOR</div>", unsafe_allow_html=True)
                     else:
