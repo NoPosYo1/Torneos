@@ -686,7 +686,7 @@ def panel_rondas():
                 with col2:
                     e2_sel = st.selectbox("Equipo 2", [None] + list(opciones.keys()), key=f"add_e2_{nombre_grupo}")
 
-                if st.button("Confirmar Nuevo Encuentro", use_container_width=True, key=f"btn_confirmar_{nombre_grupo}"):
+                if st.button("Confirmar Nuevo Encuentro", use_container_width=True, key=f"btn_confirmar_nuevo_vs_{nombre_grupo}"):
                     if e1_sel and e2_sel:
                         nuevo_duelo = {
                             "ronda": ronda_actual, # Asegúrate de que esta variable sea accesible
