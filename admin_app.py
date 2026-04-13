@@ -524,11 +524,37 @@ else:
                     else:
                         # Placeholder para que la columna no se colapse
                         st.markdown("<p style='color:gray; font-style:italic; padding-top:10px;'>Esperando rival...</p>", unsafe_allow_html=True)
-                        st.selectbox("Asignar Rival", options=[None] + [e['equipo_1']['j1']['nick'] for e in res.data if e.get('equipo_1')], key=f"asignar_rival_{enc['id']}", label_visibility="collapsed")
+                        
+                        dict_equipos_sinvs = {}
+                        res_enc = supabd.table("encuentros").select("id, equipo_1(id), equipo_2(id)").execute()
+                        grupos_ocupados = set()
+                        for reg in res_enc.data:
+                            if reg['equipo_1']:
+                                grupos_ocupados.add(reg['equipo_1']['id'])
+                            if reg['equipo_2']:
+                                grupos_ocupados.add(reg['equipo_2']['id'])
+                        res_todos_equipos = supabd.table("equipo").select("id").execute()
+                        equipos_libres = [e for e in res_todos_equipos.data if e['id'] not in grupos_ocupados and e['estado'] == 'En Linea']
+                        dict_equipos_sinvs = {e['id']: e for e in equipos_libres}
+                        opciones_e2 = {f"Equipo {e['id']} - {e['jugador_1']['nick']} & {e['jugador_2']['nick'] if e['jugador_2'] else 'Solo'}": e['id'] for e in equipos_libres}
+                        seleccion_e2 = st.selectbox("Seleccionar Equipo 2 para este duelo", options=[None] + list(opciones_e2.keys()), key=f"select_e2_{enc['id']}")
+                        if seleccion_e2:
+                            id_equipo_2 = opciones_e2[seleccion_e2]
+                            supabd.table("encuentros").update({"equipo_2": id_equipo_2}).eq("id", enc['id']).execute()
+                            st.toast(f"Equipo 2 asignado: {seleccion_e2}", icon="✅")
+                            st.rerun()
+                        
+                        """
+                        res_ocupados = supabd.table("jugador").select("id, nick, EnDuo").is_("EnDuo", True).execute()
+                        players_ocupados = set()
 
-
-
-
+                        for reg in res_ocupados.data:
+                            if reg['EnDuo'] == True:
+                                players_ocupados.add(reg['id'])
+                        res_todos = supabd.table("jugador").select("id, nick").execute()
+                        jugadores_libres = [j for j in res_todos.data if j['id'] not in players_ocupados]
+                        dict_jugadores = {j['nick']: j['id'] for j in jugadores_libres}
+                        """
 
     # --- LÓGICA PRINCIPAL (EL SELECTOR) ---
     if st.session_state.vista == 'reg_equipo':
