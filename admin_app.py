@@ -504,9 +504,13 @@ else:
                         estado_e2 = supabd.table("equipo").select("estado").eq("id", e2['id']).execute().data[0]['estado'] if e2 else "desconocido"
                         nick2_j1 = e2.get('j1', {}).get('nick', '???')
                         nick2_j2 = e2.get('j2', {}).get('nick', 'Solo')
+
                         if estado_e2 == "eliminado":
-                            st.markdown(f"<div style='color: red; font-weight: bold;'>E2 ELIMINADO</div>", unsafe_allow_html=True)
                             st.button("Reinscribir Equipo", key=f"reinscribir_e2_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True)
+                            if enc['ganador_id'] == e2.get('id',{}):
+                                st.markdown(f"<div style='color: green; font-weight: bold;'>GANADOR</div>", unsafe_allow_html=True)
+                            elif ya_tiene_ganador and enc['ganador_id'] != e2.get('id',{}):
+                                st.markdown(f"<div style ='color: red; font-weight: bold; '>ELIMINADO</div>",unsafe_allow_html=True)
                         else:
                             
                             st.code(f"{nick2_j1}", language="None")
@@ -522,10 +526,7 @@ else:
                                 if st.button("Eliminado", key=f"eliminado_e2_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True):
                                     cambiar_estado_equipo(supabd, e2['id'], "Eliminado")
                 
-                        if enc['ganador_id'] == e2.get('id',{}):
-                            st.markdown(f"<div style='color: green; font-weight: bold;'>GANADOR</div>", unsafe_allow_html=True)
-                        elif ya_tiene_ganador and enc['ganador_id'] != e2.get('id',{}):
-                            st.markdown(f"<div style ='color: red; font-weight: bold; '>ELIMINADO</div>",unsafe_allow_html=True)
+                        
                     else:
                         # Placeholder para que la columna no se colapse
                         st.markdown("<p style='color:gray; font-style:italic; padding-top:10px;'>Esperando rival...</p>", unsafe_allow_html=True)
