@@ -269,6 +269,17 @@ else:
         cambiar_vista('editar_equipo')
     if st.sidebar.button("📊 IR A RONDAS Y RESULTADOS", key="btn_rondas_resultados"):
         cambiar_vista('rondas_resultados')
+        if st.sidebar.button("🚀 Generar Sorteo Ronda 1"):
+            generar_ronda_1_automatica(supabd)
+        
+        with st.sidebar.expander("⚠️ ZONA DE PELIGRO - GESTIÓN CRÍTICA"):
+            st.warning("Al resetear se borrarán todos los avances de las rondas. Los equipos y jugadores permanecerán registrados.")
+            
+            confirmacion = st.checkbox("Confirmo que deseo borrar todos los resultados.")
+            
+            if st.button("🚨 RESETEAR RONDAS Y VOLVER A R1", disabled=not confirmacion, type="primary"):
+                resetear_torneo_completo(supabd)
+                st.rerun()
 
     st.sidebar.markdown(
         f'<img src="https://media1.tenor.com/m/PYORpU4s_zAAAAAd/zoe-laugh.gif">',
@@ -386,11 +397,10 @@ else:
                             supabd.table("jugador").update({"EnDuo": True}).eq("id", id_j2).execute()
                             st.toast(f"¡Dúo {player['nick']} & {nuevo_j2_nick} creado!", icon="⚔️")
                             st.rerun()
-
+#---------------------------------------------------------------------------------------------+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     def panel_rondas():
         st.title("🏆 Panel de Control de Brackets")
-        if st.sidebar.button("🚀 Generar Sorteo Ronda 1"):
-            generar_ronda_1_automatica(supabd)
+
         # 1. Espacio para el temporizador en la parte superior
         if st.session_state.vista == 'rondas_resultados':
             st_autorefresh(interval=600000, key="refresh_rondas")
@@ -422,14 +432,6 @@ else:
             options=["Ronda 1", "Ronda 2", "Ronda 3", "Ronda 4", "Ronda 5","Ronda 6","Ronda 7", "Semifinal", "Final"]
         )
 
-        with st.sidebar.expander("⚠️ ZONA DE PELIGRO - GESTIÓN CRÍTICA"):
-            st.warning("Al resetear se borrarán todos los avances de las rondas. Los equipos y jugadores permanecerán registrados.")
-            
-            confirmacion = st.checkbox("Confirmo que deseo borrar todos los resultados.")
-            
-            if st.button("🚨 RESETEAR RONDAS Y VOLVER A R1", disabled=not confirmacion, type="primary"):
-                resetear_torneo_completo(supabd)
-                st.rerun()
         # 2. Consulta con Doble Join para traer nicks de los 4 posibles jugadores
         res = supabd.table("encuentros").select("""
             id,
