@@ -609,7 +609,7 @@ def panel_rondas():
                                 supabd.table("encuentros").update({"equipo_2": id_reubicado}).eq("id", enc['id']).execute()
                                 st.toast("Equipo reubicado correctamente", icon="🔄")
                                 st.rerun()
-        if len(lista_encuentros) < 8:
+        if len(lista_encuentros) < grupos_por_ronda:
             st.divider()
             with st.expander(f"Añadir nuevo versus al {nombre_grupo}"):
                 res_eq = supabd.table("equipo").select("id, jugador_1(nick), jugador_2(nick)").execute()
