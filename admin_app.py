@@ -406,7 +406,7 @@ def panel_rondas():
             return
 
         st.divider()
-
+        time.sleep(5)
         # 3. Listado de Duelos
         for enc in res.data:
             ya_tiene_ganador = enc.get('ganador_id') is not None
@@ -480,7 +480,7 @@ def panel_rondas():
                             VS
                         </p>
                     """, unsafe_allow_html=True)
-# --- LÓGICA DENTRO DEL BUCLE DE ENCUENTROS ---
+                    # --- LÓGICA DENTRO DEL BUCLE DE ENCUENTROS ---
                     if e2:
                         # 1. Determinar el estado actual (asumiendo que e1 y e2 traen el campo 'estado')
                         # Si ambos están "En Partida", el botón debe resaltar
