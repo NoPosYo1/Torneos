@@ -268,7 +268,6 @@ else:
     if st.sidebar.button("✏️ IR A EDICIÓN DE EQUIPOS", key="btn_edicion_equipos"):
         cambiar_vista('editar_equipo')
     if st.sidebar.button("📊 IR A RONDAS Y RESULTADOS", key="btn_rondas_resultados"):
-        cambiar_vista('rondas_resultados')
         if st.sidebar.button("🚀 Generar Sorteo Ronda 1"):
             generar_ronda_1_automatica(supabd)
         
@@ -279,7 +278,9 @@ else:
             
             if st.button("🚨 RESETEAR RONDAS Y VOLVER A R1", disabled=not confirmacion, type="primary"):
                 resetear_torneo_completo(supabd)
-                st.rerun()
+                st.rerun()        
+        cambiar_vista('rondas_resultados')
+
 
     st.sidebar.markdown(
         f'<img src="https://media1.tenor.com/m/PYORpU4s_zAAAAAd/zoe-laugh.gif">',
