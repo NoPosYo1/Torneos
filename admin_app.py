@@ -633,7 +633,7 @@ def panel_rondas():
                             seleccion_e2 = st.selectbox(
                                 "Seleccionar Equipo 2 para este duelo",
                                 options=[None] + list(opciones_e2.keys()),
-                                key=f"select_e2_{enc['id']}")
+                                key=f"select_e2_{nombre_grupo}_{enc['id']}")
                             
 
                     with c2:
