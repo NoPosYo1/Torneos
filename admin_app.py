@@ -494,7 +494,7 @@ else:
                         tipo_boton = "primary" if estando_en_partida else "secondary"
 
                         # 3. El botón cambia de color visualmente si ya están en partida
-                        if st.button("🎮 En Partida", key=f"btn_p_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True, type=tipo_boton):
+                        if st.button("En Partida", key=f"btn_p_{enc['id']}", disabled=ya_tiene_ganador, use_container_width=True, type=tipo_boton):
                             st.toast("¡Equipos en combate!", icon="⚔️")
                             cambiar_estado_equipo(supabd, e1['id'], "En Partida")
                             cambiar_estado_equipo(supabd, e2['id'], "En Partida")
