@@ -615,11 +615,7 @@ def panel_rondas():
                                 st.toast("Equipo reubicado correctamente", icon="🔄")
                                 st.rerun()
         
-        if st.button("Añadir nuevo versus", key=f"btn_nuevo_versus_{nombre_grupo}"):
-            st.divider()
-            # 1. Función con cache para evitar consultas infinitas y resets de UI
-
-            # 2. Obtener datos
+        # 2. Obtener datos
             datos_equipos = obtener_equipos()
 
             if datos_equipos:
