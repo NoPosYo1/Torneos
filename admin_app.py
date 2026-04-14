@@ -426,7 +426,7 @@ def panel_rondas():
 
     # Función interna para no repetir el código del renderizado del versus
     def renderizar_duelos(lista_encuentros,nombre_grupo,indice):
-        for enc in lista_encuentros[:grupos_por_ronda]: 
+        for j,enc in lista_encuentros[:grupos_por_ronda]: 
             ya_tiene_ganador = enc.get('ganador_id') is not None
             e1 = enc.get('equipo_1')
             e2 = enc.get('equipo_2')
@@ -561,7 +561,7 @@ def panel_rondas():
                             res_todos_equipos = supabd.table("equipo").select("id, jugador_1(nick), jugador_2(nick)").execute()
                             equipos_libres = [e for e in res_todos_equipos.data if e['id'] not in grupos_ocupados]
                             opciones_e2 = {f"Equipo {e['id']} - {e['jugador_1']['nick']} & {e['jugador_2']['nick'] if e['jugador_2'] else 'Solo'}": e['id'] for e in equipos_libres}
-                            seleccion_e2 = st.selectbox("Seleccionar Equipo 2 para este duelo", options=[None] + list(opciones_e2.keys()), key=f"add_e2_{nombre_grupo}_{ronda_actual}")
+                            seleccion_e2 = st.selectbox("Seleccionar Equipo 2 para este duelo", options=[None] + list(opciones_e2.keys()), key=f"add_e2_{nombre_grupo}_{ronda_actual}_{enc['id']}")
                             if seleccion_e2:
                                 id_equipo_2 = opciones_e2[seleccion_e2]
                                 supabd.table("encuentros").update({"equipo_2": id_equipo_2}).eq("id", enc['id']).execute()
@@ -614,60 +614,61 @@ def panel_rondas():
                                 supabd.table("encuentros").update({"equipo_2": id_reubicado}).eq("id", enc['id']).execute()
                                 st.toast("Equipo reubicado correctamente", icon="🔄")
                                 st.rerun()
-        
+        st.divider
+        st.subheader("Añadir Nuevo Versus")
         # 2. Obtener datos
-            datos_equipos = obtener_equipos()
+        datos_equipos = obtener_equipos()
 
-            if datos_equipos:
-                # Creamos el diccionario de opciones de forma estable
-                opciones = {
-                    f"ID {e['id']} - {e['jugador_1']['nick']} - {e['jugador_2']['nick']}": e['id'] 
-                    for e in datos_equipos
-                }
-                lista_opciones = [None] + list(opciones.keys())
+        if datos_equipos:
+            # Creamos el diccionario de opciones de forma estable
+            opciones = {
+                f"ID {e['id']} - {e['jugador_1']['nick']} - {e['jugador_2']['nick']}": e['id'] 
+                for e in datos_equipos
+            }
+            lista_opciones = [None] + list(opciones.keys())
 
-                col1, col2 = st.columns(2)
+            col1, col2 = st.columns(2)
 
-                with col1:
-                    # Importante: el index 0 es None
-                    e1_sel = st.selectbox(
-                        "Equipo 1", 
-                        options=lista_opciones, 
-                        key=f"add_nv_vs_e1_{nombre_grupo}_{indice}"
-                    )
+            with col1:
+                # Importante: el index 0 es None
+                e1_sel = st.selectbox(
+                    "Equipo 1", 
+                    options=lista_opciones, 
+                    key=f"add_nv_vs_e1_{nombre_grupo}_{indice}"
+                )
 
-                with col2:
-                    e2_sel = st.selectbox(
-                        "Equipo 2", 
-                        options=lista_opciones, 
-                        key=f"add_nv_vs_e2_{nombre_grupo}_{indice}"
-                    )
+            with col2:
+                e2_sel = st.selectbox(
+                    "Equipo 2", 
+                    options=lista_opciones, 
+                    key=f"add_nv_vs_e2_{nombre_grupo}_{indice}"
+                )
 
-                if st.button("Confirmar Nuevo Encuentro", use_container_width=True, key=f"btn_confirmar_{nombre_grupo}"):
-                    if e1_sel and e2_sel:
-                        if e1_sel == e2_sel:
-                            st.error("Un equipo no puede pelear contra sí mismo.")
-                        else:
-                            nuevo_duelo = {
-                                "ronda": ronda_actual,
-                                "equipo_1": opciones[e1_sel],
-                                "equipo_2": opciones[e2_sel],
-                                "grupo": nombre_grupo.replace("Grupo ", ""),
-                                "formato": "eliminacion_directa"
-                            }
-                            
-                            try:
-                                supabd.table("encuentros").insert(nuevo_duelo).execute()
-                                st.success("¡Versus añadido!")
-                                # Limpiamos cache para que el nuevo encuentro aparezca si es necesario
-                                st.cache_data.clear()
-                                st.rerun()
-                            except Exception as e:
-                                st.error(f"Error al insertar: {e}")
+            if st.button("Confirmar Nuevo Encuentro", use_container_width=True, key=f"btn_confirmar_{nombre_grupo}"):
+                if e1_sel and e2_sel:
+                    if e1_sel == e2_sel:
+                        st.error("Un equipo no puede pelear contra sí mismo.")
                     else:
-                        st.error("Debes seleccionar ambos equipos.")
-            else:
-                st.warning("No hay equipos creados todavía.")
+                        nuevo_duelo = {
+                            "ronda": ronda_actual,
+                            "equipo_1": opciones[e1_sel],
+                            "equipo_2": opciones[e2_sel],
+                            "grupo": nombre_grupo.replace("Grupo ", ""),
+                            "formato": "eliminacion_directa"
+                        }
+                            
+                        try:
+                            supabd.table("encuentros").insert(nuevo_duelo).execute()
+                            st.success("¡Versus añadido!")
+                            # Limpiamos cache para que el nuevo encuentro aparezca si es necesario
+                            st.cache_data.clear()
+                            st.rerun()
+                        except Exception as e:
+                            st.error(f"Error al insertar: {e}")
+                else:
+                    st.error("Debes seleccionar ambos equipos.")
+        else:
+            st.warning("No hay equipos creados todavía.")
 
     # --- REPARTO DE DUELOS POR PESTAÑA ---
     for i, nombre in enumerate(nombres_grupos):
