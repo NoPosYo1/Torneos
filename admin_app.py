@@ -257,6 +257,21 @@ def cambiar_estado_equipo(id_equipo, nuevo_estado):
     except Exception as e:
         st.error(f"Error al actualizar estado: {e}")
 
+def obtener_equipos_libres(ronda):
+    # Traemos todos los equipos
+    todos = supabd.table("equipo").select("id, jugador_1(nick), jugador_2(nick)").execute().data
+    
+    # Traemos los IDs de equipos que ya tienen duelo en esta ronda
+    ocupados_res = supabd.table("encuentros").select("equipo_1, equipo_2").eq("ronda", ronda).execute().data
+    
+    ids_ocupados = set()
+    for reg in ocupados_res:
+        if reg['equipo_1']: ids_ocupados.add(reg['equipo_1'])
+        if reg['equipo_2']: ids_ocupados.add(reg['equipo_2'])
+        
+    # Retornamos solo los que no están en la lista de ocupados
+    return [e for e in todos if e['id'] not in ids_ocupados]
+
 @st.cache_data(ttl=60) # Cache por 1 minuto
 def obtener_equipos():
     res = supabd.table("equipo").select("id, jugador_1(nick), jugador_2(nick)").execute()
@@ -615,6 +630,39 @@ def panel_rondas():
                                 supabd.table("encuentros").update({"equipo_2": id_reubicado}).eq("id", enc['id']).execute()
                                 st.toast("Equipo reubicado correctamente", icon="🔄")
                                 st.rerun()
+        
+        # --- NUEVA SECCIÓN: CREAR ENCUENTRO MANUAL EN ESTE GRUPO ---
+    with st.expander(f"➕ Crear nuevo encuentro en {nombre_grupo}"):
+        equipos_libres = obtener_equipos_libres(ronda_actual)
+        
+        if len(equipos_libres) >= 2:
+            opciones = {
+                f"{e['jugador_1']['nick']} & {e['jugador_2']['nick'] if e['jugador_2'] else 'Solo'}": e['id'] 
+                for e in equipos_libres
+            }
+            
+            c1, c2 = st.columns(2)
+            with c1:
+                sel_1 = st.selectbox("Selecciona Equipo A", [None] + list(opciones.keys()), key=f"new_vs_a_{nombre_grupo}")
+            with c2:
+                sel_2 = st.selectbox("Selecciona Equipo B", [None] + list(opciones.keys()), key=f"new_vs_b_{nombre_grupo}")
+            
+            if st.button("Agendar Encuentro", key=f"btn_new_vs_{nombre_grupo}", use_container_width=True):
+                if sel_1 and sel_2 and sel_1 != sel_2:
+                    nuevo_vs = {
+                        "ronda": ronda_actual,
+                        "equipo_1": opciones[sel_1],
+                        "equipo_2": opciones[sel_2],
+                        "grupo": nombre_grupo.replace("Grupo ", ""),
+                        "formato": "eliminacion_directa"
+                    }
+                    supabd.table("encuentros").insert(nuevo_vs).execute()
+                    st.success("Duelo creado con éxito")
+                    st.rerun()
+                else:
+                    st.error("Selecciona dos equipos distintos")
+        else:
+            st.info("No hay suficientes equipos libres para crear un nuevo duelo en esta ronda.")
         
         st.divider()
         st.subheader("➕ Añadir Encuentro Manual")
