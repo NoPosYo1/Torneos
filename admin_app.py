@@ -616,7 +616,7 @@ def panel_rondas():
                 col1, col2 = st.columns(2)
                 with col1:
 
-                    c1,c2,c3 = st.columns(3)
+                    c1,c2 = st.columns(2)
                     with c1:
                             st.write("Equipos sin Versus")
                             res_enc = supabd.table("encuentros").select("id, equipo_1(id,estado), equipo_2(id,estado),ronda,ganador_id").execute()
@@ -677,11 +677,11 @@ def panel_rondas():
                                 options=[None] + list(huerfanos.keys()),
                                 key=f"reubicar_{enc['id']}" # 'enc' es el duelo vacío donde lo quieres meter
                             )
-                    with c3:
-                        st.write("Todos los equipos creados")
-                        res_eq = supabd.table("equipo").select("id, jugador_1(nick), jugador_2(nick)").execute()
-                        opciones = {f"ID {e['id']} - {e['jugador_1']['nick']}": e['id'] for e in res_eq.data}
-                        e1_sel = st.selectbox("Equipo 1", [None] + list(opciones.keys()), key=f"add_e1_{nombre_grupo}")
+                    
+                    st.write("Todos los equipos creados")
+                    res_eq = supabd.table("equipo").select("id, jugador_1(nick), jugador_2(nick)").execute()
+                    opciones = {f"ID {e['id']} - {e['jugador_1']['nick']}": e['id'] for e in res_eq.data}
+                    e1_sel = st.selectbox("Equipo 1", [None] + list(opciones.keys()), key=f"add_e1_{nombre_grupo}")
 
                 with col2:
                     e2_sel = st.selectbox("Equipo 2", [None] + list(opciones.keys()), key=f"add_e2_{nombre_grupo}")
