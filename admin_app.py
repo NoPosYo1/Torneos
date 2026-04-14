@@ -655,7 +655,7 @@ def panel_rondas():
                             "ronda": ronda_actual,
                             "equipo_1": opciones[e1_sel],
                             "equipo_2": opciones[e2_sel],
-                            "grupo": nombre_grupo.replace("Grupo ", ""),
+                            "grupo": nombre_grupo.replace("Grupo ", nombre_grupo),
                             "formato": "eliminacion_directa"
                         }
                         
