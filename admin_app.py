@@ -257,6 +257,11 @@ def cambiar_estado_equipo(id_equipo, nuevo_estado):
     except Exception as e:
         st.error(f"Error al actualizar estado: {e}")
 
+@st.cache_data(ttl=60) # Cache por 1 minuto
+def obtener_equipos():
+    res = supabd.table("equipo").select("id, jugador_1(nick), jugador_2(nick)").execute()
+    return res.data
+
 
 # --- FUNCIONES DE CADA PANEL ---
 #---------------------------------------------------------------------------------------------+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -609,96 +614,64 @@ def panel_rondas():
                                 supabd.table("encuentros").update({"equipo_2": id_reubicado}).eq("id", enc['id']).execute()
                                 st.toast("Equipo reubicado correctamente", icon="🔄")
                                 st.rerun()
+        
         if st.button("Añadir nuevo versus", key=f"btn_nuevo_versus_{nombre_grupo}"):
             st.divider()
-            with st.expander(f"Añadir nuevo versus al {nombre_grupo}"):
+            # 1. Función con cache para evitar consultas infinitas y resets de UI
+
+            # 2. Obtener datos
+            datos_equipos = obtener_equipos()
+
+            if datos_equipos:
+                # Creamos el diccionario de opciones de forma estable
+                opciones = {
+                    f"ID {e['id']} - {e['jugador_1']['nick']} - {e['jugador_2']['nick']}": e['id'] 
+                    for e in datos_equipos
+                }
+                lista_opciones = [None] + list(opciones.keys())
 
                 col1, col2 = st.columns(2)
+
                 with col1:
-
-                    st.write("Equipos sin Versus")
-                    res_enc = supabd.table("encuentros").select("id, equipo_1(id,estado), equipo_2(id,estado),ronda,ganador_id").execute()
-                    grupos_ocupados = set()
-                    grupos_ocupados.add(e1['id'])
-                    for reg in res_enc.data:
-                        if reg['equipo_2']:
-                            grupos_ocupados.add(reg['equipo_2']['id'])
-                            grupos_ocupados.add(reg['equipo_1']['id'])
-                        
-                    res_todos_equipos = supabd.table("equipo").select("id, jugador_1(nick), jugador_2(nick)").execute()
-                    equipos_libres = [e for e in res_todos_equipos.data if e['id'] not in grupos_ocupados]
-                    opciones_e2 = {f"Equipo {e['id']} - {e['jugador_1']['nick']} & {e['jugador_2']['nick'] if e['jugador_2'] else 'Solo'}": e['id'] for e in equipos_libres}
-                    seleccion_e2 = st.selectbox(
-                        "Seleccionar Equipo 2 para este duelo",
-                        options=[None] + list(opciones_e2.keys()),
-                        key=f"select_e2_{nombre_grupo}_{enc['id']}")
-                            
-                            
-                            
-                            # 1. Obtener todos los encuentros para analizar estados
-                    st.write("Equipos que no jugaron y el rival se elimino")
-                    res_enc = supabd.table("encuentros").select("""
-                                id, 
-                                ganador_id,
-                                equipo_1(id, jugador_1(nick), jugador_2(nick), estado), 
-                                equipo_2(id, jugador_1(nick), jugador_2(nick), estado),
-                                ronda
-                            """).execute()
-                    huerfanos = {}
-                            
-                    for reg in res_enc.data:
-                        # Si el duelo ya se cerró (tiene ganador), no nos interesa para reubicar
-                        if reg['ronda'] == "Ronda 1":
-                            if reg.get('ganador_id'):
-                                continue
-                            eq1 = reg.get('equipo_1')
-                            eq2 = reg.get('equipo_2')
-                            # Caso 1: Equipo 1 está vivo pero el 2 no existe o está eliminado
-                            if (eq1 and eq1['estado'] != "Eliminado") and eq1['id'] != e1['id']:
-                                if not eq2 or eq2['estado'] == "Eliminado":
-                                    n1 = eq1['jugador_1']['nick'] if eq1['jugador_1'] else "???"
-                                    n2 = eq1['jugador_2']['nick'] if eq1['jugador_2'] else "Solo"
-                                    label = f"{n1} & {n2}"
-                                    huerfanos[label] = eq1['id']
-
-                                    # Caso 2: Equipo 2 está vivo pero el 1 está eliminado
-                            if (eq2 and eq2['estado'] != "Eliminado") and eq2['id'] != e1['id']:
-                                if eq1 and eq1['estado'] == "Eliminado" :
-                                    n1 = eq2['jugador_1']['nick'] if eq2['jugador_1'] else "???"
-                                    n2 = eq2['jugador_2']['nick'] if eq2['jugador_2'] else "Solo"
-                                    label = f"{n1} & {n2}"
-                                    huerfanos[label] = eq2['id']
-
-                            # 2. Mostrar el Selectbox
-                    seleccion_huerfano = st.selectbox(
-                        "Asignar equipo huérfano como rival",
-                        options=[None] + list(huerfanos.keys()),
-                        key=f"reubicar_{enc['id']}" # 'enc' es el duelo vacío donde lo quieres meter
+                    # Importante: el index 0 es None
+                    e1_sel = st.selectbox(
+                        "Equipo 1", 
+                        options=lista_opciones, 
+                        key=f"add_e1_{nombre_grupo}"
                     )
-                    
-
-                    st.write("Todos los equipos creados")
-                    res_eq = supabd.table("equipo").select("id, jugador_1(nick), jugador_2(nick)").execute()
-                    opciones = {f"ID {e['id']} - {e['jugador_1']['nick']} - {e['jugador_2']['nick']}": e['id'] for e in res_eq.data}
-                    e1_sel = st.selectbox("Equipo 1", [None] + list(opciones.keys()), key=f"add_e1_{nombre_grupo}")
 
                 with col2:
-                    e2_sel = st.selectbox("Equipo 2", [None] + list(opciones.keys()), key=f"add_e2_{nombre_grupo}")
+                    e2_sel = st.selectbox(
+                        "Equipo 2", 
+                        options=lista_opciones, 
+                        key=f"add_e2_{nombre_grupo}"
+                    )
 
-                if st.button("Confirmar Nuevo Encuentro", use_container_width=True, key=f"btn_confirmar_nuevo_vs_{nombre_grupo}"):
+                if st.button("Confirmar Nuevo Encuentro", use_container_width=True, key=f"btn_confirmar_{nombre_grupo}"):
                     if e1_sel and e2_sel:
-                        nuevo_duelo = {
-                            "ronda": ronda_actual, # Asegúrate de que esta variable sea accesible
-                            "equipo_1": opciones[e1_sel],
-                            "equipo_2": opciones[e2_sel],
-                            "grupo": nombre_grupo.replace("Grupo ", ""), # Extrae solo la letra 'A', 'B', etc.
-                            "formato": "eliminacion_directa"
-                        }
-                        supabd.table("encuentros").insert(nuevo_duelo).execute()
-                        st.success("Versus añadido!")
-                        st.rerun()
+                        if e1_sel == e2_sel:
+                            st.error("Un equipo no puede pelear contra sí mismo.")
+                        else:
+                            nuevo_duelo = {
+                                "ronda": ronda_actual,
+                                "equipo_1": opciones[e1_sel],
+                                "equipo_2": opciones[e2_sel],
+                                "grupo": nombre_grupo.replace("Grupo ", ""),
+                                "formato": "eliminacion_directa"
+                            }
+                            
+                            try:
+                                supabd.table("encuentros").insert(nuevo_duelo).execute()
+                                st.success("¡Versus añadido!")
+                                # Limpiamos cache para que el nuevo encuentro aparezca si es necesario
+                                st.cache_data.clear()
+                                st.rerun()
+                            except Exception as e:
+                                st.error(f"Error al insertar: {e}")
                     else:
                         st.error("Debes seleccionar ambos equipos.")
+            else:
+                st.warning("No hay equipos creados todavía.")
     # --- REPARTO DE DUELOS POR PESTAÑA ---
     for i, nombre in enumerate(nombres_grupos):
         with tabs[i]:
