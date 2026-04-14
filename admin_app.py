@@ -425,8 +425,9 @@ def panel_rondas():
     tabs = st.tabs([f"GRUPO {n}" for n in nombres_grupos])
 
     # Función interna para no repetir el código del renderizado del versus
-    def renderizar_duelos(lista_encuentros,nombre_grupo,indice):
-        for j,enc in lista_encuentros[:grupos_por_ronda]: 
+    def renderizar_duelos(lista_encuentros,nombre_grupo,indice_grupo):
+        
+        for j, enc in lista_encuentros[:grupos_por_ronda]: 
             ya_tiene_ganador = enc.get('ganador_id') is not None
             e1 = enc.get('equipo_1')
             e2 = enc.get('equipo_2')
@@ -614,15 +615,16 @@ def panel_rondas():
                                 supabd.table("encuentros").update({"equipo_2": id_reubicado}).eq("id", enc['id']).execute()
                                 st.toast("Equipo reubicado correctamente", icon="🔄")
                                 st.rerun()
-        st.divider
-        st.subheader("Añadir Nuevo Versus")
-        # 2. Obtener datos
+        
+        st.divider()
+        st.subheader("➕ Añadir Encuentro Manual")
+
+        # 2. FORMULARIO DE NUEVO ENCUENTRO (FUERA DEL BUCLE DE ARRIBA)
         datos_equipos = obtener_equipos()
 
         if datos_equipos:
-            # Creamos el diccionario de opciones de forma estable
             opciones = {
-                f"ID {e['id']} - {e['jugador_1']['nick']} - {e['jugador_2']['nick']}": e['id'] 
+                f"ID {e['id']} - {e['jugador_1']['nick']} - {e.get('jugador_2', {}).get('nick', 'Solo')}": e['id'] 
                 for e in datos_equipos
             }
             lista_opciones = [None] + list(opciones.keys())
@@ -630,21 +632,21 @@ def panel_rondas():
             col1, col2 = st.columns(2)
 
             with col1:
-                # Importante: el index 0 es None
+                # Usamos indice_grupo para que sea único por pestaña
                 e1_sel = st.selectbox(
                     "Equipo 1", 
                     options=lista_opciones, 
-                    key=f"add_nv_vs_e1_{nombre_grupo}_{indice}"
+                    key=f"nuevo_e1_g{nombre_grupo}_{indice_grupo}"
                 )
 
             with col2:
                 e2_sel = st.selectbox(
                     "Equipo 2", 
                     options=lista_opciones, 
-                    key=f"add_nv_vs_e2_{nombre_grupo}_{indice}"
+                    key=f"nuevo_e2_g{nombre_grupo}_{indice_grupo}"
                 )
 
-            if st.button("Confirmar Nuevo Encuentro", use_container_width=True, key=f"btn_confirmar_{nombre_grupo}"):
+            if st.button("Confirmar Nuevo Encuentro", use_container_width=True, key=f"btn_confirmar_g{nombre_grupo}_{indice_grupo}"):
                 if e1_sel and e2_sel:
                     if e1_sel == e2_sel:
                         st.error("Un equipo no puede pelear contra sí mismo.")
@@ -656,19 +658,16 @@ def panel_rondas():
                             "grupo": nombre_grupo.replace("Grupo ", ""),
                             "formato": "eliminacion_directa"
                         }
-                            
+                        
                         try:
                             supabd.table("encuentros").insert(nuevo_duelo).execute()
                             st.success("¡Versus añadido!")
-                            # Limpiamos cache para que el nuevo encuentro aparezca si es necesario
                             st.cache_data.clear()
                             st.rerun()
                         except Exception as e:
                             st.error(f"Error al insertar: {e}")
                 else:
                     st.error("Debes seleccionar ambos equipos.")
-        else:
-            st.warning("No hay equipos creados todavía.")
 
     # --- REPARTO DE DUELOS POR PESTAÑA ---
     for i, nombre in enumerate(nombres_grupos):
