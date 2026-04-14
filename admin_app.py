@@ -633,14 +633,14 @@ def panel_rondas():
                     e1_sel = st.selectbox(
                         "Equipo 1", 
                         options=lista_opciones, 
-                        key=f"add_nv_vs_e1_{nombre_grupo}"
+                        key=f"add_nv_vs_e1_{nombre_grupo}e{'id'}"
                     )
 
                 with col2:
                     e2_sel = st.selectbox(
                         "Equipo 2", 
                         options=lista_opciones, 
-                        key=f"add_nv_vs_e2_{nombre_grupo}"
+                        key=f"add_nv_vs_e2_{nombre_grupo}e{'id'}"
                     )
 
                 if st.button("Confirmar Nuevo Encuentro", use_container_width=True, key=f"btn_confirmar_{nombre_grupo}"):
