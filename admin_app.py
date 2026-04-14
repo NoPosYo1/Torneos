@@ -678,6 +678,7 @@ def panel_rondas():
                                 key=f"reubicar_{enc['id']}" # 'enc' es el duelo vacío donde lo quieres meter
                             )
                     
+                    
                     st.write("Todos los equipos creados")
                     res_eq = supabd.table("equipo").select("id, jugador_1(nick), jugador_2(nick)").execute()
                     opciones = {f"ID {e['id']} - {e['jugador_1']['nick']}": e['id'] for e in res_eq.data}
