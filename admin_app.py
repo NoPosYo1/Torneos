@@ -427,7 +427,7 @@ def panel_rondas():
     # Función interna para no repetir el código del renderizado del versus
     def renderizar_duelos(lista_encuentros,nombre_grupo,indice_grupo):
         
-        for j, enc in lista_encuentros[:grupos_por_ronda]: 
+        for j, enc in enumerate(lista_encuentros[:grupos_por_ronda]):
             ya_tiene_ganador = enc.get('ganador_id') is not None
             e1 = enc.get('equipo_1')
             e2 = enc.get('equipo_2')
