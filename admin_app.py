@@ -257,6 +257,23 @@ def cambiar_estado_equipo(id_equipo, nuevo_estado):
     except Exception as e:
         st.error(f"Error al actualizar estado: {e}")
 
+def obtener_equipos_sin_duelo(ronda_objetivo):
+    # 1. Traer todos los que NO están eliminados ni ausentes
+    res_vivos = supabd.table("equipo").select("id, jugador_1(nick), jugador_2(nick)").neq("estado", "Eliminado").neq("estado", "Ausente").execute()
+    equipos_vivos = res_vivos.data
+    
+    # 2. Traer IDs de quienes YA tienen un duelo en esta ronda
+    res_duelos = supabd.table("encuentros").select("equipo_1, equipo_2").eq("ronda", ronda_objetivo).execute()
+    
+    ids_con_duelo = set()
+    for d in res_duelos.data:
+        if d['equipo_1']: ids_con_duelo.add(d['equipo_1'])
+        if d['equipo_2']: ids_con_duelo.add(d['equipo_2'])
+        
+    # 3. Filtrar: Solo los que están vivos pero no tienen duelo
+    libres = [e for e in equipos_vivos if e['id'] not in ids_con_duelo]
+    return libres
+
 def obtener_equipos_libres(ronda,grupo_ronda1):
     # 1. Traer todos los equipos que NO están eliminados
     res_equipos = supabd.table("equipo").select("id, jugador_1(nick), jugador_2(nick), estado").neq("estado", "Eliminado").execute()
@@ -567,72 +584,33 @@ def panel_rondas():
                         st.markdown("<p style='color:gray; font-style:italic; padding-top:10px;'>Esperando rival...</p>", unsafe_allow_html=True)
                         st.markdown("<p style='color:gray; font-style:italic; padding-top:10px;'>Se mostraran equipos que no consiguieron rivales de la ronda actual y anteriores </p>", unsafe_allow_html=True)
                         
-                        c1,c2 = st.columns(2)
-                        with c1:
-                            res_enc = supabd.table("encuentros").select("id, equipo_1(id,estado), equipo_2(id,estado),ronda,ganador_id").execute()
-                            grupos_ocupados = set()
-                            grupos_ocupados.add(e1['id'])
-                            for reg in res_enc.data:
-                                if reg['equipo_2']:
-                                    grupos_ocupados.add(reg['equipo_2']['id'])
-                                    grupos_ocupados.add(reg['equipo_1']['id'])
+                        # ... (Dentro de tu lógica cuando e2 no existe)
+                        st.warning("Equipo sin rival detectado")
+                        
+                        # Llamamos a la función que acabamos de crear
+                        equipos_para_selector = obtener_equipos_sin_duelo(ronda_actual)
+                        
+                        if equipos_para_selector:
+                            # Creamos el diccionario para el selectbox
+                            opciones_reubicacion = {
+                                f"ID {e['id']} - {e['jugador_1']['nick']}": e['id'] 
+                                for e in equipos_para_selector if e['id'] != e1['id'] # Que no se elija a sí mismo
+                            }
                             
-                            res_todos_equipos = supabd.table("equipo").select("id, jugador_1(nick), jugador_2(nick)").execute()
-                            equipos_libres = [e for e in res_todos_equipos.data if e['id'] not in grupos_ocupados]
-                            opciones_e2 = {f"Equipo {e['id']} - {e['jugador_1']['nick']} & {e['jugador_2']['nick'] if e['jugador_2'] else 'Solo'}": e['id'] for e in equipos_libres}
-                            seleccion_e2 = st.selectbox("Seleccionar Equipo 2 para este duelo", options=[None] + list(opciones_e2.keys()), key=f"add_e2_{nombre_grupo}_{ronda_actual}_{enc['id']}")
-                            if seleccion_e2:
-                                id_equipo_2 = opciones_e2[seleccion_e2]
-                                supabd.table("encuentros").update({"equipo_2": id_equipo_2}).eq("id", enc['id']).execute()
-                                st.toast(f"Equipo 2 asignado: {seleccion_e2}", icon="✅")
-                                st.rerun()
-                        with c2:
-                            # 1. Obtener todos los encuentros para analizar estados
-                            res_enc = supabd.table("encuentros").select("""
-                                id, 
-                                ganador_id,
-                                equipo_1(id, jugador_1(nick), jugador_2(nick), estado), 
-                                equipo_2(id, jugador_1(nick), jugador_2(nick), estado),
-                                ronda
-                            """).execute()
-                            huerfanos = {}
-                            
-                            for reg in res_enc.data:
-                                # Si el duelo ya se cerró (tiene ganador), no nos interesa para reubicar
-                                if reg['ronda'] == "Ronda 1":
-                                    if reg.get('ganador_id'):
-                                        continue
-                                    eq1 = reg.get('equipo_1')
-                                    eq2 = reg.get('equipo_2')
-                                    # Caso 1: Equipo 1 está vivo pero el 2 no existe o está eliminado
-                                    if (eq1 and eq1['estado'] != "Eliminado") and eq1['id'] != e1['id']:
-                                        if not eq2 or eq2['estado'] == "Eliminado":
-                                            n1 = eq1['jugador_1']['nick'] if eq1['jugador_1'] else "???"
-                                            n2 = eq1['jugador_2']['nick'] if eq1['jugador_2'] else "Solo"
-                                            label = f"{n1} & {n2}"
-                                            huerfanos[label] = eq1['id']
-
-                                    # Caso 2: Equipo 2 está vivo pero el 1 está eliminado
-                                    if (eq2 and eq2['estado'] != "Eliminado") and eq2['id'] != e1['id']:
-                                        if eq1 and eq1['estado'] == "Eliminado" :
-                                            n1 = eq2['jugador_1']['nick'] if eq2['jugador_1'] else "???"
-                                            n2 = eq2['jugador_2']['nick'] if eq2['jugador_2'] else "Solo"
-                                            label = f"{n1} & {n2}"
-                                            huerfanos[label] = eq2['id']
-
-                            # 2. Mostrar el Selectbox
-                            seleccion_huerfano = st.selectbox(
-                                "Asignar equipo huérfano como rival",
-                                options=[None] + list(huerfanos.keys()),
-                                key=f"reubicar_{enc['id']}_{nombre_grupo}_{ronda_actual}" # 'enc' es el duelo vacío donde lo quieres meter
+                            seleccion = st.selectbox(
+                                "Asignar rival disponible",
+                                options=[None] + list(opciones_reubicacion.keys()),
+                                key=f"fix_rival_{enc['id']}"
                             )
-
-                            if seleccion_huerfano:
-                                id_reubicado = huerfanos[seleccion_huerfano]
-                                # Actualizamos el duelo vacío con este equipo
-                                supabd.table("encuentros").update({"equipo_2": id_reubicado}).eq("id", enc['id']).execute()
-                                st.toast("Equipo reubicado correctamente", icon="🔄")
+                            
+                            if seleccion:
+                                id_nuevo_rival = opciones_reubicacion[seleccion]
+                                # Actualizamos la fila del encuentro que estaba vacía
+                                supabd.table("encuentros").update({"equipo_2": id_nuevo_rival}).eq("id", enc['id']).execute()
+                                st.success(f"Rival asignado: {seleccion}")
                                 st.rerun()
+                        else:
+                            st.info("No hay más equipos disponibles para asignar en esta ronda.")
         
         # --- NUEVA SECCIÓN: CREAR ENCUENTRO MANUAL EN ESTE GRUPO ---
         st.divider()
