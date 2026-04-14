@@ -425,7 +425,7 @@ def panel_rondas():
     tabs = st.tabs([f"GRUPO {n}" for n in nombres_grupos])
 
     # Función interna para no repetir el código del renderizado del versus
-    def renderizar_duelos(lista_encuentros,nombre_grupo):
+    def renderizar_duelos(lista_encuentros,nombre_grupo,indice):
         for enc in lista_encuentros[:grupos_por_ronda]: 
             ya_tiene_ganador = enc.get('ganador_id') is not None
             e1 = enc.get('equipo_1')
@@ -633,14 +633,14 @@ def panel_rondas():
                     e1_sel = st.selectbox(
                         "Equipo 1", 
                         options=lista_opciones, 
-                        key=f"add_nv_vs_e1_{nombre_grupo}e{'id'}"
+                        key=f"add_nv_vs_e1_{nombre_grupo}_{indice}"
                     )
 
                 with col2:
                     e2_sel = st.selectbox(
                         "Equipo 2", 
                         options=lista_opciones, 
-                        key=f"add_nv_vs_e2_{nombre_grupo}e{'id'}"
+                        key=f"add_nv_vs_e2_{nombre_grupo}_{indice}"
                     )
 
                 if st.button("Confirmar Nuevo Encuentro", use_container_width=True, key=f"btn_confirmar_{nombre_grupo}"):
@@ -672,7 +672,7 @@ def panel_rondas():
     # --- REPARTO DE DUELOS POR PESTAÑA ---
     for i, nombre in enumerate(nombres_grupos):
         with tabs[i]:
-            renderizar_duelos(grupos_detectados[nombre],nombre)
+            renderizar_duelos(grupos_detectados[nombre],nombre,i)
 
 
 
