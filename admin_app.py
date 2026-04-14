@@ -257,20 +257,23 @@ def cambiar_estado_equipo(id_equipo, nuevo_estado):
     except Exception as e:
         st.error(f"Error al actualizar estado: {e}")
 
-def obtener_equipos_libres(ronda):
-    # Traemos todos los equipos
-    todos = supabd.table("equipo").select("id, jugador_1(nick), jugador_2(nick)").execute().data
+def obtener_equipos_libres(ronda,grupo_ronda1):
+    # 1. Traer todos los equipos que NO están eliminados
+    res_equipos = supabd.table("equipo").select("id, jugador_1(nick), jugador_2(nick), estado").neq("estado", "Eliminado").execute()
+    activos = res_equipos.data
     
-    # Traemos los IDs de equipos que ya tienen duelo en esta ronda
-    ocupados_res = supabd.table("encuentros").select("equipo_1, equipo_2").eq("ronda", ronda).execute().data
+    # 2. Traer encuentros de la ronda actual para ver quién ya tiene pelea
+    res_enc = supabd.table("encuentros").select("equipo_1, equipo_2").eq("ronda", ronda).execute()
     
-    ids_ocupados = set()
-    for reg in ocupados_res:
-        if reg['equipo_1']: ids_ocupados.add(reg['equipo_1'])
-        if reg['equipo_2']: ids_ocupados.add(reg['equipo_2'])
+    ids_con_pelea = set()
+    for enc in res_enc.data:
+        if enc['equipo_1']: ids_con_pelea.add(enc['equipo_1'])
+        if enc['equipo_2']: ids_con_pelea.add(enc['equipo_2'])
         
-    # Retornamos solo los que no están en la lista de ocupados
-    return [e for e in todos if e['id'] not in ids_ocupados]
+    # 3. Disponibles = Están vivos Y no tienen pelea en esta ronda
+    disponibles = [e for e in activos if e['id'] not in ids_con_pelea]
+    
+    return disponibles
 
 @st.cache_data(ttl=60) # Cache por 1 minuto
 def obtener_equipos():
@@ -632,9 +635,9 @@ def panel_rondas():
                                 st.rerun()
         
         # --- NUEVA SECCIÓN: CREAR ENCUENTRO MANUAL EN ESTE GRUPO ---
-        
+        st.divider()
         with st.expander(f"➕ Crear nuevo encuentro en {nombre_grupo}"):
-            equipos_libres = obtener_equipos_libres(ronda_actual)
+            equipos_libres = obtener_equipos_libres(ronda_actual,nombre_grupo)
             
             if len(equipos_libres) >= 2:
                 opciones = {
@@ -665,58 +668,6 @@ def panel_rondas():
             else:
                 st.info("No hay suficientes equipos libres para crear un nuevo duelo en esta ronda.")
         
-        st.divider()
-        st.subheader("➕ Añadir Encuentro Manual")
-
-        # 2. FORMULARIO DE NUEVO ENCUENTRO (FUERA DEL BUCLE DE ARRIBA)
-        datos_equipos = obtener_equipos()
-
-        if datos_equipos:
-            opciones = {
-                f"ID {e['id']} - {e['jugador_1']['nick']} - {e.get('jugador_2', {}).get('nick', 'Solo')}": e['id'] 
-                for e in datos_equipos
-            }
-            lista_opciones = [None] + list(opciones.keys())
-
-            col1, col2 = st.columns(2)
-
-            with col1:
-                # Usamos indice_grupo para que sea único por pestaña
-                e1_sel = st.selectbox(
-                    "Equipo 1", 
-                    options=lista_opciones, 
-                    key=f"nuevo_e1_g{nombre_grupo}_{indice_grupo}"
-                )
-
-            with col2:
-                e2_sel = st.selectbox(
-                    "Equipo 2", 
-                    options=lista_opciones, 
-                    key=f"nuevo_e2_g{nombre_grupo}_{indice_grupo}"
-                )
-
-            if st.button("Confirmar Nuevo Encuentro", use_container_width=True, key=f"btn_confirmar_g{nombre_grupo}_{indice_grupo}"):
-                if e1_sel and e2_sel:
-                    if e1_sel == e2_sel:
-                        st.error("Un equipo no puede pelear contra sí mismo.")
-                    else:
-                        nuevo_duelo = {
-                            "ronda": ronda_actual,
-                            "equipo_1": opciones[e1_sel],
-                            "equipo_2": opciones[e2_sel],
-                            "grupo": nombre_grupo.replace("Grupo ", nombre_grupo),
-                            "formato": "eliminacion_directa"
-                        }
-                        
-                        try:
-                            supabd.table("encuentros").insert(nuevo_duelo).execute()
-                            st.success("¡Versus añadido!")
-                            st.cache_data.clear()
-                            st.rerun()
-                        except Exception as e:
-                            st.error(f"Error al insertar: {e}")
-                else:
-                    st.error("Debes seleccionar ambos equipos.")
 
     # --- REPARTO DE DUELOS POR PESTAÑA ---
     for i, nombre in enumerate(nombres_grupos):
