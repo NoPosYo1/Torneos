@@ -616,7 +616,7 @@ def panel_rondas():
                 col1, col2 = st.columns(2)
                 with col1:
 
-                    c1,c2 = st.columns(2)
+                    c1 = st.columns(1)
                     with c1:
                             st.write("Equipos sin Versus")
                             res_enc = supabd.table("encuentros").select("id, equipo_1(id,estado), equipo_2(id,estado),ronda,ganador_id").execute()
@@ -635,48 +635,48 @@ def panel_rondas():
                                 options=[None] + list(opciones_e2.keys()),
                                 key=f"select_e2_{nombre_grupo}_{enc['id']}")
                             
-
-                    with c2:
+                            
+                            
                             # 1. Obtener todos los encuentros para analizar estados
-                            st.write("Equipos que no jugaron y el rival se elimino")
-                            res_enc = supabd.table("encuentros").select("""
+                    st.write("Equipos que no jugaron y el rival se elimino")
+                    res_enc = supabd.table("encuentros").select("""
                                 id, 
                                 ganador_id,
                                 equipo_1(id, jugador_1(nick), jugador_2(nick), estado), 
                                 equipo_2(id, jugador_1(nick), jugador_2(nick), estado),
                                 ronda
                             """).execute()
-                            huerfanos = {}
+                    huerfanos = {}
                             
-                            for reg in res_enc.data:
-                                # Si el duelo ya se cerró (tiene ganador), no nos interesa para reubicar
-                                if reg['ronda'] == "Ronda 1":
-                                    if reg.get('ganador_id'):
-                                        continue
-                                    eq1 = reg.get('equipo_1')
-                                    eq2 = reg.get('equipo_2')
-                                    # Caso 1: Equipo 1 está vivo pero el 2 no existe o está eliminado
-                                    if (eq1 and eq1['estado'] != "Eliminado") and eq1['id'] != e1['id']:
-                                        if not eq2 or eq2['estado'] == "Eliminado":
-                                            n1 = eq1['jugador_1']['nick'] if eq1['jugador_1'] else "???"
-                                            n2 = eq1['jugador_2']['nick'] if eq1['jugador_2'] else "Solo"
-                                            label = f"{n1} & {n2}"
-                                            huerfanos[label] = eq1['id']
+                    for reg in res_enc.data:
+                        # Si el duelo ya se cerró (tiene ganador), no nos interesa para reubicar
+                        if reg['ronda'] == "Ronda 1":
+                            if reg.get('ganador_id'):
+                                continue
+                            eq1 = reg.get('equipo_1')
+                            eq2 = reg.get('equipo_2')
+                            # Caso 1: Equipo 1 está vivo pero el 2 no existe o está eliminado
+                            if (eq1 and eq1['estado'] != "Eliminado") and eq1['id'] != e1['id']:
+                                if not eq2 or eq2['estado'] == "Eliminado":
+                                    n1 = eq1['jugador_1']['nick'] if eq1['jugador_1'] else "???"
+                                    n2 = eq1['jugador_2']['nick'] if eq1['jugador_2'] else "Solo"
+                                    label = f"{n1} & {n2}"
+                                    huerfanos[label] = eq1['id']
 
                                     # Caso 2: Equipo 2 está vivo pero el 1 está eliminado
-                                    if (eq2 and eq2['estado'] != "Eliminado") and eq2['id'] != e1['id']:
-                                        if eq1 and eq1['estado'] == "Eliminado" :
-                                            n1 = eq2['jugador_1']['nick'] if eq2['jugador_1'] else "???"
-                                            n2 = eq2['jugador_2']['nick'] if eq2['jugador_2'] else "Solo"
-                                            label = f"{n1} & {n2}"
-                                            huerfanos[label] = eq2['id']
+                            if (eq2 and eq2['estado'] != "Eliminado") and eq2['id'] != e1['id']:
+                                if eq1 and eq1['estado'] == "Eliminado" :
+                                    n1 = eq2['jugador_1']['nick'] if eq2['jugador_1'] else "???"
+                                    n2 = eq2['jugador_2']['nick'] if eq2['jugador_2'] else "Solo"
+                                    label = f"{n1} & {n2}"
+                                    huerfanos[label] = eq2['id']
 
                             # 2. Mostrar el Selectbox
-                            seleccion_huerfano = st.selectbox(
-                                "Asignar equipo huérfano como rival",
-                                options=[None] + list(huerfanos.keys()),
-                                key=f"reubicar_{enc['id']}" # 'enc' es el duelo vacío donde lo quieres meter
-                            )
+                    seleccion_huerfano = st.selectbox(
+                        "Asignar equipo huérfano como rival",
+                        options=[None] + list(huerfanos.keys()),
+                        key=f"reubicar_{enc['id']}" # 'enc' es el duelo vacío donde lo quieres meter
+                    )
                     
 
                     st.write("Todos los equipos creados")
