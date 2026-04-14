@@ -561,7 +561,7 @@ def panel_rondas():
                             res_todos_equipos = supabd.table("equipo").select("id, jugador_1(nick), jugador_2(nick)").execute()
                             equipos_libres = [e for e in res_todos_equipos.data if e['id'] not in grupos_ocupados]
                             opciones_e2 = {f"Equipo {e['id']} - {e['jugador_1']['nick']} & {e['jugador_2']['nick'] if e['jugador_2'] else 'Solo'}": e['id'] for e in equipos_libres}
-                            seleccion_e2 = st.selectbox("Seleccionar Equipo 2 para este duelo", options=[None] + list(opciones_e2.keys()), key=f"select_e2_{enc['id']}")
+                            seleccion_e2 = st.selectbox("Seleccionar Equipo 2 para este duelo", options=[None] + list(opciones_e2.keys()), key=f"add_e2_{nombre_grupo}_{ronda_actual}")
                             if seleccion_e2:
                                 id_equipo_2 = opciones_e2[seleccion_e2]
                                 supabd.table("encuentros").update({"equipo_2": id_equipo_2}).eq("id", enc['id']).execute()
@@ -605,7 +605,7 @@ def panel_rondas():
                             seleccion_huerfano = st.selectbox(
                                 "Asignar equipo huérfano como rival",
                                 options=[None] + list(huerfanos.keys()),
-                                key=f"reubicar_{enc['id']}" # 'enc' es el duelo vacío donde lo quieres meter
+                                key=f"reubicar_{enc['id']}_{nombre_grupo}_{ronda_actual}" # 'enc' es el duelo vacío donde lo quieres meter
                             )
 
                             if seleccion_huerfano:
@@ -633,14 +633,14 @@ def panel_rondas():
                     e1_sel = st.selectbox(
                         "Equipo 1", 
                         options=lista_opciones, 
-                        key=f"add_e1_{nombre_grupo}"
+                        key=f"add_nv_vs_e1_{nombre_grupo}"
                     )
 
                 with col2:
                     e2_sel = st.selectbox(
                         "Equipo 2", 
                         options=lista_opciones, 
-                        key=f"add_e2_{nombre_grupo}"
+                        key=f"add_nv_vs_e2_{nombre_grupo}"
                     )
 
                 if st.button("Confirmar Nuevo Encuentro", use_container_width=True, key=f"btn_confirmar_{nombre_grupo}"):
