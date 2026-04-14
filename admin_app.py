@@ -462,7 +462,7 @@ def panel_rondas():
                         st.code(f"{nick_j1}", language="None")
                         st.code(f"{nick_j2}", language="None")
                          # (Aquí va el resto de tu lógica de botones Ganador E1, Ausente, etc.)
-                        if estado_e1 == "Eliminado" or (enc['ganador_id'] != e1['id'] and ya_tiene_ganador):
+                        if estado_e1.lower() == "eliminado" or (enc['ganador_id'] != e1['id'] and ya_tiene_ganador):
                             st.markdown(f"<div style='color: red; font-weight: bold;'>ELIMINADO</div>", unsafe_allow_html=True)
                             st.button("Reinscribir Equipo", key=f"reinscribir_e1_{enc['id']}", use_container_width=True)
                         else:
@@ -542,7 +542,7 @@ def panel_rondas():
                         st.code(f"{nick2_j1}", language="None")
                         st.code(f"{nick2_j2}", language="None")                        
 
-                        if estado_e2 == "eliminado" or (enc['ganador_id'] != e2['id'] and ya_tiene_ganador):
+                        if estado_e2.lower() == "eliminado" or (enc['ganador_id'] != e2['id'] and ya_tiene_ganador):
                             st.markdown("<div style='color: red; font-weight: bold; '>ELIMINADO </div>",unsafe_allow_html=True)
                             st.button("Reinscribir Equipo", key=f"reinscribir_e2_{enc['id']}", use_container_width=True)
                         else:
