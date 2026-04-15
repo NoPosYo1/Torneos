@@ -141,14 +141,14 @@ def llamada_db_duos():
 
 def avanzar_equipo_completo(supabd, id_equipo_ganador, ronda_actual, id_duelo_actual):
     # 1. VALIDACIÓN CRÍTICA: ¿Ya se registró un ganador para este duelo?
-    duelo_check = supabd.table("encuentros").select("ganador_id").eq("id", id_duelo_actual).execute()
+    duelo_check = supabd.table("encuentro").select("ganador_id").eq("id", id_duelo_actual).execute()
     
     if duelo_check.data and duelo_check.data[0]['ganador_id'] is not None:
         st.warning("Este duelo ya tiene un ganador registrado.")
         return
 
     # 2. Registrar el ganador en el duelo actual para "bloquearlo"
-    supabd.table("encuentros").update({"ganador_id": id_equipo_ganador}).eq("id", id_duelo_actual).execute()
+    supabd.table("encuentro").update({"ganador_id": id_equipo_ganador}).eq("id", id_duelo_actual).execute()
 
     # --- El resto de la lógica de avance sigue igual ---
     orden_rondas = ["Ronda 1", "Ronda 2", "Ronda 3", "Ronda 4", "Ronda 5", "Semifinal", "Final"]
@@ -159,7 +159,7 @@ def avanzar_equipo_completo(supabd, id_equipo_ganador, ronda_actual, id_duelo_ac
         return
 
     # 3. Buscar hueco en la próxima ronda
-    partido_pendiente = supabd.table("encuentros")\
+    partido_pendiente = supabd.table("encuentro")\
         .select("id")\
         .eq("ronda", proxima)\
         .is_("equipo_2", "null")\
@@ -167,9 +167,9 @@ def avanzar_equipo_completo(supabd, id_equipo_ganador, ronda_actual, id_duelo_ac
 
     if partido_pendiente.data:
         id_partido_next = partido_pendiente.data[0]['id']
-        supabd.table("encuentros").update({"equipo_2": id_equipo_ganador}).eq("id", id_partido_next).execute()
+        supabd.table("encuentro").update({"equipo_2": id_equipo_ganador}).eq("id", id_partido_next).execute()
     else:
-        supabd.table("encuentros").insert({
+        supabd.table("encuentro").insert({
             "ronda": proxima,
             "equipo_1": id_equipo_ganador,
             "equipo_2": None
@@ -205,7 +205,7 @@ def generar_ronda_1_automatica(supabd):
 
     # 4. Insertar en la BD
     try:
-        supabd.table("encuentros").insert(duelos_a_insertar).execute()
+        supabd.table("encuentro").insert(duelos_a_insertar).execute()
         st.success(f"✅ Ronda 1 generada con {len(duelos_a_insertar)} enfrentamientos.")
     except Exception as e:
         st.error(f"Error al generar ronda: {e}")
@@ -214,7 +214,7 @@ def resetear_torneo_completo(supabd):
     try:
         # 1. Eliminar todos los enfrentamientos (Brackets)
         # Usamos un filtro que siempre sea cierto para borrar todo
-        supabd.table("encuentros").delete().neq("id", 0).execute()
+        supabd.table("encuentro").delete().neq("id", 0).execute()
         
         # 2. Resetear estados en la tabla Equipo
         # Ponemos ganador_id en NULL y el estado en 'activo'
@@ -390,7 +390,7 @@ else:
 
         # 2. Consulta con Doble Join para traer nicks de los 4 posibles jugadores
 # 2. Consulta con Doble Join (Agregamos ganador_id al inicio)
-        res = supabd.table("encuentros").select("""
+        res = supabd.table("encuentro").select("""
             id,
             ronda,
             ganador_id,
@@ -407,7 +407,7 @@ else:
         """).eq("ronda", ronda_actual).execute()
 
         if not res.data:
-            st.info(f"No hay encuentros generados para {ronda_actual}")
+            st.info(f"No hay encuentro generados para {ronda_actual}")
             return
 
         st.divider()
